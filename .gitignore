@@ -1,0 +1,39 @@
+# ----------------------------------------------------------------------
+# Soubory a složky vyloučené ze snímku projektu (project_snapshot.txt)
+# Vyloučeno na základě 'Vyloučené Položky (Pouze Název)' 
+# ----------------------------------------------------------------------
+
+# Generování snímku
+generate_ss_snapshot.py 
+generate_ss_snapshot_ignore.txt 
+project_snapshot.txt 
+
+# Dočasné soubory / Logy
+*.log 
+*.tmp 
+log/ 
+logs/ 
+
+
+# ----------------------------------------------------------------------
+# Obvyklé vyloučení z webového/aplikačního vývoje
+# (Zahrnuje položky ze seznamu vyloučených, které se v projektu mohou objevit)
+# ----------------------------------------------------------------------
+
+# Závislosti Node.js
+node_modules/ 
+
+# Python (pokud by se projekt rozšířil o Python backend)
+__pycache__/ 
+
+# Build / Distribuční adresáře
+build/ 
+dist/ 
+
+# Citlivá data / Konfigurace prostředí
+.env
+
+# Projektové dokumenty
+README.dm
+WORKFLOW.dm
+
