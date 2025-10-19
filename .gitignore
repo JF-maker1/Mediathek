@@ -36,4 +36,6 @@ dist/
 # Projektové dokumenty
 README.dm
 WORKFLOW.dm
+archiv/
 
+.vercel
