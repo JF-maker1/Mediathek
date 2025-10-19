@@ -6,22 +6,104 @@
     <title>Hello World - Základní Aplikace</title>
     <style>
         body {
-            font-family: sans-serif;
+            font-family: sans-serif; /* Ponecháno stávající CSS  */
             display: flex;
+            flex-direction: column; /* Změna na column pro vertikální uspořádání [cite: 8] */
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #f4f4f4;
+            background-color: #f4f4f4; /* Ponecháno stávající CSS [cite: 3] */
             color: #333;
         }
         h1 {
-            color: #007bff; /* Modrá barva pro "Hello World" */
+            color: #007bff; /* Ponecháno stávající CSS [cite: 4] */
+        }
+        
+        /* Nové styly pro video a ovládání */
+        #video-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px; /* Mezery mezi prvky */
+            margin-top: 20px;
+        }
+        
+        /* Styl pro tlačítka */
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #28a745; /* Zelená pro Přehrát */
+            color: white;
+            transition: background-color 0.3s;
+        }
+
+        #pause-button {
+            background-color: #dc3545; /* Červená pro Pauzu */
+        }
+        
+        button:hover {
+            opacity: 0.8;
         }
     </style>
 </head>
 <body>
     <h1>Hello World! 👋</h1>
     <p>Toto je počáteční verze webové aplikace.</p>
+
+    <div id="video-container">
+        
+        <button onclick="playVideo()">Přehrát video</button>
+        
+        <div id="player"></div>
+        
+        <button id="pause-button" onclick="pauseVideo()">⏸️ Pauza</button>
+        
+    </div>
+    
+    <script>
+      // 1. Zavedení YouTube IFrame Player API scriptu
+      var tag = document.createElement('script');
+      tag.src = "https://www.youtube.com/iframe_api";
+      var firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      // 2. Deklarace proměnné pro YouTube přehrávač
+      var player;
+
+      // 3. Funkce volaná po načtení API
+      function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+          height: '390',
+          width: '640',
+          videoId: 'pxPI_fsJTAU', // ID videa z odkazu: https://www.youtube.com/watch?v=pxPI_fsJTAU [cite: 17]
+          playerVars: {
+            'controls': 1, // Zobrazit ovládací prvky
+            'autoplay': 0, // Nezačínat automaticky
+            'modestbranding': 1 // Skromnější branding
+          },
+          events: {
+            // 'onReady': onPlayerReady, // V případě potřeby akce po načtení
+          }
+        });
+      }
+
+      // 4. Funkce pro ovládání přehrávání z tlačítka
+      function playVideo() {
+        if (player && typeof player.playVideo === 'function') {
+          player.playVideo();
+        }
+      }
+
+      // 5. Funkce pro ovládání pauzy z tlačítka [cite: 19]
+      function pauseVideo() {
+        if (player && typeof player.pauseVideo === 'function') {
+          player.pauseVideo();
+        }
+      }
+    </script>
 </body>
 </html>
