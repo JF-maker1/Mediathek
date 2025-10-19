@@ -6,18 +6,19 @@
     <title>Hello World - Základní Aplikace</title>
     <style>
         body {
-            font-family: sans-serif; /* Ponecháno stávající CSS  */
+            font-family: sans-serif; /* Ponecháno stávající CSS [cite: 16] */
             display: flex;
-            flex-direction: column; /* Změna na column pro vertikální uspořádání [cite: 8] */
+            flex-direction: column; /* Změna na column pro vertikální uspořádání [cite: 17] */
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #f4f4f4; /* Ponecháno stávající CSS [cite: 3] */
+            background-color: #f4f4f4; /* Ponecháno stávající CSS [cite: 18] */
             color: #333;
         }
         h1 {
-            color: #007bff; /* Ponecháno stávající CSS [cite: 4] */
+            color: #007bff;
+            /* Ponecháno stávající CSS [cite: 19, 20] */
         }
         
         /* Nové styly pro video a ovládání */
@@ -25,28 +26,58 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px; /* Mezery mezi prvky */
+            gap: 15px; /* Mezery mezi prvky [cite: 21] */
             margin-top: 20px;
         }
         
-        /* Styl pro tlačítka */
+        /* Styl pro tlačítka [cite: 22] */
         button {
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
             border: none;
             border-radius: 5px;
-            background-color: #28a745; /* Zelená pro Přehrát */
+            background-color: #28a745; /* Zelená pro Přehrát [cite: 24] */
             color: white;
             transition: background-color 0.3s;
         }
 
         #pause-button {
-            background-color: #dc3545; /* Červená pro Pauzu */
+            background-color: #dc3545; /* Červená pro Pauzu [cite: 26] */
         }
         
         button:hover {
             opacity: 0.8;
+        }
+
+        /* NOVÉ STYLY PRO PLAYLIST */
+        #playlist-box {
+            margin-top: 30px;
+            width: 640px; /* Stejná šířka jako video */
+            border: 1px solid #ccc;
+            padding: 15px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .playlist-item {
+            padding: 8px 10px;
+            margin-bottom: 5px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s, box-shadow 0.2s;
+        }
+
+        .playlist-item:hover {
+            background-color: #dee2e6;
+        }
+
+        .selected {
+            background-color: #007bff; /* Modrá pro označené video */
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
         }
     </style>
 </head>
@@ -64,41 +95,80 @@
         
     </div>
     
+    <div id="playlist-box">
+        <h2>Seznam videí</h2>
+        </div>
+
     <script>
-      // 1. Zavedení YouTube IFrame Player API scriptu
+      // 1. Zavedení YouTube IFrame Player API scriptu [cite: 29]
       var tag = document.createElement('script');
       tag.src = "https://www.youtube.com/iframe_api";
       var firstScriptTag = document.getElementsByTagName('script')[0];
       firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-      // 2. Deklarace proměnné pro YouTube přehrávač
+      
+      // 2. Deklarace proměnné pro YouTube přehrávač [cite: 30]
       var player;
 
-      // 3. Funkce volaná po načtení API
+      // NOVÉ: Seznam videí a proměnná pro aktuální vybrané ID
+      const playlist = [
+        { id: 'pxPI_fsJTAU', title: 'Původní Video (ID: pxPI_fsJTAU)' },
+        { id: 'ue3R5dBynWQ', title: 'Nové Video (ID: ue3R5dBynWQ)' }
+      ];
+      let currentVideoId = playlist[0].id; // Nastavení prvního videa jako výchozího
+      
+      // Funkce pro vykreslení playlistu do DOM
+      function renderPlaylist() {
+        const playlistBox = document.getElementById('playlist-box');
+        let html = '';
+        
+        playlist.forEach(video => {
+          // Nastavení třídy 'selected' pro aktuálně vybrané video
+          const isSelected = video.id === currentVideoId ? ' selected' : '';
+          html += `<div class="playlist-item${isSelected}" 
+                        onclick="selectVideo('${video.id}')">
+                      ${video.title}
+                  </div>`;
+        });
+        
+        playlistBox.innerHTML = `<h2>Seznam videí</h2>${html}`;
+      }
+      
+      // Funkce pro výběr videa z playlistu
+      function selectVideo(videoId) {
+        currentVideoId = videoId;
+        renderPlaylist(); // Překreslí playlist pro aktualizaci zvýraznění
+      }
+
+      // Vykreslení playlistu při načtení stránky
+      document.addEventListener('DOMContentLoaded', renderPlaylist);
+
+      // 3. Funkce volaná po načtení API [cite: 31]
       function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
           height: '390',
           width: '640',
-          videoId: 'pxPI_fsJTAU', // ID videa z odkazu: https://www.youtube.com/watch?v=pxPI_fsJTAU [cite: 17]
+          // ZMĚNA: videoId se nastavuje z proměnné currentVideoId (výchozí video)
+          videoId: currentVideoId, 
           playerVars: {
-            'controls': 1, // Zobrazit ovládací prvky
-            'autoplay': 0, // Nezačínat automaticky
-            'modestbranding': 1 // Skromnější branding
+            'controls': 1, // Zobrazit ovládací prvky [cite: 32]
+            'autoplay': 0, // Nezačínat automaticky [cite: 32]
+            'modestbranding': 1 // Skromnější branding [cite: 32]
           },
           events: {
-            // 'onReady': onPlayerReady, // V případě potřeby akce po načtení
+            // 'onReady': onPlayerReady, // V případě potřeby akce po načtení [cite: 32]
           }
         });
       }
 
       // 4. Funkce pro ovládání přehrávání z tlačítka
       function playVideo() {
-        if (player && typeof player.playVideo === 'function') {
-          player.playVideo();
+        // ZMĚNA: Používá loadVideoById pro načtení a spuštění vybraného videa
+        if (player && typeof player.loadVideoById === 'function') {
+          player.loadVideoById(currentVideoId); 
         }
       }
 
-      // 5. Funkce pro ovládání pauzy z tlačítka [cite: 19]
+      // 5. Funkce pro ovládání pauzy z tlačítka [cite: 34]
       function pauseVideo() {
         if (player && typeof player.pauseVideo === 'function') {
           player.pauseVideo();
