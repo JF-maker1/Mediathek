@@ -6,19 +6,18 @@
     <title>Hello World - Základní Aplikace</title>
     <style>
         body {
-            font-family: sans-serif; /* Ponecháno stávající CSS [cite: 16] */
+            font-family: sans-serif; 
             display: flex;
-            flex-direction: column; /* Změna na column pro vertikální uspořádání [cite: 17] */
+            flex-direction: column; 
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #f4f4f4; /* Ponecháno stávající CSS [cite: 18] */
+            background-color: #f4f4f4; 
             color: #333;
         }
         h1 {
             color: #007bff;
-            /* Ponecháno stávající CSS [cite: 19, 20] */
         }
         
         /* Nové styly pro video a ovládání */
@@ -26,24 +25,24 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px; /* Mezery mezi prvky [cite: 21] */
+            gap: 15px; 
             margin-top: 20px;
         }
         
-        /* Styl pro tlačítka [cite: 22] */
+        /* Styl pro tlačítka */
         button {
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
             border: none;
             border-radius: 5px;
-            background-color: #28a745; /* Zelená pro Přehrát [cite: 24] */
+            background-color: #28a745;
             color: white;
             transition: background-color 0.3s;
         }
 
         #pause-button {
-            background-color: #dc3545; /* Červená pro Pauzu [cite: 26] */
+            background-color: #dc3545;
         }
         
         button:hover {
@@ -74,7 +73,7 @@
         }
 
         .selected {
-            background-color: #007bff; /* Modrá pro označené video */
+            background-color: #007bff;
             color: white;
             font-weight: bold;
             box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
@@ -97,26 +96,64 @@
     
     <div id="playlist-box">
         <h2>Seznam videí</h2>
-        </div>
+    </div>
 
     <script>
-      // 1. Zavedení YouTube IFrame Player API scriptu [cite: 29]
+      // 1. Zavedení YouTube IFrame Player API scriptu 
       var tag = document.createElement('script');
       tag.src = "https://www.youtube.com/iframe_api";
       var firstScriptTag = document.getElementsByTagName('script')[0];
       firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
       
-      // 2. Deklarace proměnné pro YouTube přehrávač [cite: 30]
+      // 2. Deklarace proměnné pro YouTube přehrávač
       var player;
-
-      // NOVÉ: Seznam videí a proměnná pro aktuální vybrané ID
+      // ZMĚNA: Seznam videí a proměnná pro aktuální vybrané ID
+      // Ponecháme pouze ID, název bude načten dynamicky z API.
       const playlist = [
-        { id: 'pxPI_fsJTAU', title: 'Původní Video (ID: pxPI_fsJTAU)' },
-        { id: 'ue3R5dBynWQ', title: 'Nové Video (ID: ue3R5dBynWQ)' }
+        { id: 'pxPI_fsJTAU', title: 'Načítám...' }, 
+        { id: 'ue3R5dBynWQ', title: 'Načítám...' }
       ];
       let currentVideoId = playlist[0].id; // Nastavení prvního videa jako výchozího
+
+      // NOVÁ: Asynchronní funkce pro načtení názvů z Vercel Proxy (/api/get-titles)
+      async function fetchVideoTitles() {
+        const videoIds = playlist.map(v => v.id); // Získáme pole ID
+        console.log('Fetching titles for IDs:', videoIds);
+
+        try {
+            // Volání Serverless Proxy, které bezpečně zavolá YouTube API
+            const response = await fetch('/api/get-titles', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ videoIds })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                console.error('Failed to fetch titles from proxy:', data.error);
+                // Při chybě necháme dočasné názvy ('Načítám...')
+                return;
+            }
+
+            // Aktualizace globálního playlistu s dynamickými názvy
+            data.titles.forEach(apiVideo => {
+                const index = playlist.findIndex(v => v.id === apiVideo.id);
+                if (index !== -1) {
+                    playlist[index].title = apiVideo.title;
+                }
+            });
+            
+            renderPlaylist(); // Vykreslení playlistu s dynamickými názvy
+
+        } catch (error) {
+            console.error('Network or parsing error during title fetch:', error);
+        }
+      }
       
-      // Funkce pro vykreslení playlistu do DOM
+      // Funkce pro vykreslení playlistu do DOM (Původní logika zůstává)
       function renderPlaylist() {
         const playlistBox = document.getElementById('playlist-box');
         let html = '';
@@ -126,23 +163,22 @@
           const isSelected = video.id === currentVideoId ? ' selected' : '';
           html += `<div class="playlist-item${isSelected}" 
                         onclick="selectVideo('${video.id}')">
-                      ${video.title}
+                    ${video.title}
                   </div>`;
         });
-        
         playlistBox.innerHTML = `<h2>Seznam videí</h2>${html}`;
       }
       
-      // Funkce pro výběr videa z playlistu
+      // Funkce pro výběr videa z playlistu (Původní logika zůstává)
       function selectVideo(videoId) {
         currentVideoId = videoId;
         renderPlaylist(); // Překreslí playlist pro aktualizaci zvýraznění
       }
 
-      // Vykreslení playlistu při načtení stránky
-      document.addEventListener('DOMContentLoaded', renderPlaylist);
-
-      // 3. Funkce volaná po načtení API [cite: 31]
+      // ZMĚNA: Spuštění načítání dat a vykreslení playlistu při načtení stránky
+      document.addEventListener('DOMContentLoaded', fetchVideoTitles); 
+      
+      // 3. Funkce volaná po načtení API 
       function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
           height: '390',
@@ -150,12 +186,12 @@
           // ZMĚNA: videoId se nastavuje z proměnné currentVideoId (výchozí video)
           videoId: currentVideoId, 
           playerVars: {
-            'controls': 1, // Zobrazit ovládací prvky [cite: 32]
-            'autoplay': 0, // Nezačínat automaticky [cite: 32]
-            'modestbranding': 1 // Skromnější branding [cite: 32]
+            'controls': 1, // Zobrazit ovládací prvky
+            'autoplay': 0, // Nezačínat automaticky
+            'modestbranding': 1 // Skromnější branding
           },
           events: {
-            // 'onReady': onPlayerReady, // V případě potřeby akce po načtení [cite: 32]
+            // 'onReady': onPlayerReady, // V případě potřeby akce po načtení 
           }
         });
       }
@@ -164,11 +200,11 @@
       function playVideo() {
         // ZMĚNA: Používá loadVideoById pro načtení a spuštění vybraného videa
         if (player && typeof player.loadVideoById === 'function') {
-          player.loadVideoById(currentVideoId); 
+          player.loadVideoById(currentVideoId);
         }
       }
 
-      // 5. Funkce pro ovládání pauzy z tlačítka [cite: 34]
+      // 5. Funkce pro ovládání pauzy z tlačítka
       function pauseVideo() {
         if (player && typeof player.pauseVideo === 'function') {
           player.pauseVideo();
