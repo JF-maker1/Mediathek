@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hello World - Základní Aplikace</title>
+    
     <style>
         body {
-            font-family: sans-serif; 
+            font-family: sans-serif;
             display: flex;
             flex-direction: column; 
             justify-content: center;
@@ -96,7 +97,8 @@
     
     <div id="playlist-box">
         <h2>Seznam videí</h2>
-    </div>
+  
+     </div>
 
     <script>
       // 1. Zavedení YouTube IFrame Player API scriptu 
@@ -107,29 +109,25 @@
       
       // 2. Deklarace proměnné pro YouTube přehrávač
       var player;
-      // ZMĚNA: Seznam videí a proměnná pro aktuální vybrané ID
-      // Ponecháme pouze ID, název bude načten dynamicky z API.
-      const playlist = [
-        { id: 'pxPI_fsJTAU', title: 'Načítám...' }, 
-        { id: 'ue3R5dBynWQ', title: 'Načítám...' }
-      ];
-      let currentVideoId = playlist[0].id; // Nastavení prvního videa jako výchozího
+      
+      // ZMĚNA: Globální proměnné pro playlist a aktuální video
+      // Budou naplněny dynamicky po načtení videos.json
+      let playlist = [];
+      let currentVideoId = ''; 
 
-      // NOVÁ: Asynchronní funkce pro načtení názvů z Vercel Proxy (/api/get-titles)
+      // Stávající funkce pro načtení názvů z Vercel Proxy (/api/get-titles)
       async function fetchVideoTitles() {
         const videoIds = playlist.map(v => v.id); // Získáme pole ID
         console.log('Fetching titles for IDs:', videoIds);
-
         try {
             // Volání Serverless Proxy, které bezpečně zavolá YouTube API
             const response = await fetch('/api/get-titles', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
-                },
+                 },
                 body: JSON.stringify({ videoIds })
             });
-
             const data = await response.json();
 
             if (!response.ok) {
@@ -143,7 +141,7 @@
                 const index = playlist.findIndex(v => v.id === apiVideo.id);
                 if (index !== -1) {
                     playlist[index].title = apiVideo.title;
-                }
+                 }
             });
             
             renderPlaylist(); // Vykreslení playlistu s dynamickými názvy
@@ -163,7 +161,7 @@
           const isSelected = video.id === currentVideoId ? ' selected' : '';
           html += `<div class="playlist-item${isSelected}" 
                         onclick="selectVideo('${video.id}')">
-                    ${video.title}
+                     ${video.title}
                   </div>`;
         });
         playlistBox.innerHTML = `<h2>Seznam videí</h2>${html}`;
@@ -175,8 +173,41 @@
         renderPlaylist(); // Překreslí playlist pro aktualizaci zvýraznění
       }
 
-      // ZMĚNA: Spuštění načítání dat a vykreslení playlistu při načtení stránky
-      document.addEventListener('DOMContentLoaded', fetchVideoTitles); 
+      // NOVÁ: Hlavní funkce pro inicializaci aplikace
+      // 1. Načte ID ze souboru videos.json
+      // 2. Zavolá fetchVideoTitles() pro získání názvů z API
+      async function initializeApp() {
+        try {
+          // 1. Načtení externího seznamu ID
+          const response = await fetch('./videos.json'); // Načtení nového souboru
+          if (!response.ok) {
+            throw new Error(`Failed to fetch videos.json: ${response.statusText}`);
+          }
+          const videoIds = await response.json();
+
+          if (!videoIds || videoIds.length === 0) {
+            console.error('Video list (videos.json) is empty or invalid.');
+            document.getElementById('playlist-box').innerHTML = '<h2>Seznam videí je prázdný.</h2>';
+            return;
+          }
+
+          // 2. Transformace ID na strukturu playlistu (s dočasnými názvy)
+          playlist = videoIds.map(id => ({ id: id, title: 'Načítám...' }));
+          currentVideoId = playlist[0].id; // Nastavení prvního videa jako výchozího
+
+          // 3. Zavolání stávající funkce pro načtení názvů z API
+          // Tato funkce na svém konci sama zavolá renderPlaylist()
+          await fetchVideoTitles();
+
+        } catch (error) {
+          console.error('Failed to initialize application:', error);
+          // Zobrazení chyby uživateli v DOM
+          document.getElementById('playlist-box').innerHTML = '<h2>Chyba při načítání videí.</h2>';
+        }
+      }
+
+      // ZMĚNA: Spuštění nové inicializační funkce při načtení stránky
+      document.addEventListener('DOMContentLoaded', initializeApp);
       
       // 3. Funkce volaná po načtení API 
       function onYouTubeIframeAPIReady() {
@@ -186,14 +217,14 @@
           // ZMĚNA: videoId se nastavuje z proměnné currentVideoId (výchozí video)
           videoId: currentVideoId, 
           playerVars: {
-            'controls': 1, // Zobrazit ovládací prvky
+             'controls': 1, // Zobrazit ovládací prvky
             'autoplay': 0, // Nezačínat automaticky
             'modestbranding': 1 // Skromnější branding
           },
           events: {
             // 'onReady': onPlayerReady, // V případě potřeby akce po načtení 
           }
-        });
+         });
       }
 
       // 4. Funkce pro ovládání přehrávání z tlačítka
