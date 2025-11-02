@@ -1,0 +1,212 @@
+JÁ_PROMPT:
+Prosím o návrh zadání pro realizační tým webové aplikace. Tato aplikace bude vyvíjena na lokálním PC a poté bude nasazena na Vercelu. Jde o tzv. počáteční výkop. Proto by aplikace měla zatím obsahovat pouze jednu stránku. Na této stránce bude název "Mediathek: Tvá sbírka Tvých videí". Prosím o návrh dalších parametrů pro realizační tým které by mělo zadání obsahovat. Vývoj aplikace bude probíhat v tomto prostředí [pi@rpi5:~/Projects/web_app_Mediathek $ inxi -F
+
+System:
+
+  Host: rpi5 Kernel: 6.12.47+rpt-rpi-2712 arch: aarch64 bits: 64
+
+  Desktop: LabWC v: N/A Distro: Debian GNU/Linux 13 (trixie)
+
+Machine:
+
+  Type: ARM System: Raspberry Pi 5 Model B Rev 1.0 details: N/A rev: d04170
+
+    serial: 01a6965fe04e21d2
+
+CPU:
+
+  Info: quad core model: N/A variant: cortex-a76 bits: 64 type: MCP cache:
+
+    L2: 2 MiB
+
+  Speed (MHz): avg: 2400 min/max: 1500/2400 cores: 1: 2400 2: 2400 3: 2400
+
+    4: 2400
+
+Graphics:
+
+  Device-1: bcm2712-hdmi0 driver: vc4_hdmi v: N/A
+
+  Device-2: bcm2712-hdmi1 driver: vc4_hdmi v: N/A
+
+  Display: wayland server: X.org v: 1.21.1.16 with: Xwayland v: 24.1.6
+
+    compositor: LabWC driver:
+
+    gpu: vc4-drm,vc4_crtc,vc4_dpi,vc4_dsi,vc4_firmware_kms,vc4_hdmi,vc4_hvs,vc4_txp,vc4_v3d,vc4_vec
+
+    resolution: 1920x1080~60Hz
+
+  API: EGL v: 1.5 drivers: swrast,v3d,vc4
+
+    platforms: gbm,wayland,x11,surfaceless,device
+
+  API: OpenGL v: 4.5 compat-v: 3.1 vendor: broadcom mesa v: 25.0.7-2+rpt2
+
+    renderer: V3D 7.1.7.0
+
+  API: Vulkan v: 1.4.309 drivers: v3dv,llvmpipe surfaces: xcb,xlib,wayland
+
+  Info: Tools: api: eglinfo, glxinfo, vulkaninfo wl: kanshi,wlr-randr
+
+    x11: xdriinfo, xdpyinfo, xprop, xrandr
+
+Audio:
+
+  Device-1: bcm2712-hdmi0 driver: vc4_hdmi
+
+  Device-2: bcm2712-hdmi1 driver: vc4_hdmi
+
+  API: ALSA v: k6.12.47+rpt-rpi-2712 status: kernel-api
+
+  Server-1: PipeWire v: 1.4.2 status: active
+
+Network:
+
+  Device-1: Raspberry Pi RP1 PCIe 2.0 South Bridge driver: rp1
+
+  IF: wlan0 state: up mac: 2c:cf:67:70:92:b6
+
+  IF-ID-1: eth0 state: up speed: 100 Mbps duplex: full
+
+    mac: 2c:cf:67:70:92:b5
+
+Bluetooth:
+
+  Device-1: bcm7271-uart driver: bcm7271_uart
+
+  Report: hciconfig ID: hci0 state: up address: 2C:CF:67:70:92:B7 bt-v: 5.0
+
+  Device-2: bcm7271-uart driver: ctrl
+
+Drives:
+
+  Local Storage: total: 355.66 GiB used: 12.77 GiB (3.6%)
+
+  ID-1: /dev/sda vendor: Verbatim model: Vi550 S3 SSD size: 238.47 GiB
+
+    type: USB
+
+  ID-2: /dev/sdb model: N/A size: 117.19 GiB type: USB
+
+Partition:
+
+  ID-1: / size: 234.17 GiB used: 12.68 GiB (5.4%) fs: ext4 dev: /dev/sda2
+
+Swap:
+
+  ID-1: swap-1 type: zram size: 2 GiB used: 0 KiB (0.0%) dev: /dev/zram0
+
+Sensors:
+
+  System Temperatures: cpu: 61.3 C mobo: N/A
+
+  Fan Speeds (rpm): cpu: 1503
+
+Info:
+
+  Memory: total: N/A available: 7.87 GiB used: 2.2 GiB (27.9%) igpu: 8 MiB
+
+  Processes: 250 Uptime: 41m Shell: Bash inxi: 3.3.38
+
+pi@rpi5:~/Projects/web_app_Mediathek $ 
+
+]
+
+AI_RESPONZE:
+Jasně, zde je návrh zadání pro realizační tým pro počáteční "výkop" projektu webové aplikace "Mediathek". Zadání je strukturováno tak, aby bylo jasné, stručné a poskytlo týmu všechny potřebné informace pro první fázi vývoje.
+
+Zadání projektu: Webová aplikace Mediathek (Fáze 1 - Kick-off)
+Datum: 2. listopadu 2025 Verze: 1.0
+
+1. Název projektu
+Mediathek
+
+2. Cíl projektu (Dlouhodobá vize)
+Vytvořit moderní webovou aplikaci, která uživatelům umožní snadno spravovat, organizovat a přehrávat jejich soukromou sbírku videí. Aplikace bude fungovat jako osobní "mediální knihovna" dostupná odkudkoliv.
+
+3. Rozsah pro počáteční fázi (MVP - Minimum Viable Product)
+Cílem této první, minimální fáze je vytvořit a nasadit naprostý základ aplikace. Nejde o funkčnost pro koncové uživatele, ale o ověření celého vývojového a deployment procesu – od lokálního vývoje na daném hardwaru až po úspěšné nasazení na cílovou platformu.
+
+Výstupem bude jediná statická webová stránka.
+
+4. Funkční požadavky
+FR1: Aplikace musí zobrazit jednu webovou stránku (landing page).
+
+FR2: Na stránce musí být viditelný hlavní nadpis v tomto přesném znění: Mediathek: Tvá sbírka Tvých videí.
+
+FR3: Stránka musí být korektně zobrazitelná v moderních webových prohlížečích (Chrome, Firefox, Safari, Edge).
+
+5. Nefunkční požadavky
+Vzhled: Pro tuto fázi stačí naprosto minimalistický design. Například bílé pozadí a černý, čitelný text. Nadpis může být pro jednoduchost vystředěn horizontálně i vertikálně na stránce.
+
+Responzivita: Stránka musí být čitelná jak na desktopovém monitoru (např. rozlišení 1920x1080), tak na obrazovce mobilního telefonu. Text se musí zalamovat a škálovat.
+
+Výkon: Vzhledem k jednoduchosti se očekává extrémně rychlé načtení stránky (metrika LCP pod 1 sekundu).
+
+6. Technologický stack a vývojové prostředí
+Frontend Framework: Doporučuje se použít Next.js nebo SvelteKit. Oba frameworky jsou moderní, mají skvělou podporu pro Vercel a umožňují snadné budoucí rozšíření.
+
+Programovací jazyk: TypeScript (preferováno pro budoucí udržitelnost) nebo JavaScript.
+
+Stylování: Pro tuto fázi postačí globální CSS soubor nebo CSS moduly. Není potřeba zavádět složitější řešení jako Tailwind CSS (pokud se tým nerozhodne jinak pro zjednodušení práce).
+
+Verzování: Veškerý kód musí být verzován pomocí Git. Bude vytvořen nový repozitář na platformě GitHub nebo GitLab.
+
+Vývojové prostředí: Vývoj bude probíhat na poskytnuté konfiguraci:
+
+Hardware: Raspberry Pi 5 Model B
+
+Operační systém: Debian GNU/Linux 13 (trixie)
+
+Architektura: aarch64
+
+Tým musí zajistit, aby všechny zvolené nástroje (Node.js, npm/yarn/pnpm, Git atd.) byly kompatibilní a funkční v tomto prostředí.
+
+7. Deployment
+Cílová platforma: Vercel
+
+Proces: Projekt na Vercelu bude propojen s Git repozitářem. Musí být nastaveno automatické nasazení (Continuous Deployment), takže každý push do hlavní větve (např. main nebo master) automaticky spustí build a nasazení nové verze aplikace.
+
+8. Akceptační kritéria (Definice "Hotovo")
+Tato první fáze bude považována za dokončenou, když budou splněny všechny následující body:
+
+Byl založen Git repozitář obsahující zdrojový kód aplikace.
+
+Projekt lze úspěšně spustit v lokálním vývojovém režimu na cílovém Raspberry Pi 5 (např. příkazem npm run dev).
+
+Projekt je propojen s platformou Vercel.
+
+Aplikace je úspěšně nasazena a je veřejně dostupná na vygenerované URL adrese od Vercelu (např. mediathek-projekt.vercel.app).
+
+Po otevření této URL se zobrazí stránka s požadovaným nadpisem.
+
+Zobrazení je korektní na desktopu i v mobilním zobrazení (dle emulátoru v prohlížeči).
+
+9. Budoucí rozvoj (Mimo rozsah této fáze)
+Pro kontext týmu, co bude následovat po úspěšném dokončení této fáze:
+
+Implementace uživatelské autentizace (přihlášení/registrace).
+
+Návrh databázové struktury pro ukládání informací o videích.
+
+Vytvoření rozhraní pro nahrávání video souborů.
+
+Zobrazení galerie nahraných videí.
+
+Stránka pro přehrávání konkrétního videa.
+
+Funkce vyhledávání a filtrování.
+
+10. První kroky pro realizační tým
+Založit Git repozitář projektu.
+
+Vybrat a inicializovat projekt pomocí zvoleného frameworku (např. npx create-next-app@latest).
+
+Implementovat jednoduchou stránku dle funkčních požadavků.
+
+Provést první push do repozitáře.
+
+Založit projekt na Vercelu a propojit ho s repozitářem.
+
+Ověřit úspěšné nasazení a splnění všech akceptačních kritérií.
