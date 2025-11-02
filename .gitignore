@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Soubory pro generování snímku projektu
+project_snapshot.md
+project_snapshot.py

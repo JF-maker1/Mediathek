@@ -1,0 +1,223 @@
+JÁ_PROMPT:
+V příloze jsou výsledky z předešlé fáze realizace webové aplikace zaměřené na správu obsahu resp. primárně videi z youtube. Má jít o jakou osobní složku s videi na základě kterých se bude generovat jejich obsah pro jejich snadnou orientaci ve videích např. vzdělavacích a podobných videích. Nyní prosím o výběr seznamů vlastností které by mohly být nyní implementovány a jejich seřazení dle jejich relevance . Poté z nich jednu vyberu zřejmě tu první pro kterou vytvoříme zadání pro realizační tým. Díky moc ;-)
+[README_00_01ZADANI][README_00_02REALIZACE_Kick-off]
+
+AI_RESPONZE:
+Jasně, naprosto rozumím. Po úspěšném "výkopu" a ověření celého technologického a deployment procesu je čas zaměřit se na skutečnou funkčnost, která přinese hodnotu. Vzhledem k cíli aplikace – osobní knihovna a nástroj pro orientaci v obsahu vzdělávacích YouTube videí – jsem připravil seznam možných dalších kroků.
+
+Vlastnosti jsou seřazeny podle strategické relevance: od naprosto nezbytných základů, bez kterých nelze pokračovat, až po pokročilejší funkce, které aplikaci obohatí.
+
+Seznam Následujících Funkcí a Vlastností (Seřazeno dle Priority)
+Zde je přehled možných implementačních balíčků. Každý představuje logický celek, který posouvá projekt o významný krok vpřed.
+
+1. Implementace Uživatelské Autentizace a Databáze (Nejvyšší priorita)
+Popis: Vytvoření systému, který uživatelům umožní vytvořit si účet a přihlásit se. Toto je absolutní základ pro jakoukoliv personalizovanou funkci. Součástí je i výběr a nastavení databáze, kam se budou ukládat data o uživatelích a později i o jejich videích.
+
+Klíčové kroky:
+
+Výběr poskytovatele autentizace (např. NextAuth.js s přihlášením přes Google/GitHub pro jednoduchost).
+
+Výběr a nastavení databázové platformy kompatibilní s Vercel (např. Vercel Postgres, Supabase, nebo MongoDB Atlas).
+
+Vytvoření databázového schématu pro uživatele.
+
+Implementace stránek pro přihlášení a registraci.
+
+Zabezpečení budoucích stránek tak, aby byly dostupné pouze přihlášeným uživatelům.
+
+Proč je to relevantní: Toto je blokující prvek. Bez identity uživatele nelze vytvořit "osobní sbírku videí". Všechny další funkce na tomto základě staví.
+
+2. Základní Správa Videí (Přidání a Zobrazení)
+Popis: Po přihlášení musí mít uživatel možnost přidat do své sbírky první video a vidět seznam všech svých videí. Jedná se o první klíčovou interakci s aplikací.
+
+Klíčové kroky:
+
+Vytvoření databázového schématu pro videa (bude obsahovat např. ID uživatele, URL na YouTube, název, popis, délku, ID kanálu).
+
+Návrh a implementace formuláře pro vložení YouTube URL.
+
+Vytvoření API endpointu, který po přijetí URL:
+
+Zvaliduje, že jde o platný YouTube odkaz.
+
+Použije YouTube Data API k načtení metadat o videu (název, náhledový obrázek atd.).
+
+Uloží tato data do databáze a spojí je s přihlášeným uživatelem.
+
+Vytvoření hlavní stránky (dashboardu), která zobrazí seznam (např. v podobě karet) všech videí přidaných uživatelem.
+
+Proč je to relevantní: Okamžitě po implementaci autentizace dodává tato funkce aplikaci její primární smysl – možnost budovat si vlastní knihovnu.
+
+3. Přehrávač a Stránka Detailu Videa
+Popis: Uživatel musí mít možnost si uložené video přehrát a vidět jeho detaily. Tím se uzavře základní uživatelský cyklus: přidat -> vidět v seznamu -> přehrát.
+
+Klíčové kroky:
+
+Vytvoření dynamické stránky, která na základě ID videa zobrazí jeho detail.
+
+Integrace vestavěného YouTube přehrávače (např. pomocí balíčku react-youtube).
+
+Zobrazení všech metadat načtených z YouTube (název, popis, kanál atd.).
+
+Tato stránka se stane základem pro budoucí implementaci analýzy obsahu (zobrazení přepisu, souhrnu atd.).
+
+Proč je to relevantní: Poskytuje klíčovou funkci konzumace obsahu a připravuje půdu pro nejdůležitější analytické funkce.
+
+4. Automatická Generace a Zobrazení Přepisu Videa
+Popis: Toto je první krok k "chytrým" funkcím a snadné orientaci. Systém by měl pro každé přidané video automaticky stáhnout dostupné titulky (přepis) a zobrazit je na stránce detailu videa.
+
+Klíčové kroky:
+
+Výběr a implementace knihovny pro stahování titulků z YouTube (např. youtube-captions-scraper).
+
+Aktualizace procesu přidávání videa – po uložení metadat se spustí proces na pozadí, který stáhne a uloží přepis do databáze.
+
+Zobrazení interaktivního přepisu vedle přehrávače, kde se zvýrazňuje aktuálně mluvený text.
+
+Proč je to relevantní: Přepis je základním stavebním kamenem pro všechny pokročilé funkce, jako je fulltextové vyhledávání ve videích nebo generování souhrnů.
+
+Prosím, vyberte jednu z těchto vlastností. Doporučuji postupovat podle navrženého pořadí a začít první možností: Implementace uživatelské autentizace a databáze, protože je technickým předpokladem pro vše ostatní. Jakmile si vyberete, připravím pro ni podrobné zadání pro realizační tým, podobně jako v minulé fázi.
+
+JÁ_PROMPT:
+Ano pojdme vytvořit zadání pro realizační tým v tomto implementačním bodě [Jasně, naprosto rozumím. Po úspěšném "výkopu" a ověření celého technologického a deployment procesu je čas zaměřit se na skutečnou funkčnost, která přinese hodnotu. Vzhledem k cíli aplikace – osobní knihovna a nástroj pro orientaci v obsahu vzdělávacích YouTube videí – jsem připravil seznam možných dalších kroků.
+
+Vlastnosti jsou seřazeny podle strategické relevance: od naprosto nezbytných základů, bez kterých nelze pokračovat, až po pokročilejší funkce, které aplikaci obohatí.
+
+Seznam Následujících Funkcí a Vlastností (Seřazeno dle Priority)
+
+Zde je přehled možných implementačních balíčků. Každý představuje logický celek, který posouvá projekt o významný krok vpřed.
+
+1. Implementace Uživatelské Autentizace a Databáze (Nejvyšší priorita)
+
+Popis: Vytvoření systému, který uživatelům umožní vytvořit si účet a přihlásit se. Toto je absolutní základ pro jakoukoliv personalizovanou funkci. Součástí je i výběr a nastavení databáze, kam se budou ukládat data o uživatelích a později i o jejich videích.
+
+Klíčové kroky:
+
+Výběr poskytovatele autentizace (např. NextAuth.js s přihlášením přes Google/GitHub pro jednoduchost).
+
+Výběr a nastavení databázové platformy kompatibilní s Vercel (např. Vercel Postgres, Supabase, nebo MongoDB Atlas).
+
+Vytvoření databázového schématu pro uživatele.
+
+Implementace stránek pro přihlášení a registraci.
+
+Zabezpečení budoucích stránek tak, aby byly dostupné pouze přihlášeným uživatelům.
+
+Proč je to relevantní: Toto je blokující prvek. Bez identity uživatele nelze vytvořit "osobní sbírku videí". Všechny další funkce na tomto základě staví.] Prosím o přípravu ve struktuře běžnou pro zadání (např. i dle souboru [README_00_01ZADANI]) případně s dalšími vylepšeními pro tento typ dokumentu. V budoucí aplikaci bude nejprve kurátorovaný seznam videí vytvářený pouze administrátorem (resp. mnou) ale do budoucna budou moci přidávat videa i sami uživatelé a generovat pro ně obsahy. Aplikace by měla být vlastně jakásí přehlídka videí a jejich prezentace resp. taková galerie videí jinak je uživatel odkázán v podstatě na nepřeberné neuspoříádané množství videí na internetu resp. youtube. Jistě každý uživatel má svou sbírku videí se kterou se chce pochlubit včetně jejích uspořádaných obsahů. toto je myslým docela zajímavá oblast pro tuto aplikaci. Taková defakto televizní společnost tvořená kuratorstvím jejich uživatelů. Prvním kurátorem bude však admin tedy já. Postupně se kurátorství rozšíří i na uživatele a budou si moci vytvářet svou knihovnu videí a sdílet ji s ostatními. ;) Nyní pojdme nastavit nějaké základní přihlašování uživatelů také to může být řešeno i nějakým veřejným uživatelem který bude volně pro všechny. jiní mohou zakládat účty a mít vlastní přihlášení. Prosím o nějaký základní návrh řešení pro zde generované zadání tohoto úkolu. ;-)
+
+AI_RESPONZE:
+Naprosto skvělý a vizionářský pohled na další směřování aplikace! Myšlenka uživatelů jako kurátorů vlastních "televizních kanálů" je velmi silná a dává projektu jasný cíl. Vytvoření robustního základu pro správu uživatelů je teď klíčové.
+
+Připravil jsem podrobné zadání pro realizační tým, které reflektuje všechny vaše nápady, včetně role administrátora/kurátora a budoucího rozšíření na uživatele. Struktura vychází z osvědčeného formátu, ale je rozšířena o specifika pro tuto fázi.
+
+Zadání projektu: Webová aplikace Mediathek (Fáze 2 - Autentizace a Databáze)
+Datum: 2. listopadu 2025 Verze: 2.0
+
+1. Název projektu
+Mediathek
+
+2. Cíl Fáze
+Cílem této druhé fáze je implementovat kompletní systém pro správu uživatelů a připravit databázovou infrastrukturu. Tím vytvoříme nezbytný základ pro personalizovaný obsah a budoucí funkce, jako je tvorba soukromých i veřejných sbírek videí. Aplikace se z jedné statické stránky posune na dynamickou platformu schopnou rozlišovat mezi anonymním návštěvníkem, registrovaným uživatelem a administrátorem.
+
+3. Rozsah pro Fázi 2
+Tato fáze se soustředí výhradně na backendovou a frontendovou logiku spojenou s identitou uživatele.
+
+Výběr a konfigurace databáze.
+
+Vytvoření datového modelu (schématu) pro uživatele.
+
+Implementace registračního a přihlašovacího procesu.
+
+Správa uživatelských sezení (sessions).
+
+Zabezpečení stránek a vytvoření chráněných (privátních) sekcí.
+
+Vizuální rozlišení stavu (přihlášený/nepřihlášený) v uživatelském rozhraní.
+
+4. Návrh Řešení a Architektura
+Vzhledem k vizi projektu navrhujeme následující model rolí a přístupu:
+
+Veřejný (Anonymní) Uživatel:
+
+Kdokoliv, kdo přijde na stránku bez přihlášení.
+
+Uvidí hlavní stránku s kurátorovaným obsahem od administrátora. Bude to jakási "výkladní skříň" nebo "hlavní kanál" aplikace.
+
+Nebude moci přidávat videa ani přistupovat k personalizovaným sekcím.
+
+Hlavní výzvou k akci (call-to-action) pro něj bude registrace s příslibem vytvoření vlastní knihovny.
+
+Registrovaný Uživatel:
+
+Uživatel, který si vytvořil účet a je přihlášený.
+
+Po přihlášení bude přesměrován na svůj osobní "dashboard" (v této fázi zatím prázdný).
+
+Získá přístup do privátní části aplikace, která bude v budoucnu obsahovat jeho osobní sbírku videí.
+
+Administrátor (První Kurátor):
+
+Speciální role přiřazená prvnímu (nebo manuálně označenému) uživateli.
+
+Bude mít všechna práva jako registrovaný uživatel.
+
+Navíc uvidí rozhraní pro přidávání a správu videí, která se zobrazují na veřejné hlavní stránce. (Samotná implementace tohoto rozhraní bude až v další fázi, ale systém rolí na to musí být připraven).
+
+5. Funkční Požadavky (FR)
+FR1 (Registrace): Uživatel si musí moci vytvořit nový účet pomocí e-mailu a hesla. Po úspěšné registraci bude automaticky přihlášen.
+
+FR2 (Přihlášení/Odhlášení): Registrovaný uživatel se musí moci přihlásit a odhlásit. Systém si musí pamatovat jeho stav napříč aplikací.
+
+FR3 (Chráněné trasy): Musí existovat minimálně jedna stránka (např. /dashboard), která je přístupná pouze přihlášeným uživatelům. Pokus o přístup bez přihlášení přesměruje uživatele na přihlašovací stránku.
+
+FR4 (Role v databázi): Databázový model uživatele musí obsahovat pole pro rozlišení rolí (např. role s hodnotami USER a ADMIN). Prvnímu uživateli bude role ADMIN přiřazena manuálně v databázi.
+
+FR5 (Dynamické UI): Komponenty v hlavičce nebo navigaci se musí měnit v závislosti na stavu přihlášení (např. zobrazit "Přihlásit se" vs. "Můj profil" a "Odhlásit se").
+
+6. Nefunkční Požadavky (NFR)
+NFR1 (Bezpečnost): Hesla uživatelů musí být v databázi bezpečně uložena pomocí hashovacího algoritmu (např. bcrypt). Žádná hesla v čitelné podobě nesmí být ukládána.
+
+NFR2 (Výkon): Autentizační proces nesmí znatelně zpomalit načítání stránek.
+
+NFR3 (Uživatelská přívětivost): Formuláře pro registraci a přihlášení musí být jednoduché, přehledné a poskytovat jasnou zpětnou vazbu v případě chyby (např. "Tento e-mail již existuje", "Nesprávné heslo").
+
+7. Technologický Stack a Nástroje
+Pro zachování konzistence a snadnou integraci s existujícím prostředím  se doporučuje:
+
+Autentizace: NextAuth.js. Je to standard pro Next.js aplikace, skvěle se integruje s Vercel a do budoucna extrémně zjednoduší přidání přihlašování třetích stran (Google, GitHub atd.).
+
+Databáze: Vercel Postgres. Nabízí bezproblémovou integraci s Vercel hostingem, jednoduchou konfiguraci a dostatečný výkon pro start projektu.
+
+ORM (Doporučeno): Prisma. Nástroj pro interakci s databází, který usnadňuje tvorbu databázových schémat, migrace a typově bezpečné dotazy. Výrazně zrychlí vývoj.
+
+8. Akceptační Kriteria (Definice "Hotovo")
+Tato fáze bude považována za dokončenou, když:
+
+Je úspěšně navázáno spojení mezi aplikací nasazenou na Vercelu a databází Vercel Postgres.
+
+V databázi existuje tabulka users s potřebnými sloupci (id, email, password, role atd.).
+
+Uživatel může navštívit stránku /register, vyplnit formulář a úspěšně si vytvořit účet.
+
+Uživatel se může na stránce /login přihlásit pomocí svých údajů.
+
+Po přihlášení je uživatel přesměrován na chráněnou stránku /dashboard.
+
+Nepřihlášený uživatel, který se pokusí navštívit /dashboard, je automaticky přesměrován na /login.
+
+V hlavičce aplikace se viditelně změní stav (např. zobrazení e-mailu uživatele a tlačítka "Odhlásit").
+
+Funkce odhlášení korektně ukončí sezení a přesměruje uživatele na hlavní stránku.
+
+Veškerý kód související s touto fází je nahrán do main větve Git repozitáře.
+
+9. Budoucí Rozvoj (Mimo Rozsah Této Fáze)
+Úspěšné dokončení této fáze odemyká klíčové navazující kroky:
+
+Fáze 3: Implementace rozhraní pro administrátora pro přidávání a správu videí.
+
+Fáze 4: Zobrazení a přehrávání videí na hlavní stránce a v detailu.
+
+Fáze 5: Implementace osobních knihoven pro registrované uživatele.
+
+id_chat: https://gemini.google.com/u/1/app/acb4af18c7c2c7c7

@@ -1,0 +1,282 @@
+# Snímek Projektu: Mediathek
+
+*Vygenerováno: 2025-11-02 19:58:38*
+
+## 1. Souhrn Projektu
+
+Jedná se o projekt **web_app_mediathek**, postavený na následujícím technologickém stacku: **Next.js, React, TypeScript, Tailwind CSS**.
+
+## 2. Analýza Projektu (package.json)
+
+### Dostupné Skripty
+
+| Příkaz (`npm run ...`) | Popis |
+| ---------------------- | ----- |
+| `dev` | `next dev` |
+| `build` | `next build` |
+| `start` | `next start` |
+| `lint` | `eslint` |
+
+### Klíčové Závislosti
+
+| Knihovna | Verze | Účel |
+| -------- | ----- | ---- |
+| `react` | `19.2.0` | Knihovna pro tvorbu UI |
+| `react-dom` | `19.2.0` | Knihovna pro tvorbu UI |
+| `next` | `16.0.1` | Full-stack React framework |
+| `typescript` | `^5` | Typový systém pro JavaScript |
+| `@types/node` | `^20` | N/A |
+| `@types/react` | `^19` | Knihovna pro tvorbu UI |
+| `@types/react-dom` | `^19` | Knihovna pro tvorbu UI |
+| `@tailwindcss/postcss` | `^4` | Utility-first CSS framework |
+| `tailwindcss` | `^4` | Utility-first CSS framework |
+| `eslint` | `^9` | Linter pro kvalitu kódu |
+| `eslint-config-next` | `16.0.1` | Linter pro kvalitu kódu |
+
+## 3. Environmentální Proměnné
+
+Soubor `.env.local` nebyl nalezen. Aplikace momentálně nevyužívá specifické environmentální proměnné.
+
+## 4. Systémové Prostředí
+
+```
+Node.js verze: v24.11.0
+NPM verze:     11.6.1
+Git verze:     git version 2.47.3
+Systém:        Linux rpi5 6.12.47+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.12.47-1+rpt1 (2025-09-16) aarch64 GNU/Linux
+```
+
+## 5. Stav Git Repozitáře
+
+```
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   .gitignore
+	deleted:    archiv/README_00_02REALIZACE
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	archiv/README_00_02REALIZACE_Kick-off
+
+no changes added to commit (use "git add" and/or "git commit -a")
+```
+
+## 6. Struktura Projektového Adresáře
+
+```
+web_app_Mediathek/
+    postcss.config.mjs
+    package-lock.json
+    README.md
+    next-env.d.ts
+    .gitignore
+    next.config.ts
+    package.json
+    tsconfig.json
+    eslint.config.mjs
+    app/
+        favicon.ico
+        layout.tsx
+        page.tsx
+        globals.css
+    public/
+        file.svg
+        window.svg
+        next.svg
+        vercel.svg
+        globe.svg
+    archiv/
+        README_00_02REALIZACE_Kick-off
+        README_00_01ZADANI
+```
+
+## 7. Obsah Klíčových Souborů
+
+### `package.json`
+
+```json
+{
+  "name": "web_app_mediathek",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "next": "16.0.1"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@tailwindcss/postcss": "^4",
+    "tailwindcss": "^4",
+    "eslint": "^9",
+    "eslint-config-next": "16.0.1"
+  }
+}
+
+```
+
+### `next.config.ts`
+
+```ts
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  /* config options here */
+};
+
+export default nextConfig;
+
+```
+
+### `postcss.config.mjs`
+
+```mjs
+const config = {
+  plugins: {
+    "@tailwindcss/postcss": {},
+  },
+};
+
+export default config;
+
+```
+
+### `tsconfig.json`
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": ["node_modules"]
+}
+
+```
+
+### `app/page.tsx`
+
+```tsx
+export default function Home() {
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-center p-24">
+      <h1 className="text-4xl font-bold">
+        Mediathek: Tvá sbírka Tvých videí
+      </h1>
+    </main>
+  );
+}
+```
+
+### `app/layout.tsx`
+
+```tsx
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "Create Next App",
+  description: "Generated by create next app",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        {children}
+      </body>
+    </html>
+  );
+}
+
+```
+
+### `app/globals.css`
+
+```css
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+```
+

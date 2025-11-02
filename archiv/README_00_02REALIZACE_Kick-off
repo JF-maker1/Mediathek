@@ -1,0 +1,364 @@
+JÁ_PROMPT:  
+V příloze je zadání pro tvorbu webové aplikace [README_00_01ZADANI]. Prosím ze zadání vytvořit konkrétní plán realizace (resp. jednotlivé příkazy, nastavení, instalace, ověření prostředí jak systémové, tak projektové) včetně plánu testování která potvrdí úspěšné ukončení realizační fáze. Realizační fáze je ukončena testováním jak na lokálním prostředí tak i na produkčním prostředí.
+
+AI_RESPONZE:
+Jasně, zde je podrobný plán realizace a testování, který vychází z dodaného zadání. Plán obsahuje konkrétní příkazy a kroky pro instalační, vývojovou a testovací fázi projektu "Mediathek" na vašem Raspberry Pi 5.
+
+Plán Realizace a Testování: Mediathek (Fáze 1)
+Tento dokument převádí projektové zadání do konkrétních technických kroků pro realizační tým. Cílem je úspěšně nastavit prostředí, vyvinout minimální produkt dle specifikace a ověřit jeho funkčnost lokálně i na produkčním prostředí Vercel.
+
+Fáze 1: Příprava systémového prostředí (na Raspberry Pi 5)
+
+Cíl: Zajistit, aby vývojové zařízení mělo všechny potřebné nástroje pro vývoj. 
+
+Aktualizace systému:
+
+Ujistěte se, že všechny systémové balíčky jsou aktuální.
+
+Bash
+
+sudo apt update && sudo apt upgrade -y
+Instalace Git:
+
+Nainstalujte systém pro správu verzí Git. 
+
+
+Bash
+
+sudo apt install git -y
+Ověření: Zkontrolujte nainstalovanou verzi.
+
+Bash
+
+git --version
+Instalace Node.js a npm (pomocí NVM):
+
+Pro flexibilní správu verzí Node.js nainstalujeme NVM (Node Version Manager). To zajistí kompatibilitu a snadné budoucí aktualizace.
+
+Bash
+
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+Znovu načtěte konfiguraci shellu (nebo zavřete a znovu otevřete terminál).
+
+Bash
+
+source ~/.bashrc
+Nainstalujte nejnovější LTS (Long-Term Support) verzi Node.js.
+
+Bash
+
+nvm install --lts
+Ověření: Zkontrolujte verze Node.js a npm.
+
+Bash
+
+node -v
+npm -v
+Instalace editoru kódu (doporučeno):
+
+Pokud ještě nemáte, nainstalujte editor kódu, např. Visual Studio Code, který má oficiální podporu pro architekturu aarch64.
+
+Bash
+
+sudo apt install code -y
+Fáze 2: Založení projektu a správa verzí
+
+Cíl: Vytvořit strukturu projektu a napojit ji na vzdálený Git repozitář. 
+
+
+Vytvoření repozitáře na GitHubu:
+
+Přihlaste se na svůj účet GitHub (nebo GitLab).
+
+Vytvořte nový prázdný repozitář s názvem mediathek. Nepřidávejte zatím žádné soubory jako README nebo .gitignore.
+
+Inicializace projektu Next.js:
+
+Přejděte do vaší pracovní složky.
+
+Bash
+
+cd ~/Projects/web_app_Mediathek
+Pomocí create-next-app vytvořte nový projekt. Zvolíme TypeScript dle doporučení v zadání. 
+
+
+Bash
+
+npx create-next-app@latest mediathek
+Během instalace zvolte následující možnosti (doporučené):
+
+Would you like to use TypeScript? Yes
+
+Would you like to use ESLint? Yes
+
+
+Would you like to use Tailwind CSS? Yes (Zjednoduší stylování pro vycentrování.) 
+
+Would you like to use 'src/' directory? Yes
+
+Would you like to use App Router? Yes
+
+Would you like to customize the default import alias? No
+
+Propojení s GitHub repozitářem:
+
+Přejděte do nově vytvořené složky projektu.
+
+Bash
+
+cd mediathek
+Přidejte vzdálený repozitář, který jste vytvořili v kroku 1.
+
+Bash
+
+git remote add origin https://github.com/VASE_UZIVATELSKE_JMENO/mediathek.git
+git branch -M main
+(Nahraďte VASE_UZIVATELSKE_JMENO vaším skutečným uživatelským jménem.)
+
+Fáze 3: Vývoj aplikace (lokální prostředí)
+
+Cíl: Implementovat statickou stránku dle funkčních požadavků. 
+
+Spuštění vývojového serveru:
+
+Ověřte, že se projekt dá spustit v základním stavu. 
+
+Bash
+
+npm run dev
+Otevřete v prohlížeči adresu http://localhost:3000. Měli byste vidět výchozí stránku Next.js.
+
+Úprava hlavní stránky:
+
+Otevřete soubor src/app/page.tsx ve vašem editoru.
+
+Smažte veškerý obsah uvnitř elementu <main>.
+
+Vložte hlavní nadpis dle zadání. 
+
+Upravte <main> tag tak, aby centroval obsah pomocí Tailwind CSS tříd, čímž splníte požadavek na minimalistický design a centrování. 
+
+Výsledný kód v src/app/page.tsx bude vypadat takto:
+
+TypeScript
+
+import Image from "next/image";
+
+export default function Home() {
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-center p-24">
+      <h1 className="text-4xl font-bold">
+        Mediathek: Tvá sbírka Tvých videí
+      </h1>
+    </main>
+  );
+}
+Uložení změn do Git:
+
+Uložte změny, nahrajte je do lokálního repozitáře a odešlete na GitHub.
+
+Bash
+
+git add .
+git commit -m "feat: Implement initial landing page"
+git push -u origin main
+Fáze 4: Lokální testování a validace
+Cíl: Ověřit, že aplikace na lokálním PC splňuje všechny požadavky před nasazením.
+
+Testovací plán (Lokální prostředí):
+
+Spusťte znovu vývojový server, pokud neběží: npm run dev.
+
+Otevřete http://localhost:3000 v prohlížeči (doporučeno Chrome nebo Firefox).
+
+Test č. 1 (Obsah):
+
+Krok: Zkontrolujte zobrazený text na stránce.
+
+
+Očekávaný výsledek: Text je přesně Mediathek: Tvá sbírka Tvých videí. 
+
+Test č. 2 (Vzhled - Desktop):
+
+Krok: Pozorujte umístění textu na stránce.
+
+
+Očekávaný výsledek: Text je zarovnán horizontálně i vertikálně na střed. 
+
+Test č. 3 (Responzivita):
+
+Krok: Otevřete vývojářské nástroje (klávesa F12) a zapněte "Toggle device toolbar" (ikona telefonu/tabletu).
+
+Krok: Vyzkoušejte několik různých mobilních zařízení (např. iPhone 12, Galaxy S20).
+
+
+Očekávaný výsledek: Text zůstává čitelný, je vycentrovaný a správně se zalamuje, pokud je to nutné. 
+
+
+Test č. 4 (Kompatibilita):
+
+Krok: (Volitelné, pokud máte) Otevřete stránku v dalších prohlížečích (Safari, Edge).
+
+
+Očekávaný výsledek: Zobrazení je konzistentní. 
+
+Fáze 5: Nasazení na produkční prostředí (Deployment)
+
+Cíl: Propojit projekt s Vercel a nastavit automatické nasazování. 
+
+Registrace a propojení s Vercel:
+
+Vytvořte si účet na Vercel, ideálně propojením s vaším GitHub účtem.
+
+Na hlavní stránce Vercel (Dashboard) klikněte na "Add New... -> Project".
+
+Import a nasazení projektu:
+
+V sekci "Import Git Repository" vyberte váš repozitář mediathek a klikněte na "Import".
+
+Vercel automaticky detekuje, že se jedná o Next.js projekt a předvyplní všechna nastavení sestavení (Build & Development Settings). Ponechte je beze změny.
+
+Klikněte na tlačítko Deploy.
+
+Vercel nyní stáhne kód z GitHubu, sestaví aplikaci a nasadí ji na veřejně dostupnou URL. 
+
+Fáze 6: Produkční testování a akceptace
+
+Cíl: Ověřit, že nasazená aplikace je plně funkční a splňuje všechna akceptační kritéria. 
+
+Testovací plán (Produkční prostředí - Vercel):
+
+Po dokončení deploymentu vám Vercel zobrazí gratulační stránku s odkazem na vaši aplikaci (např. mediathek-vas-ucet.vercel.app).
+
+Test č. 5 (Dostupnost a obsah):
+
+
+Krok: Otevřete produkční URL adresu. 
+
+Očekávaný výsledek: Stránka se úspěšně načte a zobrazí nadpis Mediathek: Tvá sbírka Tvých videí.
+
+Test č. 6 (Responzivita v produkci):
+
+Krok: Zopakujte kroky z Testu č. 3 (kontrola responzivity) na produkční URL.
+
+
+Očekávaný výsledek: Zobrazení je korektní na desktopu i v mobilním emulátoru. 
+
+Test č. 7 (Výkon):
+
+Krok: V prohlížeči Chrome na produkční URL otevřete vývojářské nástroje (F12), přejděte na záložku Lighthouse.
+
+Krok: Spusťte audit pro kategorii "Performance".
+
+
+Očekávaný výsledek: Metrika Largest Contentful Paint (LCP) má hodnotu výrazně pod 1 sekundou. 
+
+Úspěšným dokončením všech testů v této fázi jsou splněna všechna akceptační kritéria a "výkop" projektu je považován za hotový. Tým ověřil celý proces od lokálního vývoje až po finální nasazení.
+
+JÁ_PROMPT:  
+Mohu poprosit o souhrnou zprávu z této fáze realizace vyplývající z tohoto chatu. Tuto zprávu uložím jako záznam o všech zde provedených činnostech na projektu - prosím o podrobnosti. zejména ty významné.
+
+AI_RESPONZE:
+Jasně, zde je podrobná souhrnná zpráva o dokončené realizační fázi projektu, která zaznamenává všechny klíčové kroky a rozhodnutí z naší konverzace.
+
+Zpráva o Realizaci Fáze 1: Mediathek Kick-off
+
+Projekt: Mediathek  Fáze: 1 - Kick-off (Nastavení, lokální vývoj a verzování) Datum vyhotovení: 2. listopadu 2025 Verze dokumentu: 1.0
+
+1. Cíl Fáze
+Cílem této úvodní fáze bylo vytvořit absolutní základ webové aplikace, ověřit celý vývojový proces na cílovém hardwaru a připravit projekt pro nasazení na platformu Vercel. Hlavním výstupem měla být jediná statická webová stránka obsahující předem definovaný nadpis , přičemž veškerý zdrojový kód musel být verzován pomocí Git a uložen ve vzdáleném repozitáři.
+
+
+
+
+
+2. Přehled Provedených Činností
+Následující kroky byly provedeny v chronologickém pořadí na vývojovém prostředí Raspberry Pi 5 s operačním systémem Debian GNU/Linux 13 (trixie).
+
+Příprava systémového prostředí:
+
+Byla provedena aktualizace systémových balíčků (apt update && apt upgrade).
+
+Byly nainstalovány a ověřeny klíčové vývojové nástroje:
+
+Systém pro správu verzí Git.
+
+Správce verzí Node.js NVM (Node Version Manager), pomocí kterého byla nainstalována doporučená LTS verze Node.js.
+
+Založení projektu:
+
+Pomocí příkazu npx create-next-app@latest byl vytvořen nový projekt web_app_mediathek.
+
+Při inicializaci projektu byly zvoleny doporučené výchozí hodnoty, které zahrnovaly:
+
+
+TypeScript pro typovou bezpečnost a budoucí udržitelnost.
+
+Tailwind CSS pro zjednodušení stylování.
+
+ESLint pro udržení kvality kódu.
+
+App Router jako moderní způsob směrování v Next.js.
+
+Projekt byl úspěšně vytvořen a inicializován jako lokální Git repozitář.
+
+Implementace funkčních požadavků:
+
+Byl upraven klíčový soubor src/app/page.tsx.
+
+Veškerý výchozí obsah komponenty byl odstraněn a nahrazen novou, minimalistickou strukturou.
+
+Do stránky byl vložen hlavní nadpis <h1> s přesným zněním: "Mediathek: Tvá sbírka Tvých videí".
+
+Pomocí tříd Tailwind CSS (flex, min-h-screen, items-center, justify-center) bylo zajištěno, že nadpis je horizontálně i vertikálně vycentrován na stránce.
+
+Nastavení a konfigurace verzování (Git & GitHub):
+
+Na platformě GitHub byl vytvořen nový, prázdný repozitář Mediathek.
+
+Lokální projekt byl propojen s tímto vzdáleným repozitářem.
+
+3. Významné Milníky a Řešené Problémy
+Během této fáze bylo nutné vyřešit několik klíčových technických výzev, které jsou zásadní pro další plynulý vývoj.
+
+Problém s autentizací vůči GitHubu (HTTPS):
+
+První pokus o nahrání kódu (git push) pomocí HTTPS a hesla selhal.
+
+Identifikovaná příčina: GitHub ukončil podporu pro autentizaci pomocí hesla pro Git operace z bezpečnostních důvodů.
+
+Počáteční řešení: Byl vygenerován a použit Personal Access Token (PAT), který úspěšně umožnil první push.
+
+Strategické rozhodnutí: Přechod na SSH autentizaci:
+
+Pro zjednodušení budoucí práce a zvýšení bezpečnosti bylo rozhodnuto o implementaci trvalého přihlašování pomocí SSH klíče.
+
+Provedené kroky:
+
+Vygenerování nového SSH klíče (algoritmus Ed25519) na Raspberry Pi.
+
+Přidání veřejného klíče do nastavení účtu na GitHubu.
+
+Zásadní krok: Změna URL vzdáleného repozitáře v lokální konfiguraci Gitu z https://... na formát git@github.com:... pomocí příkazu git remote set-url origin.
+
+Problém s prvním push přes SSH:
+
+Po změně na SSH se objevil problém fatal: The current branch main has no upstream branch.
+
+Identifikovaná příčina: Lokální větev main nebyla propojena s žádnou větví na vzdáleném serveru.
+
+Řešení: Byl použit příkaz git push --set-upstream origin main, který kód nahrál a zároveň vytvořil trvalé "sledovací" propojení mezi lokální a vzdálenou větví main.
+
+4. Stav po Ukončení Fáze
+Vývojové prostředí na Raspberry Pi 5 je plně nakonfigurováno pro vývoj aplikace.
+
+Zdrojový kód projektu existuje, splňuje základní požadavky zadání a je úspěšně nahrán ve vzdáleném repozitáři na GitHubu.
+
+Je vytvořen a ověřen bezpečný a pohodlný komunikační kanál mezi lokálním vývojovým prostředím a GitHubem (pomocí SSH).
+
+Jsou splněny všechny předpoklady pro navázání další fází: propojení s Vercel a automatické nasazení (Continuous Deployment).
+
+
+Tato fáze je považována za úspěšně dokončenou.
+
+ID_chatu: https://gemini.google.com/u/1/app/8a182d2662d7ffff?pli=1 
