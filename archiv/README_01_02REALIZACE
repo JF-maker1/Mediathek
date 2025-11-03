@@ -1,0 +1,353 @@
+JÁ_PROMPT:  
+V příloze je zadání pro tvorbu webové aplikace [README_01_01ZADANI]. Prosím ze zadání vytvořit konkrétní plán realizace (resp. jednotlivé příkazy, nastavení, instalace, ověření prostředí jak systémové, tak projektové) včetně plánu testování která potvrdí úspěšné ukončení realizační fáze. Realizační fáze je ukončena testováním jak na lokálním prostředí tak i na produkčním prostředí. V příloze je rovněž snímek projektového adresáře který by měl poskytnout představu o podmínkávh jednak vnitřních v projektu tak podmínkách vnějších pro projekt. [README_00_03project_snapshot.md]
+
+AI_RESPONZE:
+Jistě, na základě dodaného zadání (README_01_01ZADANI) a snímku stávajícího stavu projektu (README_00_03project_snapshot.md) jsem připravil podrobný, krok-za-krokem realizační plán. Plán zahrnuje konkrétní příkazy, úpravy kódu a detailní testovací scénáře pro ověření úspěšného dokončení této fáze.
+
+Realizační Plán: Fáze 2 - Autentizace a Databáze
+Tento dokument popisuje konkrétní technické kroky potřebné k implementaci uživatelské autentizace a databázové vrstvy do aplikace Mediathek v souladu se zadáním verze 2.0.
+
+Fáze 1: Příprava Prostředí a Instalace Závislostí
+Cílem této fáze je připravit lokální prostředí, vyčistit repozitář a nainstalovat všechny potřebné knihovny.
+
+1.1. Kontrola Systémového Prostředí Dle snímku projektu jsou systémové požadavky (Node.js, NPM, Git) splněny. Je nutné mít navíc účet na platformě Vercel pro vytvoření databáze a finální deployment.
+
+1.2. Synchronizace Git Repozitáře Stav repozitáře ukazuje nemazané změny. Prvním krokem je vždy zajistit čistý pracovní stav.
+
+Bash
+
+# Přidat všechny změny do stagingu
+git add .
+
+# Vytvořit commit s popisnou zprávou
+git commit -m "chore: Clean up working directory before feature implementation"
+
+# (Volitelné) Odeslat změny na vzdálený repozitář
+git push origin main
+1.3. Instalace Potřebných Knihoven Nainstalujeme knihovny specifikované v návrhu řešení: NextAuth.js pro autentizaci, Prisma jako ORM, @prisma/client pro komunikaci s databází a bcrypt pro hashování hesel.
+
+Bash
+
+# Instalace produkčních závislostí
+npm install next-auth prisma @prisma/client bcrypt
+
+# Instalace vývojových závislostí (typy pro bcrypt a samotná Prisma CLI)
+npm install -D @types/bcrypt
+Fáze 2: Nastavení Databáze a ORM (Prisma)
+V této fázi propojíme aplikaci s databází a definujeme datový model uživatele.
+
+2.1. Vytvoření Databáze na Vercelu
+
+Přejděte na svůj Vercel dashboard.
+
+V záložce Storage vytvořte novou Postgres databázi.
+
+Po vytvoření si zkopírujte připojovací řetězec (Connection String) ve formátu .env. Bude vypadat nějak takto: POSTGRES_PRISMA_URL="...".
+
+2.2. Nastavení Environmentálních Proměnných Snímek projektu ukazuje, že soubor .env.local chybí. Vytvoříme ho.
+
+V kořenovém adresáři projektu vytvořte soubor .env.local.
+
+Do souboru vložte připojovací řetězec z Vercelu a přejmenujte proměnnou na DATABASE_URL.
+
+Přidejte také tajný klíč pro NextAuth.js. Můžete ho vygenerovat například příkazem: openssl rand -base64 32.
+
+Obsah souboru .env.local:
+
+Fragment kódu
+
+DATABASE_URL="postgres://..." # Váš connection string z Vercelu
+NEXTAUTH_SECRET="váš_vygenerovaný_tajný_klíč"
+2.3. Inicializace Prisma Tento příkaz vytvoří adresář prisma s konfiguračním souborem schema.prisma.
+
+Bash
+
+npx prisma init
+2.4. Konfigurace Schématu a Datového Modelu Upravte soubor prisma/schema.prisma tak, aby obsahoval datový model User v souladu s požadavky (FR4, NFR1).
+
+Obsah souboru prisma/schema.prisma:
+
+Fragment kódu
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Definice rolí pro uživatele
+enum Role {
+  USER
+  ADMIN
+}
+
+// Datový model pro uživatele
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+2.5. Provedení Databázové Migrace Tento příkaz porovná vaše schéma s databází, vygeneruje SQL migrační soubor a aplikuje změny na databázi. Vytvoří tabulku User.
+
+Bash
+
+npx prisma migrate dev --name init-user-model
+Po úspěšném provedení příkazu se také vygeneruje Prisma Client, připravený k použití v aplikaci.
+
+Fáze 3: Implementace Autentizační Logiky
+Nastavíme NextAuth.js a vytvoříme API endpointy pro registraci a přihlášení.
+
+3.1. Vytvoření NextAuth API Route Vytvořte soubor app/api/auth/[...nextauth]/route.ts, který bude obsluhovat všechny autentizační požadavky.
+
+Obsah souboru app/api/auth/[...nextauth]/route.ts:
+
+TypeScript
+
+import NextAuth from "next-auth";
+import { PrismaClient } from "@prisma/client";
+import CredentialsProvider from "next-auth/providers/credentials";
+import * as bcrypt from "bcrypt";
+
+const prisma = new PrismaClient();
+
+export const authOptions = {
+  providers: [
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email },
+        });
+
+        if (!user) {
+          return null;
+        }
+
+        const isPasswordValid = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
+
+        if (!isPasswordValid) {
+          return null;
+        }
+
+        return {
+          id: user.id,
+          email: user.email,
+          role: user.role,
+        };
+      },
+    }),
+  ],
+  session: {
+    strategy: "jwt" as const,
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+        session.user.role = token.role as string;
+      }
+      return session;
+    },
+  },
+  pages: {
+    signIn: "/login",
+  },
+};
+
+const handler = NextAuth(authOptions);
+
+export { handler as GET, handler as POST };
+3.2. Vytvoření API Endpointu pro Registraci Vytvořte soubor app/api/register/route.ts pro obsluhu registrace nových uživatelů.
+
+Obsah souboru app/api/register/route.ts:
+
+TypeScript
+
+import { NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
+import * as bcrypt from "bcrypt";
+
+const prisma = new PrismaClient();
+
+export async function POST(request: Request) {
+  try {
+    const { email, password } = await request.json();
+
+    if (!email || !password) {
+      return new NextResponse("Missing email or password", { status: 400 });
+    }
+
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      return new NextResponse("User already exists", { status: 409 });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = await prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+      },
+    });
+
+    return NextResponse.json({
+      id: newUser.id,
+      email: newUser.email,
+    });
+  } catch (error) {
+    console.error("REGISTRATION_ERROR", error);
+    return new NextResponse("Internal Server Error", { status: 500 });
+  }
+}
+Fáze 4: Implementace Uživatelského Rozhraní (Frontend)
+Vytvoříme stránky pro přihlášení, registraci, chráněný dashboard a dynamickou navigaci.
+
+4.1. Vytvoření Session Provideru Pro zpřístupnění dat o sezení v celé aplikaci je potřeba obalit layout.tsx providerem.
+
+Vytvořte adresář components.
+
+V něm vytvořte soubor components/Providers.tsx:
+
+TypeScript
+
+"use client";
+import { SessionProvider } from "next-auth/react";
+
+export default function Providers({ children }: { children: React.ReactNode }) {
+  return <SessionProvider>{children}</SessionProvider>;
+}
+Upravte app/layout.tsx a obalte {children} novým providerem:
+
+TypeScript
+
+// ... importy
+import Providers from "@/components/Providers"; // Upravte cestu dle potřeby
+
+// ...
+export default function RootLayout({ children }: { children: React.ReactNode; }) {
+  return (
+    <html lang="en">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  );
+}
+4.2. Vytvoření Stránek a Komponent Vytvořte následující soubory s jednoduchými formuláři a obsahem. (Pro zjednodušení je zde jen základní logika bez stylů.)
+
+app/login/page.tsx (Přihlašovací formulář)
+
+app/register/page.tsx (Registrační formulář)
+
+app/dashboard/page.tsx (Chráněná stránka)
+
+components/Navbar.tsx (Navigace s dynamickým zobrazením dle stavu přihlášení)
+
+4.3. Implementace Chráněných Tras (Middleware) Vytvořte soubor middleware.ts v kořenovém adresáři projektu pro ochranu stránky /dashboard (FR3).
+
+Obsah souboru middleware.ts:
+
+TypeScript
+
+export { default } from "next-auth/middleware";
+
+export const config = {
+  matcher: ["/dashboard"],
+};
+Fáze 5: Plán Testování
+Tato fáze ověří, zda byly všechny funkční i nefunkční požadavky a akceptační kritéria splněny.
+
+5.1. Lokální Testování
+
+Spuštění aplikace:
+
+Akce: Spusťte v terminálu npm run dev.
+
+Očekávaný výsledek: Aplikace se úspěšně spustí na http://localhost:3000 bez chyb v konzoli.
+
+Test Registrace (FR1, NFR3):
+
+Akce: Otevřete v prohlížeči http://localhost:3000/register. Vyplňte e-mail a heslo a odešlete formulář.
+
+Očekávaný výsledek: Účet je úspěšně vytvořen. Jste přesměrováni (nebo můžete přejít) na přihlašovací stránku.
+
+Akce: Zkuste se registrovat se stejným e-mailem znovu.
+
+Očekávaný výsledek: Formulář zobrazí chybovou hlášku "User already exists".
+
+Ověření Databáze (FR4, NFR1):
+
+Akce: Spusťte v novém terminálu npx prisma studio. Otevřete zobrazenou URL v prohlížeči.
+
+Očekávaný výsledek: V tabulce User vidíte nově vytvořeného uživatele. Heslo v databázi je dlouhý, nečitelný hash. Role je nastavena na USER.
+
+Test Přihlášení a Odhlášení (FR2, FR5):
+
+Akce: Přejděte na http://localhost:3000/login. Zadejte údaje nově registrovaného uživatele.
+
+Očekávaný výsledek: Jste úspěšně přihlášeni a přesměrováni na /dashboard. V navigaci se zobrazuje váš e-mail a tlačítko "Odhlásit se".
+
+Akce: Klikněte na "Odhlásit se".
+
+Očekávaný výsledek: Jste odhlášeni a přesměrováni na hlavní stránku. Navigace opět zobrazuje "Přihlásit se".
+
+Test Chráněných Tras (FR3):
+
+Akce: V nepřihlášeném stavu (např. v anonymním okně) zkuste přejít na http://localhost:3000/dashboard.
+
+Očekávaný výsledek: Jste automaticky přesměrováni na /login.
+
+5.2. Produkční (Vercel) Testování
+
+Konfigurace Produkčního Prostředí:
+
+Akce: V nastavení vašeho projektu na Vercelu přejděte do sekce Settings -> Environment Variables.
+
+Očekávaný výsledek: Přidejte proměnné DATABASE_URL a NEXTAUTH_SECRET se stejnými hodnotami jako v lokálním .env.local souboru.
+
+Deployment:
+
+Akce: Odešlete veškerý nový kód do main větve vašeho Git repozitáře (git push origin main).
+
+Očekávaný výsledek: Vercel automaticky spustí build a deployment. Proces je úspěšně dokončen.
+
+Ověření na Produkci:
+
+Akce: Otevřete URL vaší produkční aplikace.
+
+Očekávaný výsledek: Zopakujte všechny testovací scénáře z bodu 5.1. Lokální Testování na produkční URL. Všechny kroky musí fungovat identicky jako na lokálním prostředí.
+
+Po úspěšném dokončení všech testovacích scénářů na lokálním i produkčním prostředí je tato realizační fáze považována za hotovou.
+
+
+
+pokr.
+Fáze 3: Implementace Autentizační Logiky
+Nastavíme NextAuth.js a vytvoříme API endpointy pro registraci a přihlášení.
+
+ID_chatu: https://gemini.google.com/u/1/app/df7ba85230d74bad

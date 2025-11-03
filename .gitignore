@@ -43,3 +43,5 @@ next-env.d.ts
 # Soubory pro generování snímku projektu
 project_snapshot.md
 project_snapshot.py
+/app/generated/prisma
+.env*.local
