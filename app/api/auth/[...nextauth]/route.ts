@@ -1,11 +1,13 @@
-import NextAuth from "next-auth";
+import NextAuth, { AuthOptions } from "next-auth"; // <-- Importujeme AuthOptions
 import { PrismaClient } from "@prisma/client";
 import CredentialsProvider from "next-auth/providers/credentials";
 import * as bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
-export const authOptions = {
+// Explicitně typujeme naše volby, aby TypeScript mohl odvodit
+// typy pro všechny callbacky (tím se zbavíme chyby 'any').
+export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -35,29 +37,36 @@ export const authOptions = {
           return null;
         }
 
+        // Vracíme objekt, který odpovídá naší rozšířené definici 'User'
+        // (viz types/next-auth.d.ts)
         return {
           id: user.id,
           email: user.email,
-          role: user.role,
+          role: user.role, // Prisma enum (USER/ADMIN) je kompatibilní se stringem
         };
       },
     }),
   ],
   session: {
-    strategy: "jwt" as const,
+    strategy: "jwt",
   },
   callbacks: {
+    // Díky AuthOptions a typovému souboru již TypeScript ví,
+    // že 'token' je JWT a 'user' je náš rozšířený User.
     async jwt({ token, user }) {
+      // Při prvním přihlášení (kdy 'user' existuje) přeneseme data do tokenu
       if (user) {
         token.id = user.id;
         token.role = user.role;
       }
       return token;
     },
+    // Zde přeneseme data z tokenu (který je v cookie) do session
+    // (kterou vidí klient)
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id as string;
-        session.user.role = token.role as string;
+        session.user.id = token.id;
+        session.user.role = token.role;
       }
       return session;
     },
