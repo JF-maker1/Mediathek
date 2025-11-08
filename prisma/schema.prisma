@@ -1,24 +1,41 @@
-generator client {
-  provider = "prisma-client-js"
-}
+    generator client {
+      provider = "prisma-client-js"
+    }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
+    datasource db {
+      provider = "postgresql"
+      url      = env("DATABASE_URL")
+    }
 
-// Definice rolí pro uživatele
-enum Role {
-  USER
-  ADMIN
-}
+    // Definice rolí pro uživatele
+    enum Role {
+      USER
+      ADMIN
+    }
 
-// Datový model pro uživatele
-model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
+    // Datový model pro uživatele
+    model User {
+      id        String   @id @default(cuid())
+      email     String   @unique
+      password  String
+      role      Role     @default(USER)
+      createdAt DateTime @default(now())
+      updatedAt DateTime @updatedAt
+    
+      // Vztah: Uživatel může přidat více videí
+      videos    Video[]
+    }
+
+    model Video {
+      id        String   @id @default(cuid())
+      youtubeId String   @unique // ID videa z URL (např. "dQw4w9WgXcQ")
+      title     String   // Manuálně zadaný název
+      summary   String   @db.Text // Manuálně zadané shrnutí (delší text)
+
+      createdAt DateTime @default(now())
+      updatedAt DateTime @updatedAt
+
+      // Propojení na autora
+      authorId  String
+      author    User     @relation(fields: [authorId], references: [id])
+    }

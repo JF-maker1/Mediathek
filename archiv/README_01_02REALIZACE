@@ -345,9 +345,202 @@ Očekávaný výsledek: Zopakujte všechny testovací scénáře z bodu 5.1. Lok
 Po úspěšném dokončení všech testovacích scénářů na lokálním i produkčním prostředí je tato realizační fáze považována za hotovou.
 
 
+JÁ_PROMPT:
+Build proběhl nyní ok a test na produkci rovněž. Díky. ;-) Mohu nyní poprosit o souhrnou zprávu z této fáze realizace vyplývající z tohoto chatu. Tuto zprávu uložím jako záznam o všech zde provedených činnostech na projektu pro budoucí informaci o proběhlých činnostech v této fázi realizace - prosím i o podrobnosti z této fáte realizace - zejména pak ty významné podrobnosti.
 
-pokr.
-Fáze 3: Implementace Autentizační Logiky
-Nastavíme NextAuth.js a vytvoříme API endpointy pro registraci a přihlášení.
+AI_RESPONZE:
+Záznam Realizace - Fáze 2: Autentizace a Databáze
+
+Datum: 3. listopadu 2025
+Verze: 2.0
+Stav: Dokončeno
+
+1. Souhrn Fáze
+
+Cílem této realizační fáze bylo implementovat kompletní systém uživatelské autentizace a připravit databázovou infrastrukturu. Tato fáze byla klíčová pro transformaci statické webové stránky na dynamickou platformu schopnou spravovat personalizovaný obsah.
+
+Fáze byla úspěšně dokončena, včetně nasazení na produkční prostředí Vercel. Všichni uživatelé si nyní mohou vytvořit účet, přihlásit se a přistupovat k chráněným sekcím aplikace.
+
+2. Klíčové Provedené Činnosti
+
+Během této fáze byly provedeny následující implementační kroky:
+
+Nastavení Databáze: Byla vytvořena nová databáze Vercel Postgres a propojena s projektem.
+
+Instalace Závislostí: Byly nainstalovány a nakonfigurovány klíčové knihovny:
+
+next-auth (pro autentizaci)
+
+prisma (jako ORM pro komunikaci s databází)
+
+@prisma/client (klient pro databázové dotazy)
+
+bcrypt (pro hashování hesel)
+
+Definice Datového Modelu: V souboru prisma/schema.prisma byl definován model User včetně sloupců id, email, password a role (s výchozí hodnotou USER).
+
+API Endpointy:
+
+app/api/register/route.ts: Vytvořen endpoint pro registraci nových uživatelů, včetně hashování hesla a kontroly duplicitních e-mailů.
+
+app/api/auth/[...nextauth]/route.ts: Nakonfigurován hlavní endpoint NextAuth s použitím CredentialsProvider pro přihlášení e-mailem a heslem.
+
+Frontend (UI):
+
+Vytvořeny stránky /login a /register s formuláři pro uživatele.
+
+Vytvořena chráněná stránka /dashboard přístupná pouze přihlášeným.
+
+Vytvořena globální komponenta Navbar.tsx, která dynamicky mění svůj obsah podle stavu přihlášení (přihlášený/nepřihlášený).
+
+Vytvořena komponenta Providers.tsx pro obalení aplikace SessionProvider z NextAuth.
+
+Zabezpečení (Middleware): Vytvořen soubor middleware.ts, který chrání všechny trasy pod /dashboard a automaticky přesměruje nepřihlášené uživatele na /login.
+
+Testování a Deployment: Projekt byl nasazen na Vercel a byla provedena série oprav (viz níže) pro zajištění úspěšného buildu a produkční funkčnosti.
+
+3. Hlavní Zjištění a Řešení Problémů
+
+Během této fáze, zejména při interakci s lokálním vývojovým prostředím a produkčním nasazením na Vercel, jsme narazili na několik významných technických problémů, jejichž vyřešení je klíčové pro budoucí vývoj.
+
+3.1. Zjištění č. 1: Problematika Databázových Připojení (Prisma & Vercel)
+
+Největší výzva fáze. Při pokusu o spuštění databázové migrace (npx prisma migrate dev) lokálně docházelo opakovaně k chybě Missing required environment variable: DATABASE_URL, přestože byl soubor .env.local nakonfigurován.
+
+Příčina: Nástroje Prisma spouštěné z příkazové řádky (jako migrate nebo studio) automaticky nenačítají proměnné ze souboru .env.local. Kromě toho Vercel Postgres poskytuje dva typy připojovacích řetězců:
+
+Pooling (např. POSTGRES_PRISMA_URL): Určený pro aplikaci v provozu (efektivní pro mnoho krátkých dotazů).
+
+Non-Pooling (přímý, např. POSTGRES_URL_NON_POOLING): Jediný typ, který mohou nástroje jako Prisma Migrate použít k provádění změn ve schématu.
+
+Řešení:
+
+V souboru .env.local musí být proměnná DATABASE_URL nastavena na hodnotu z POSTGRES_URL_NON_POOLING.
+
+Pro spolehlivé načtení tohoto souboru byla do projektu přidána knihovna dotenv-cli.
+
+Do souboru package.json byly přidány speciální skripty, které "vnutí" proměnné prostředí nástrojům Prisma:
+
+"scripts": {
+  "prisma:migrate": "dotenv -e .env.local -- prisma migrate dev",
+  "prisma:studio": "dotenv -e .env.local -- prisma studio"
+}
+
+
+3.2. Zjištění č. 2: Selhání Buildu na Vercelu (TypeScript)
+
+Po prvním git push selhal build na Vercelu s typovou chybou (Binding element 'token' implicitly has an 'any' type.).
+
+Příčina: Produkční build Vercelu je přísnější než lokální vývojové prostředí. TypeScript nevěděl, jaké typy mají parametry token a user v callbacku NextAuth.
+
+Řešení:
+
+Byl vytvořen soubor types/next-auth.d.ts, který rozšiřuje (module augmentation) standardní typy NextAuth a přidává do Session a JWT naše vlastní pole (id a role).
+
+Soubor app/api/auth/[...nextauth]/route.ts byl upraven tak, aby explicitně používal AuthOptions a byl plně typově bezpečný.
+
+3.3. Zjištění č. 3: Selhání Buildu na Vercelu (Middleware)
+
+Po opravě typů selhal build znovu, tentokrát s chybou The file "./middleware.ts" must export a function....
+
+Příčina: Použitá zkratka export { default } from "next-auth/middleware"; není plně kompatibilní s tím, jak Next.js verze 16 (používaná Vercel) zpracovává middleware při finálním sestavování.
+
+Řešení: Soubor middleware.ts byl přepsán tak, aby explicitně importoval a exportoval funkci withAuth, což build proces již akceptoval:
+
+import { withAuth } from 'next-auth/middleware';
+export default withAuth(...);
+export const config = { ... };
+
+
+3.4. Zjištění č. 4: Nekonzistence při Zpracování Chyb API
+
+Při testování registrace duplicitního e-mailu se zobrazovala generická chyba "Došlo k chybě při registraci" místo očekávané "User already exists".
+
+Příčina: Backend (/api/register) posílal chybu jako čistý text (new NextResponse("User already exists")), ale frontend se snažil odpověď zpracovat jako JSON (await res.json()). Tento rozpor vedl k chybě při parsování.
+
+Řešení: Backend byl upraven tak, aby všechny chybové stavy vracel jednotně ve formátu JSON (NextResponse.json({ message: "..." })).
+
+4. Výsledek Fáze
+
+Všechna akceptační kritéria z původního zadání byla splněna:
+
+Spojení mezi Vercel aplikací a Vercel Postgres databází je funkční.
+
+Databáze obsahuje tabulku users s hashovanými hesly a rolemi.
+
+Uživatel se může úspěšně registrovat (/register).
+
+Uživatel se může úspěšně přihlásit (/login).
+
+Přihlášený uživatel je přesměrován na chráněnou stránku (/dashboard).
+
+Nepřihlášený uživatel je při pokusu o přístup na /dashboard přesměrován na /login.
+
+Navigace (Navbar) se dynamicky mění podle stavu přihlášení.
+
+Odhlášení je funkční.
+
+Celá funkcionalita je ověřena a nasazena na produkčním prostředí.
+
+5. Závěr
+
+Fáze 2 byla úspěšně dokončena. Projekt Mediathek je nyní robustní, dynamická aplikace s kompletním systémem pro správu uživatelů, připravená na implementaci klíčových funkcí pro správu obsahu v dalších fázích.
+
+
+
+JÁ_PROMPT: Děkuji - je po této realizační fázi potřeba zrevidovat aplikaci na vytváření [snímku projektového adresáře aplikace a dalších věcí týkajících se prostředí aplikace] tak aby přístí snímek byl co nejvíce vypovídající a zároveň efektivní ve svém nezbytně nutném rozsahu? Což je záměr této snímkovací aplikace doposud i v předchozí fázi vývoje aplikace ... resp. jestli je po této fázi realizace aplikaci přizpůsobit vývoji této aplikace ... nyní máme info z průběhu realizace této fáze rozvoje aplikace které můžeme uplatnit při revizi této snímkovací aplikace ...
+
+AI_RESPONZE: ... vygenerován aktuální snímkovací aplikace project_snapshot.py
+
+Ano, to je naprosto vynikající a prozíravý postřeh. Máte naprostou pravdu.
+
+Po této realizační fázi, jak je podrobně popsána v záznamu na Canvasu, je revize snímkovacího skriptu naprosto klíčová. Fáze 2 zavedla do projektu zcela nové typy souborů, adresářů a závislostí, které původní skript vůbec nesleduje, a budoucí snímky by tak byly neúplné a matoucí.
+
+Přizpůsobil jsem skript project_snapshot.py tak, aby plně reflektoval novou strukturu a realitu projektu po Fázi 2.
+
+Zde je aktualizovaná verze snímkovacího skriptu:
+Aktualizovaný skript pro snímek projektu (v4.0)
+3. 11. 22:33
+Soubor 'file_path' nebyl nalezen.\n```\n\n")
+3. 11. 22:33
+
+Otevřít
+e\n```\n\n")
+3. 11. 22:33
+
+Otevřít
+
+Shrnutí klíčových změn v project_snapshot.py:
+Ignorované Adresáře (DIRS_TO_IGNORE):
+
+Přidán adresář migrations – ten obsahuje automaticky generované SQL migrační soubory, jejichž obsah ve snímku nepotřebujeme, ale je dobré vědět, že existuje (což uvidíme v prisma/schema.prisma).
+
+Přidán adresář types – je přehlednější jej ve stromu nezobrazovat a raději rovnou zahrnout obsah souboru types/next-auth.d.ts.
+
+Zahrnuté Soubory (FILES_TO_INCLUDE_CONTENT):
+
+Toto je největší změna. Přidal jsem všechny klíčové soubory z Fáze 2, které definují novou funkcionalitu:
+
+middleware.ts (pro zabezpečení)
+
+prisma/schema.prisma (pro definici databáze)
+
+types/next-auth.d.ts (pro typy autentizace)
+
+Nové komponenty: components/Navbar.tsx, components/Providers.tsx
+
+Nové API routy: app/api/auth/[...nextauth]/route.ts, app/api/register/route.ts
+
+Nové stránky: app/dashboard/page.tsx, app/login/page.tsx, app/register/page.tsx
+
+Analýza Závislostí (Funkce analyze_package_json):
+
+Vylepšil jsem skript, aby nyní v tabulce "Klíčové Závislosti" správně rozpoznal a popsal účel nových knihoven, jako jsou prisma, next-auth, bcrypt a dotenv.
+
+Souhrn Projektu (Funkce get_project_summary):
+
+Aktualizován, aby do automatického souhrnu technologického stacku přidal Prisma a NextAuth.js.
+
+Příští snímek vygenerovaný pomocí tohoto aktualizovaného skriptu bude mnohem lépe odpovídat současnému stavu projektu a bude neocenitelný pro plánování dalších fází.
 
 ID_chatu: https://gemini.google.com/u/1/app/df7ba85230d74bad

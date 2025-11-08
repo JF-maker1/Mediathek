@@ -1,0 +1,289 @@
+JÁ_PROMPT:
+V příloze jsou výsledky z předešlé fáze realizace webové aplikace zaměřené na správu obsahu resp. primárně videí z youtube resp.odkazů na videa z youtube jako osobní knihovny. Má jít tedy o jakou osobní složku s videi na základě kterých se bude generovat/či bude nejprve přidáván uživateli (např. přehled obsahu videa s časovými značkami kde je ve videu uvedeno) jejich obsah pro jejich a ostatníách uživatelů snadnou orientaci ve videích např. ve vzdělavacích a podobných videích. Nyní prosím o výběr seznamů vlastností které by mohly být nyní implementovány a jejich seřazení dle jejich relevance vzhledem k tomu co už bylo implementováno (viz. dokumenty projektu v příloze), co je v předchozích zadáních plánováno za další kroky k implementaci a to jaé je celé vyznění aplikace které uvádím v jednotlivých dokumentech projektu . Poté z nich jednu vyberu zřejmě tu první pro kterou vytvoříme zadání pro realizační tým. Díky moc ;-)
+[README_00_01ZADANI][README_00_02REALIZACE_Kick-off][README_01_01ZADANI][README_01_02REALIZACE]
+
+AI_RESPONZE:
+Rozumím. Skvělá práce na dokončení Fáze 2! Nyní máme plně funkční systém pro správu uživatelů, role (včetně ADMINA) a databázi. To je perfektní odrazový můstek.
+
+
+Váš cíl je jasný: aplikace má být galerií kurátorovaného obsahu (nejprve vámi jako adminem, později i uživateli)  a klíčovou hodnotou je přidaný obsah, jako jsou časové značky pro snadnou orientaci [prompt].
+
+
+
+Na základě tohoto cíle a toho, co je již hotovo (Fáze 1 a 2), jsem připravil seznam následujících kroků. Jsou seřazeny podle priority tak, aby každá fáze logicky navazovala na tu předchozí a co nejrychleji přinášela viditelnou hodnotu.
+
+🏛️ Seznam Následujících Funkcí (Seřazeno dle Priority)
+Zde je přehled implementačních balíčků, které navazují na hotový autentizační systém.
+
+1. Správa Obsahu pro Administrátora (Přidání/Editace Videa)
+Popis: Vytvoření základního rozhraní (formuláře) přístupného pouze pro roli ADMIN. Toto rozhraní umožní administrátorovi (vám) vložit URL YouTube videa a přidat k němu základní metadata (např. vlastní název, popis). Tím se naplní databáze prvním obsahem.
+
+Proč je to priorita: Toto je naprosto klíčový a logický další krok. Máme systém rolí, ale role ADMIN zatím nemá žádnou speciální funkci. Máme databázi, ale jen s tabulkou User. Tato funkce implementuje první část vaší vize – vy jako první kurátor. Bez obsahu v databázi nemůžeme nic zobrazovat.
+
+
+
+
+
+
+Návaznost na hotovou Fázi 2: Přímo využívá existující ADMIN roli z databáze a chrání nové administrátorské stránky pomocí stejného principu jako /dashboard. Vyžaduje rozšíření schema.prisma o nový model (např. Video).
+
+
+
+2. Veřejná Galerie Videí (Zobrazení Obsahu)
+Popis: Úprava hlavní (domovské) stránky tak, aby zobrazovala všechna videa přidaná administrátorem. Mohlo by jít o mřížku karet, kde každá karta reprezentuje jedno video (náhledový obrázek, název, popis).
+
+Proč je to priorita: Jakmile je v databázi obsah (díky Kroku 1), musí být okamžitě vidět pro veřejné, anonymní uživatele. Tím se naplní vize "výkladní skříně" nebo "galerie videí". Aplikace tím získá svůj primární smysl pro návštěvníky.
+
+
+
+Návaznost na hotovou Fázi 2: Toto bude veřejná stránka (jako /login nebo /register ), která nepotřebuje přihlášení, ale bude číst data z databáze, kterou jsme ve Fázi 2 připojili.
+
+
+
+
+3. Stránka Detailu Videa a Přehrávač
+Popis: Vytvoření dynamické stránky (např. /video/[id]). Když uživatel klikne na video v galerii (Krok 2), dostane se sem. Tato stránka zobrazí vložený YouTube přehrávač a všechna metadata videa.
+
+Proč je to priorita: Uzavírá základní uživatelský cyklus: Uživatel vidí galerii -> klikne na video -> přehraje si video. Důležitější ale je, že tato stránka se stane kontejnerem pro vaši klíčovou funkci – zobrazení obsahu s časovými značkami.
+
+
+Návaznost na hotovou Fázi 2: Využívá stejný technologický stack (Next.js App Router, Prisma pro načtení dat).
+
+
+
+4. Implementace Správy Obsahu (Časové Značky)
+Popis: Rozšíření administrátorského rozhraní (z Kroku 1) a databáze tak, aby mohl administrátor k videu přidávat strukturovaný obsah – konkrétně seznam kapitol s časovými značkami a popisem. Tento obsah se pak zobrazí na stránce detailu videa (Krok 3), ideálně interaktivně (kliknutí na značku posune video).
+
+Proč je to priorita: Toto je vaše hlavní konkurenční výhoda a jádro myšlenky celé aplikace, jak jste sám popsal [prompt]. Aplikace přestává být jen "seznamem odkazů" a stává se skutečným nástrojem pro orientaci ve videích.
+
+
+Návaznost na hotovou Fázi 2: Vyžaduje další rozšíření databázového schématu (např. model Chapter propojený s modelem Video), což staví na nástroji Prisma, který jsme již zavedli a odladili .
+
+
+5. Osobní Knihovny Uživatelů
+Popis: Umožnit přihlášeným uživatelům (role USER) vytvářet si vlastní sbírky. To může být buď "olajkováním" videí z hlavní galerie, nebo (jako větší krok) umožnění jim přidávat vlastní YouTube videa do jejich soukromé sekce.
+
+
+Proč je to priorita: Toto je druhý pilíř vaší vize – uživatelé jako kurátoři. Tím se plně využije potenciál autentizačního systému z Fáze 2. Je to ale až po Krocích 1-4, protože nejprve musíme mít funkční systém správy obsahu jako takový (Admin -> Veřejnost).
+
+
+
+
+Návaznost na hotovou Fázi 2: Přímo využívá hotový systém přihlášení, chráněnou stránku /dashboard  a existující User model, ke kterému by se vázaly uživatelské sbírky.
+
+
+Doporučuji postupovat přesně v tomto pořadí. První krok, "Správa Obsahu pro Administrátora", je teď nejdůležitější, protože odemyká všechny ostatní funkce spojené s obsahem.
+
+Mohu tedy připravit podrobné zadání pro realizační tým pro implementační bod č. 1?
+
+
+
+
+JÁ_PROMPT:
+Ano pojdme vytvořit zadání pro realizační tým v tomto implementačním bodě [1. Správa Obsahu pro Administrátora (Přidání/Editace Videa)
+
+Popis: Vytvoření základního rozhraní (formuláře) přístupného pouze pro roli ADMIN. Toto rozhraní umožní administrátorovi (vám) vložit URL YouTube videa a přidat k němu základní metadata (např. vlastní název, popis). Tím se naplní databáze prvním obsahem.
+
+Proč je to priorita: Toto je naprosto klíčový a logický další krok. Máme systém rolí, ale role ADMIN zatím nemá žádnou speciální funkci. Máme databázi, ale jen s tabulkou User. Tato funkce implementuje první část vaší vize – vy jako první kurátor. Bez obsahu v databázi nemůžeme nic zobrazovat.
+
+Návaznost na hotovou Fázi 2: Přímo využívá existující ADMIN roli z databáze a chrání nové administrátorské stránky pomocí stejného principu jako /dashboard. Vyžaduje rozšíření schema.prisma o nový model (např. Video).] Prosím o přípravu ve struktuře běžnou pro zadání (např. i dle struktury souborů z předešlých fází [README_00_01ZADANI, README_00_01ZADANI]) případně s dalšími vylepšeními pro tento typ dokumentu. V budoucí aplikaci bude nejprve kurátorovaný seznam videí vytvářený pouze administrátorem (resp. mnou) ale do budoucna budou moci přidávat videa i sami uživatelé a generovat pro ně obsahy. Ano, aplikace by měla být vlastně jakásí přehlídka videí a jejich prezentace obsahu ()přehled obsahu videa jako obsah knihy s časovými značkami resp. taková galerie videí jinak je uživatel odkázán v podstatě na nepřeberné neuspořádané množství videí na internetu resp. youtube , tímto způsobem by měl získávat rychlý přehled o obsahu a také by do budoucna mohlo být možné sledovat co jsem již prohlédl ve videích abych měl přehled jak jsem daný obsah již shlédl jako uživatel. Jistě každý uživatel má či potencielně chce mít svou sbírku videí se kterou se chce pochlubit včetně jejích uspořádaných obsahů. Toto je myslím docela zajímavá oblast pro tuto aplikaci. Rovněž si představuji že bude možné z obsahů videí vytvářet samostantné textové obsahy které budou kompilovat obsahy jednotliých videí do jednoho celku a tento kompilovaný obsah se poté bude moci odkazovat na jednotlivá videa. Tímto způsobm budou moci vznikat i články či knihy které budou souhrnně pojednávat o jisté skupině videí a tímto způsobem poskytnou uživateli nadhled i nad větší skupinou videí najednou. Uživatel se bude moci pak dále nořit do kompilovaného obsahu a dany obsah tímto způsobem prozkoumávat. Taková defakto televizní společnost tvořená kuratorstvím jejich uživatelů. Prvním kurátorem bude však admin tedy já. Postupně se kurátorství rozšíří i na uživatele a budou si moci vytvářet svou knihovnu videí a sdílet ji s ostatními. ;) Nyní pojdme umožnit tedy přihlášenému administrátorovi vytvářet seznam jeho videí a nějaká základní metadata jako je název videa a jeho stručný popis, které/který vloží manuálně. Tento stručný popis/sumarizaci videa vytvoří admin vytvoří také manuálně pomocí chytu s AI na základě přepisu videa z Youtube. Do budoucna budou moci přidávat podobně videa i uživatelé. Prosím o nějaký základní návrh řešení pro zde generované zadání tohoto úkolu připadně další možnosti na vylepšení tohoto zadání pro fázi 3. ;-)
+
+AI_RESPONZE:
+istě, tady je podrobný návrh zadání pro realizační tým.
+
+Plně jsem zohlednil vaši vizi aplikace jako kurátorované galerie s přidanou hodnotou (obsahy, časové značky) a budoucím cílem kompilace obsahu napříč videi. Tato fáze 3 je prvním krokem k naplnění této vize tím, že vám, jako prvnímu kurátorovi, dává nástroje k naplnění databáze.
+
+📄 Zadání projektu: Webová aplikace Mediathek (Fáze 3 - Správa Obsahu Administrátorem)
+Datum: 4. listopadu 2025 Verze: 3.0
+
+1. Název projektu
+Mediathek 
+
+2. Cíl Fáze
+Cílem této fáze je implementovat první klíčovou funkci aplikace: rozhraní pro správu obsahu. V návaznosti na Fázi 2, kde byly definovány uživatelské role, tato fáze zpřístupní zabezpečenou sekci pouze pro administrátory (role ADMIN).
+
+Toto rozhraní umožní administrátorovi (prvnímu kurátorovi) [prompt] začít plnit databázi videi a připravit tak obsah, který bude v další fázi zobrazen veřejnosti.
+
+3. Rozsah pro Fázi 3
+Databáze: Rozšíření databázového schématu (Prisma) o nový model pro ukládání videí.
+
+Backend: Vytvoření zabezpečeného API endpointu pro příjem a ukládání dat o nových videích.
+
+Frontend: Vytvoření nové, chráněné stránky (formuláře) v app/ adresáři, přístupné pouze administrátorům.
+
+UI/Navigace: Aktualizace navigační lišty (Navbar.tsx) tak, aby dynamicky zobrazovala odkaz do administrace pouze oprávněným uživatelům.
+
+Mimo rozsah této fáze: Veřejné zobrazení videí (to bude Fáze 4), automatická extrakce metadat z YouTube, automatická generace shrnutí.
+
+4. Návrh Řešení a Architektura
+Toto je doporučený technický přístup k implementaci:
+
+Databázový Model (Prisma):
+
+Soubor prisma/schema.prisma bude rozšířen o nový model, např. Video.
+
+Tento model musí být propojen (relation) s modelem User, aby bylo jasné, který uživatel (autor) video přidal.
+
+Navrhované schéma Video:
+
+Fragment kódu
+
+model Video {
+  id          String   @id @default(cuid())
+  youtubeId   String   @unique // ID videa z URL (např. "dQw4w9WgXcQ")
+  title       String   // Manuálně zadaný název [prompt]
+  summary     String   @db.Text // Manuálně zadané shrnutí (delší text) [prompt]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Propojení na autora
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
+}
+
+// V modelu User je třeba přidat zpětnou vazbu:
+model User {
+  // ... stávající pole
+  videos   Video[] // Seznam videí přidaných tímto uživatelem
+}
+Po úpravě schématu bude nutné spustit migraci: npm run prisma:migrate (nebo npx prisma migrate dev s dotenv-cli dle nastavení z Fáze 2).
+
+Zabezpečení (Middleware a UI):
+
+
+Navigace: Soubor components/Navbar.tsx  bude upraven. Pomocí hooku useSession z next-auth/react získá data o sezení. Přidá podmíněné zobrazení odkazu:
+
+{session?.user?.role === 'ADMIN' && (<Link href="/admin">Administrace</Link>)}
+
+
+Middleware: Soubor middleware.ts  bude rozšířen, aby chránil všechny trasy pod /admin. Je třeba nejen ověřit přihlášení, ale i roli.
+
+
+Doporučená úprava: V app/api/auth/[...nextauth]/route.ts zajistit, že role je vložena do session i token .
+
+
+V middleware.ts použít withAuth callback pro ověření role:
+
+TypeScript
+
+import { withAuth } from "next-auth/middleware";
+
+export default withAuth(
+  function middleware(req) {
+    // Tato funkce se volá jen pro přihlášené uživatele
+  },
+  {
+    callbacks: {
+      authorized: ({ token }) => {
+        // Chráněné trasy vyžadují roli ADMIN
+        return token?.role === "ADMIN";
+      }
+    }
+  }
+);
+
+export const config = {
+  matcher: ["/admin/:path*"], // Chránit vše pod /admin
+};
+Frontend (Admin Formulář):
+
+Vytvořit novou stránku, např. app/admin/add/page.tsx.
+
+Tato stránka bude obsahovat formulář (<form>) s poli:
+
+input type="text" pro YouTube URL.
+
+input type="text" pro Název videa [prompt].
+
+textarea pro Shrnutí videa (sem admin vloží manuálně vytvořený text) [prompt].
+
+Formulář bude data odesílat (např. pomocí fetch nebo axios) na nový API endpoint.
+
+Backend (API Endpoint):
+
+Vytvořit soubor app/api/videos/route.ts.
+
+Implementovat POST handler, který:
+
+Získá sezení server-side (pomocí authOptions z Fáze 2).
+
+Ověří, že session.user.role === 'ADMIN'. Pokud ne, vrátí 403 Forbidden.
+
+Zpracuje data z frontendu (await request.json()).
+
+Doporučení: Z plné YouTube URL extrahuje pouze ID videa (např. z watch?v=VIDEO_ID nebo youtu.be/VIDEO_ID).
+
+Uloží data do databáze pomocí Prisma:
+
+TypeScript
+
+await prisma.video.create({
+  data: {
+    youtubeId: extractedVideoId,
+    title: body.title,
+    summary: body.summary,
+    authorId: session.user.id, // Propojení na admina
+  }
+});
+Vrátí 201 Created odpověď.
+
+5. Funkční Požadavky (FR)
+FR1 (DB Schéma): V databázi musí existovat nová tabulka (model) Video propojená vztahem "jeden-ku-mnoha" s tabulkou User.
+
+FR2 (Admin Navigace): Uživatel přihlášený s rolí ADMIN musí v hlavní navigaci vidět odkaz do administrátorské sekce [prompt].
+
+FR3 (User Navigace): Uživatel přihlášený s rolí USER (nebo nepřihlášený) nesmí tento odkaz vidět.
+
+FR4 (Přístup do Administrace): Stránka (např. /admin/add) musí být přístupná pouze přihlášenému ADMIN uživateli. Jakýkoliv jiný uživatel (včetně USER) musí být při pokusu o přístup přesměrován (např. na domovskou stránku nebo /login).
+
+FR5 (Formulář): Na administrátorské stránce musí být formulář pro zadání YouTube URL, názvu a textového shrnutí [prompt].
+
+FR6 (Ukládání Dat): Úspěšné odeslání formuláře musí vytvořit nový záznam v tabulce Video a správně jej propojit s ID přihlášeného administrátora [prompt].
+
+6. Nefunkční Požadavky (NFR)
+NFR1 (Zabezpečení API): API endpoint (/api/videos) musí striktně ověřovat roli uživatele na straně serveru. Nesmí být možné, aby USER odeslal data, i kdyby endpoint uhodl.
+
+NFR2 (Validace Vstupu): Musí být implementována základní validace (na klientu i serveru), že povinná pole (URL, Název) nejsou prázdná.
+
+NFR3 (Zpětná Vazba): Formulář musí administrátorovi poskytnout jasnou zpětnou vazbu o úspěchu ("Video přidáno") nebo neúspěchu ("Došlo k chybě").
+
+7. Technologický Stack a Nástroje
+Využívá se stávající stack: Next.js (App Router) , Prisma , NextAuth.js , Vercel Postgres , Tailwind CSS. Nejsou potřeba žádné nové klíčové knihovny.
+
+
+
+8. Akceptační Kriteria (Definice "Hotovo")
+Tato fáze je dokončena, když:
+
+Databázová migrace pro model Video úspěšně proběhla na lokálním i produkčním (Vercel) prostředí.
+
+Po přihlášení jako ADMIN je v Navbar viditelný odkaz "Administrace".
+
+Po přihlášení jako USER tento odkaz není viditelný.
+
+Přímý přístup na /admin/add jako USER selže (přesměruje).
+
+Přímý přístup na /admin/add jako ADMIN úspěšně zobrazí formulář.
+
+Odeslání formuláře s daty vytvoří nový záznam v databázi (ověřitelné např. přes npx prisma studio).
+
+Vytvořený záznam v tabulce Video má ve sloupci authorId správné ID administrátora.
+
+Veškerý kód je nahrán do main větve a úspěšně nasazen na Vercel .
+
+9. Budoucí Rozvoj (Mimo Rozsah Této Fáze)
+Fáze 4: Zobrazení těchto přidaných videí na veřejné domovské stránce (vytvoření "galerie") [prompt].
+
+Fáze 5: Vytvoření stránky detailu videa s přehrávačem.
+
+Fáze 6: Rozšíření databáze a formuláře o přidávání strukturovaného obsahu (časové značky) [prompt].
+
+Fáze 7: Umožnění uživatelům (roli USER) přidávat vlastní videa do svých soukromých knihoven [prompt].
+
+Budoucnost: Kompilace obsahů z více videí do souhrnných článků [prompt].
+
+Mohu nyní na základě tohoto zadání připravit podrobný realizační plán, včetně konkrétních příkazů a úprav kódu, podobně jako v předchozích fázích?
+
+
+id_chat: https://gemini.google.com/u/1/app/212346a5afc9c956

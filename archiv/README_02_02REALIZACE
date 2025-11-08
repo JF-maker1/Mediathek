@@ -1,0 +1,13 @@
+JÁ_PROMPT:  
+V příloze je zadání pro tvorbu webové aplikace [README_01_01ZADANI]. Prosím ze zadání vytvořit konkrétní plán realizace (resp. jednotlivé příkazy, nastavení, instalace, ověření prostředí jak systémové, tak projektové) včetně plánu testování která potvrdí úspěšné ukončení realizační fáze. Realizační fáze je ukončena testováním jak na lokálním prostředí tak i na produkčním prostředí. V příloze je rovněž snímek projektového adresáře který by měl poskytnout představu o podmínkávh jednak vnitřních v projektu tak podmínkách vnějších pro projekt. [README_00_03project_snapshot.md]
+
+AI_RESPONZE:
+
+pokr.
+9. Krok 7: Nasazení na Produkci (Vercel)
+Po úspěšném lokálním testování nasadíme změny na produkci.
+
+KRITICKÝ KROK: Automatizace Migrace na Vercel Vercel musí při sestavování (build) aplikace spustit databázovou migraci. K tomu musíme upravit build skript.
+
+
+ID_chatu: https://gemini.google.com/u/1/app/df7ba85230d74bad
