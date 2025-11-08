@@ -1,0 +1,212 @@
+JÁ_PROMPT:
+V příloze jsou výsledky z předešlé fáze realizace webové aplikace zaměřené na správu obsahu resp. správu primárně videí z youtube resp. jednotlivých odkazů na videa z youtube jako osobní knihovny s výpisky majitele této knihovny o obsahu pro snadnou orientaci v obsahu této knihovny i jednotlivých knih resp. videí. Má jít tedy o jakousi osobní složku s videi na základě kterých se bude generovat/či bude nejprve přidáván uživateli (např. přehled obsahu videa s časovými značkami kde je ve videu uvedeno) jejich obsah pro jejich i ostatních uživatelů snadnou orientaci ve videích např. ve vzdělavacích a podobných videích. Nyní prosím o výběr seznamů vlastností které by mohly být nyní dále implementovány a jejich seřazení dle jejich relevance vzhledem k tomu co už bylo implementováno (viz. dokumenty projektu v příloze), také i toho co je v předchozích zadáních již plánováno pro další kroky k implementaci a to jaké je celkové vyznění aplikace které uvádím v jednotlivých dokumentech projektu při postupném managování vytvářené aplikace . Poté z nich jednu vyberu jednu vlastnost určenou k implementaci zřejmě tu první pro kterou vytvoříme zadání pro realizační tým. V předešlém releasu jsme umožnili administrátorovi vytvýřet základní obsah jeho knihovny, nyní by bylo zřejmě vhodné tento obsah zobarazit administrátorovi k náhledu. V dalších releasech budeme uvažovat o spřístupnění tohoto obsahu dalším uvživatelům případně spíše necháme vyzrávat správu tohoto obsahu rozvíjením jeho vlastností. např. spouštění jednotlivých videí dle časových značek u obsahu. Nyní tedy prosím o projití dosavadních zadání projektu z předešlých třech fází vývoje [ke každé je dokument zadání]a již realizovaného [ke každé je i dokument realizace] a poté výběru vhodné další vlastnosti k implemetaci formou seřazení těchto vlastností dle priority. Díky moc ;-)
+
+[README_00_01ZADANI][README_00_02REALIZACE_Kick-off][README_01_01ZADANI][README_01_02REALIZACE][README_02_01ZADANI][README_02_02REALIZACE]
+
+AI_RESPONZE:
+
+Gratuluji k úspěšnému dokončení Fáze 3! Máme teď funkční systém, kde můžete jako administrátor plnit databázi obsahem, konkrétně videi s vlastním názvem a shrnutím.
+
+
+Jak jste naprosto správně podotkl [user prompt], v tuto chvíli data do systému vkládáme, ale zatím neexistuje žádný způsob, jak si je zobrazit a ověřit – existují pouze v databázi. Váš postřeh, že "nyní by bylo zřejmě vhodné tento obsah zobarazit administrátorovi k náhledu," je přesně ten nejlogičtější a nejbezpečnější další krok.
+
+
+Než obsah zpřístupníme veřejnosti, musíte mít vy jako kurátor nástroj, jak si svůj přidaný obsah zkontrolovat, spravovat a případně (v dalších fázích) upravit nebo smazat.
+
+Prošel jsem všechny předchozí dokumenty (Fáze 1, 2 i 3) a vaši vizi "kurátorské galerie". Na základě toho jsem sestavil aktualizovaný seznam funkcí seřazený podle priority.
+
+
+🏛️ Seznam Následujících Funkcí (Seřazeno dle Priority)
+Zde je přehled navazujících implementačních balíčků, které staví na dokončené Fázi 3.
+
+1. Administrátorský Přehled Obsahu (Admin Dashboard)
+Popis: Vytvoření nové, zabezpečené stránky (např. /admin/videos nebo /admin/dashboard), která bude přístupná pouze pro roli ADMIN. Tato stránka zobrazí v přehledné formě (např. tabulka nebo mřížka) seznam všech videí, která byla dosud vložena do databáze. Administrátor zde uvidí přidaný název, shrnutí a ID videa.
+
+Proč je to priorita: Toto je přímá reakce na váš požadavek "zobrazit administrátorovi k náhledu" [user prompt]. Je to chybějící článek "Čtení" (Read) v cyklu CRUD (Create-Read-Update-Delete). V Fázi 3 jsme implementovali "Create". Než budeme moci obsah mazat, upravovat nebo publikovat, musíme ho nejprve vidět.
+
+
+Návaznost: Přímo využívá data z tabulky Video vytvořené v Fázi 3 a systém ochrany rolí z Fáze 2.
+
+
+2. Veřejná Galerie Videí (Zobrazení pro Veřejnost)
+Popis: Úprava hlavní (domovské) stránky (/) tak, aby zobrazovala všechna videa přidaná a schválená administrátorem. Toto bude ona veřejná "galerie" nebo "výkladní skříň", kterou uvidí i nepřihlášení návštěvníci.
+
+
+
+Proč je to priorita: Jakmile si administrátor ověří obsah v Kroku 1, dalším logickým krokem je zpřístupnit ho veřejnosti. Tím aplikace získá svůj primární smysl pro návštěvníky.
+
+
+Návaznost: Toto byl původně plánovaný krok v zadání pro Fázi 3 (jako budoucí Fáze 4).
+
+3. Stránka Detailu Videa a Přehrávač
+Popis: Vytvoření dynamické stránky (např. /video/[id]). Když uživatel klikne na video v galerii (Krok 2), dostane se sem. Tato stránka zobrazí vložený YouTube přehrávač a všechna metadata (vlastní název, manuální shrnutí)  přidaná administrátorem.
+
+Proč je to priorita: Uzavírá základní uživatelský cyklus: Uživatel vidí galerii -> klikne na video -> přehraje si video. Tato stránka se stane klíčovým místem pro zobrazení vaší hlavní přidané hodnoty – časových značek.
+
+
+Návaznost: Toto byl původně plánovaný krok Fáze 5.
+
+4. Implementace Správy Obsahu (Časové Značky)
+
+Popis: Toto je jádro vaší vize. Zahrnuje rozšíření databáze (např. o model Timestamp) a rozšíření administrátorského rozhraní (z Fáze 3) o možnost přidávat k videím strukturovaný obsah – konkrétně seznam kapitol s časovými značkami a popisem. Tyto značky se pak interaktivně zobrazí na stránce detailu videa (Krok 3).
+
+
+Proč je to priorita: Toto je hlavní konkurenční výhoda aplikace. Aplikace se tím posune z "galerie videí" na "nástroj pro orientaci v obsahu".
+
+
+Návaznost: Toto byl původně plánovaný krok Fáze 6.
+
+5. Osobní Knihovny Uživatelů (Role USER)
+Popis: Umožnit přihlášeným uživatelům (role USER) vytvářet si vlastní soukromé sbírky videí (buď přidáním vlastních URL, nebo "uložením" videí z veřejné admin galerie do své knihovny).
+
+
+Proč je to priorita: Naplňuje druhou část vize – uživatelé jako kurátoři svých vlastních sbírek.
+
+
+
+Návaznost: Toto byl původně plánovaný krok Fáze 7.
+
+Doporučuji tedy nyní implementovat bod č. 1, který jste sám správně identifikoval jako nejnutnější.
+
+Mohu připravit podrobné zadání pro realizační tým pro implementační bod č. 1: "Administrátorský Přehled Obsahu (Admin Dashboard)"?
+
+
+
+JÁ_PROMPT:
+Ano pojdme vytvořit zadání pro realizační tým v tomto implementačním bodě [1. Administrátorský Přehled Obsahu (Admin Dashboard)
+
+Popis: Vytvoření nové, zabezpečené stránky (např. /admin/videos nebo /admin/dashboard), která bude přístupná pouze pro roli ADMIN. Tato stránka zobrazí v přehledné formě (např. tabulka nebo mřížka) seznam všech videí, která byla dosud vložena do databáze. Administrátor zde uvidí přidaný název, shrnutí a ID videa.
+
+Proč je to priorita: Toto je přímá reakce na váš požadavek "zobrazit administrátorovi k náhledu" [user prompt]. Je to chybějící článek "Čtení" (Read) v cyklu CRUD (Create-Read-Update-Delete). V Fázi 3 jsme implementovali "Create". Než budeme moci obsah mazat, upravovat nebo publikovat, musíme ho nejprve vidět.
+
+Návaznost: Přímo využívá data z tabulky Video vytvořené v Fázi 3 a systém ochrany rolí z Fáze 2.] Prosím o přípravu ve struktuře běžnou pro zadání (např. i dle struktury souborů z předešlých fází [README_00_01ZADANI, README_01_01ZADANI, README_02_01ZADANI]) případně s dalšími vylepšeními pro tento typ dokumentu. V budoucí aplikaci bude nejprve kurátorovaný seznam videí vytvářený pouze administrátorem (resp. mnou) ale do budoucna budou moci přidávat videa i sami uživatelé a generovat pro ně obsahy. Ano, aplikace by měla být vlastně jakásí přehlídka videí a jejich prezentace obsahu ()přehled obsahu videa jako obsah knihy s časovými značkami resp. taková galerie videí jinak je uživatel odkázán v podstatě na nepřeberné neuspořádané množství videí na internetu resp. youtube , tímto způsobem by měl získávat rychlý přehled o obsahu a také by do budoucna mohlo být možné sledovat co jsem již prohlédl ve videích abych měl přehled jak jsem daný obsah již shlédl jako uživatel. Jistě každý uživatel má či potencielně chce mít svou sbírku videí se kterou se chce pochlubit včetně jejích uspořádaných obsahů. Toto je myslím docela zajímavá oblast pro tuto aplikaci. Rovněž si představuji že bude možné z obsahů videí vytvářet samostantné textové obsahy které budou kompilovat obsahy jednotliých videí do jednoho celku a tento kompilovaný obsah se poté bude moci odkazovat na jednotlivá videa a vytvoří jakýsi obsah této knihovny/gelerie videí. Tímto způsobm budou moci vznikat i články či knihy které budou souhrnně pojednávat o jisté skupině videí a tímto způsobem poskytnou uživateli nadhled i nad větší skupinou videí najednou. Uživatel se bude moci pak dále nořit do kompilovaného obsahu a dany obsah tímto způsobem prozkoumávat. Taková defakto televizní společnost tvořená kuratorstvím jejich uživatelů. Prvním kurátorem bude však admin tedy já. Postupně se kurátorství rozšíří i na uživatele a budou si moci vytvářet svou knihovnu videí a sdílet ji s ostatními. ;) Nyní pojdme umožnit tedy přihlášenému administrátorovi vytvářet seznam jeho videí a nějaká základní metadata jako je název videa a jeho stručný popis, které/který vloží manuálně. Tento stručný popis/sumarizaci videa vytvoří admin vytvoří také manuálně pomocí chytu s AI na základě přepisu videa z Youtube. Do budoucna budou moci přidávat podobně videa i uživatelé. Prosím o nějaký základní návrh řešení pro zde generované zadání tohoto úkolu připadně další možnosti na vylepšení tohoto zadání pro fázi 4 - zobrazení seznamu videí např. i v nějaké designové základní úpravě např. do mřížky. či dle nějakého kreativního návrhu ... ale toto není nyní zcela nezbytné teprve v dalších releasech bude zobrazovaný obsah teprve tzv . asi zrát ;-) Nyní by jsme se měli věnovat čistě pouze zadání dalšího release z pohledu požadavků na aplikaci v kontextu předešlých zadání. [README_00_01ZADANI, README_01_01ZADANI, README_02_01ZADANI]
+
+
+
+AI_RESPONZE:
+Jistě, naprosto rozumím. Vytvoření nástroje pro přehled a kontrolu obsahu je klíčovým krokem, než se pustíme do jeho dalšího rozvoje nebo zveřejnění.
+
+Zde je podrobný návrh zadání pro realizační tým pro Fázi 4, který vychází ze všech vašich předchozích specifikací a navazuje na dokončenou Fázi 3.
+
+📄 Zadání projektu: Webová aplikace Mediathek (Fáze 4 - Administrátorský Přehled Obsahu)
+Datum: 8. listopadu 2025 Verze: 4.0
+
+1. Název projektu
+Mediathek
+
+2. Cíl Fáze
+Cílem této fáze je doplnit chybějící článek v administrátorské správě obsahu – operaci "Čtení" (Read). Po Fázi 3, kde byla implementována schopnost vytvářet (Create) záznamy o videích , musí administrátor (první kurátor) získat nástroj pro zobrazení a kontrolu veškerého obsahu, který do databáze vložil.
+
+Implementací zabezpečeného přehledu (dashboardu) získá administrátor kontrolu nad svou kurátorskou prací, což je nezbytný předpoklad pro budoucí kroky, jako je úprava obsahu, jeho zveřejnění nebo přidávání klíčové přidané hodnoty (časové značky) .
+
+3. Rozsah pro Fázi 4
+Vytvoření nové, zabezpečené stránky (dashboardu) přístupné pouze pro roli ADMIN.
+
+Načtení a zobrazení dat ze stávajícího databázového modelu Video.
+
+Aktualizace administrátorské navigace o odkaz na tento nový přehled.
+
+Zajištění, že tato stránka je chráněna existujícím middleware.ts.
+
+Mimo rozsah této fáze: Veřejné zobrazení videí, implementace funkcí pro úpravu (Edit) nebo mazání (Delete) obsahu, přidávání časových značek.
+
+4. Návrh Řešení a Architektura
+Doporučený technický přístup k implementaci:
+
+Frontend (Nová stránka):
+
+Vytvořit novou stránku na adrese app/admin/dashboard/page.tsx (nebo app/admin/videos/page.tsx).
+
+Tato stránka bude React Server Component (RSC). To znamená, že veškeré načítání dat z databáze proběhne bezpečně na serveru ještě před odesláním stránky klientovi.
+
+Načítání Dat (Prisma):
+
+Přímo v page.tsx bude použit Prisma Client (importovaný z Fáze 2) k načtení všech záznamů z modelu Video.
+
+Příklad dotazu: const videos = await prisma.video.findMany({ orderBy: { createdAt: 'desc' } });
+
+Tím je zajištěna maximální bezpečnost (klient nikdy nevidí databázový dotaz) a výkon.
+
+Zobrazení Dat (UI):
+
+Jak jste zmínil, design nyní není priorita [user prompt]. Obsah bude zobrazen v přehledné a funkční formě.
+
+Návrh: Použít jednoduchou mřížku (CSS Grid nebo Tailwind Grid) "karet". Každá karta bude reprezentovat jedno video a zobrazí:
+
+Název ( video.title )
+
+Shrnutí ( video.summary ) – manuálně vytvořené adminem [user prompt].
+
+YouTube ID ( video.youtubeId ) – pro snadnou identifikaci.
+
+Alternativa: Pokud je mřížka příliš složitá, postačí jednoduchá tabulka (<table>) se sloupci: Název, Shrnutí, YouTube ID.
+
+Zabezpečení (Middleware):
+
+Nová stránka se nachází pod adresářem /admin/.
+
+Stávající soubor middleware.ts (implementovaný v Fázi 3 ) již chrání všechny trasy "/admin/:path*" . Není tedy potřeba psát novou logiku, pouze ověřit, že ochrana funguje i na tuto novou stránku.
+
+Navigace (Navbar):
+
+Upravit komponentu components/Navbar.tsx .
+
+Vedle stávajícího odkazu "Přidat video" (nebo "Administrace"), který je viditelný pouze pro ADMIN , přidat nový odkaz, např. "Přehled obsahu".
+
+Tento odkaz bude rovněž obalen podmínkou {session?.user?.role === 'ADMIN' && ...}.
+
+5. Funkční Požadavky (FR)
+FR1 (Nová stránka): Musí existovat nová stránka na adrese (např.) /admin/dashboard.
+
+FR2 (Zabezpečení stránky): Stránka /admin/dashboard musí být přístupná pouze přihlášenému uživateli s rolí ADMIN .
+
+FR3 (Ochrana (USER)): Uživatel s rolí USER nesmí mít na stránku přístup a při pokusu o přímou návštěvu URL musí být přesměrován (dle logiky v middleware.ts ).
+
+FR4 (Načtení dat): Stránka musí při načtení zobrazit seznam všech videí, která jsou aktuálně uložena v databázové tabulce Video.
+
+FR5 (Zobrazená data): Každá položka v seznamu musí viditelně zobrazovat minimálně title, summary a youtubeId (data přidaná v Fázi 3 ).
+
+FR6 (Navigace): Přihlášený ADMIN musí v hlavní navigaci vidět nový, funkční odkaz na stránku /admin/dashboard. Uživatel USER a nepřihlášený uživatel tento odkaz vidět nesmí .
+
+6. Nefunkční Požadavky (NFR)
+NFR1 (Server-Side Rendering): Načítání dat z databáze pro tuto stránku musí probíhat výhradně na straně serveru (pomocí RSC), nikoliv na straně klienta (v useEffect).
+
+NFR2 (Konzistence ochrany): Ochrana přístupu musí být plně v souladu s middleware.ts a NextAuth.js callbacky definovanými ve Fázi 2 a 3 .
+
+NFR3 (Čitelnost): Zobrazený seznam musí být formátován pro snadnou čitelnost (např. dostatečné oddělení jednotlivých položek).
+
+7. Technologický Stack a Nástroje
+Využívá se stávající stack: Next.js (App Router), Prisma, NextAuth.js, Vercel Postgres .
+
+Nejsou potřeba žádné nové klíčové knihovny.
+
+8. Akceptační Kriteria (Definice "Hotovo")
+Tato fáze je dokončena, když:
+
+Po přihlášení jako ADMIN je v Navbar viditelný nový odkaz (např. "Přehled obsahu").
+
+Kliknutí na tento odkaz korektně přesměruje na /admin/dashboard.
+
+Stránka /admin/dashboard se úspěšně načte a zobrazí seznam všech videí přidaných v Fázi 3.
+
+Data na stránce (názvy, shrnutí) odpovídají datům v databázi (ověřitelné např. přes npm run prisma:studio).
+
+Po přihlášení jako USER odkaz v Navbar není viditelný.
+
+Přímý pokus o přístup na /admin/dashboard jako USER (nebo nepřihlášený) selže a přesměruje uživatele pryč (na /login nebo /dashboard ).
+
+Veškerý kód je nahrán do main větve a úspěšně nasazen na Vercel.
+
+9. Budoucí Rozvoj (Mimo Rozsah Této Fáze)
+Fáze 5: Zobrazení těchto přidaných videí na veřejné domovské stránce (vytvoření "galerie") .
+
+Fáze 6: Vytvoření stránky detailu videa s přehrávačem .
+
+Fáze 7: Implementace administrátorských funkcí Edit (Upravit) a Delete (Smazat) pro obsah v tomto novém přehledu.
+
+Fáze 8: Rozšíření databáze a formuláře o přidávání strukturovaného obsahu (časové značky) .
+
+
+id_chat: 
+https://gemini.google.com/u/1/app/f91a0f7a9e3a3037
+

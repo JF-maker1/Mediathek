@@ -1,13 +1,214 @@
 JÁ_PROMPT:  
-V příloze je zadání pro tvorbu webové aplikace [README_01_01ZADANI]. Prosím ze zadání vytvořit konkrétní plán realizace (resp. jednotlivé příkazy, nastavení, instalace, ověření prostředí jak systémové, tak projektové) včetně plánu testování která potvrdí úspěšné ukončení realizační fáze. Realizační fáze je ukončena testováním jak na lokálním prostředí tak i na produkčním prostředí. V příloze je rovněž snímek projektového adresáře který by měl poskytnout představu o podmínkávh jednak vnitřních v projektu tak podmínkách vnějších pro projekt. [README_00_03project_snapshot.md]
+V příloze je zadání pro tvorbu webové aplikace pro správu videí a obsahu videí [README_02_01ZADANI]. Prosím ze zadání vytvořit konkrétní plán realizace (resp. jednotlivé příkazy, nastavení, instalace, ověření prostředí jak systémové, tak projektové) včetně plánu testování která potvrdí úspěšné ukončení realizační fáze vycházející ze zadání této fáze v příloze . Realizační fáze je ukončena testováním jak na lokálním prostředí tak i na produkčním prostředí. V příloze je rovněž snímek projektového adresáře po ukončení předchozí 2 fáze realizace [README_01_03project_snapshot] který by měl poskytnout představu o podmínkávh jednak vnitřních v projektu tak podmínkách vnějších pro tento projekt. [README_01_03project_snapshot.md]
+
+AI_RESPONZE:
+Rozumím. Na základě detailního zadání pro Fázi 3 z dokumentu README_02_01ZADANI a snímku projektu README_01_03project_snapshot.md jsem připravil kompletní realizační plán.Tento plán vás provede krok za krokem implementací správy obsahu pro administrátora, včetně konkrétních úprav kódu, příkazů a testovacího scénáře.Zde je soubor s plánem realizace.README_02_02REALIZACE4. 11. 20:40
+
+[Realizační Plán: Fáze 3 - Správa Obsahu AdministrátoremDatum: 4. listopadu 2025Navazuje na: README_02_01ZADANIVychází ze stavu: README_01_03project_snapshot.md1. Cíl FázeImplementovat rozhraní pro administrátory (role ADMIN) pro přidávání nových videí (YouTube URL, název, shrnutí) do databáze. To zahrnuje aktualizaci databáze, vytvoření zabezpečeného API endpointu, vytvoření chráněné frontendové stránky s formulářem a aktualizaci navigace.2. Krok 0: Příprava ProstředíNež začneme s úpravami, připravíme si pracovní prostředí.Vytvoření nové větve:git checkout -b feature/faze3-admin-content
+
+Instalace závislostí: (Pro jistotu, i když by měly být aktuální)npm install
+
+Spuštění lokálního serveru:npm run dev
+]
+
+Otevřít3. Krok 1: Rozšíření Databáze (Prisma)Nejprve upravíme databázové schéma tak, aby mohlo ukládat informace o videích a jejich autorech (administrátorech).Upravit prisma/schema.prisma:Otevřete soubor a přidejte nový model Video a rozšiřte model User.prisma/schema.prisma (aktualizace)4. 11. 20:35
+
+[2.  **Spustit databázovou migraci:**
+    Tento příkaz vytvoří nový migrační soubor v `prisma/migrations/` a aktualizuje vaši lokální databázi.
+
+    ```bash
+    # Použijeme "npm run" skript definovaný v package.json
+    npm run prisma:migrate -- --name "add_video_model"
+    ```
+    *(Poznámka: Dvě pomlčky `--` jsou nutné, aby se parametr `--name` správně předal příkazu `prisma migrate dev`.)*
+
+3.  **Ověření migrace (Volitelné, ale doporučené):**
+    Spusťte Prisma Studio a ověřte, že vidíte nový model `Video`.
+    ```bash
+    npm run prisma:studio]
+
+Otevřít(Otevřete http://localhost:5555 v prohlížeči)4. Krok 2: Aktualizace Zabezpečení (Middleware)Nyní musíme zajistit, aby do nové administrátorské sekce (/admin) mohli přistupovat pouze uživatelé s rolí ADMIN. Upravíme stávající middleware.ts.Upravit middleware.ts:Aktualizujeme matcher a přidáme logiku pro ověření role.middleware.ts (aktualizace)4. 11. 20:35
+
+[
+
+## 5. Krok 3: Vytvoření Backendu (API Endpoint)
+
+Vytvoříme API endpoint, který bude přijímat data z formuláře a ukládat je do databáze.
+
+1.  **Vytvořit soubor `app/api/videos/route.ts`:**
+    ```bash
+    mkdir -p app/api/videos
+    touch app/api/videos/route.ts
+
+]
+
+
+Naplnit app/api/videos/route.ts:Tento handler ověří administrátorská práva na serveru, zvaliduje vstup a vytvoří záznam v databázi.app/api/videos/route.ts (nový soubor)4. 11. 20:35
+
+[
+## 6. Krok 4: Vytvoření Frontendu (Admin Formulář)
+
+Vytvoříme stránku s formulářem, kterou uvidí pouze admin.
+
+1.  **Vytvořit soubor `app/admin/add/page.tsx`:**
+    ```bash
+    mkdir -p app/admin/add
+    touch app/admin/add/page.tsx
+
+]
+
+
+OtevřítNaplnit app/admin/add/page.tsx:Bude to klientská komponenta ("use client") obsahující formulář.app/admin/add/page.tsx (nový soubor)4. 11. 20:35
+
+[]
+
+
+Otevřít7. Krok 5: Aktualizace Navigace (Navbar)Přidáme do navigace odkaz na novou administrátorskou stránku, který uvidí pouze admini.Upravit components/Navbar.tsx:Využijeme data ze useSession, která již máme k dispozici.components/Navbar.tsx (aktualizace)4. 11. 20:35
+
+
+Otevřít8. Krok 6: Plán Lokálního TestováníNyní ověříme všechny implementované funkce lokálně.Testovací účty:ADMIN: Vytvořte (nebo použijte stávající) účet a manuálně mu v databázi (přes npm run prisma:studio) změňte role z USER na ADMIN.USER: Běžný účet vytvořený přes /register.Testovací ScénářRoleKrokyOčekávaný VýsledekTC-1: Zobrazení Navigace (Admin)ADMIN1. Přihlaste se jako ADMIN.V Navbaru je viditelný odkaz "Administrace".TC-2: Zobrazení Navigace (User)USER1. Přihlaste se jako USER.V Navbaru NENÍ viditelný odkaz "Administrace".TC-3: Zobrazení Navigace (Nepřihlášený)Nepřihlášený1. Navštivte /.V Navbaru NENÍ viditelný odkaz "Administrace".TC-4: Přímý přístup (Admin)ADMIN1. Přihlaste se jako ADMIN.  2. Přejděte na /admin/add.Stránka s formulářem se úspěšně zobrazí.TC-5: Přímý přístup (User)USER1. Přihlaste se jako USER.  2. Přejděte na /admin/add.Jste přesměrováni na /dashboard (dle logiky v middleware.ts).TC-6: Přímý přístup (Nepřihlášený)Nepřihlášený1. Přejděte na /admin/add.Jste přesměrováni na /login (dle logiky v middleware.ts).TC-7: Úspěšné přidání videaADMIN1. Přejděte na /admin/add.  2. Vyplňte validní URL, název a shrnutí.  3. Klikněte na "Uložit video".Zobrazí se zpráva "Video bylo úspěšně přidáno!". Formulář se vyčistí.TC-8: Ověření dat v DBN/A1. Po TC-7 spusťte npm run prisma:studio.  2. Otevřete model Video.V databázi je nový záznam. youtubeId je správně extrahováno. authorId odpovídá ID admina.TC-9: Nevalidní URLADMIN1. Přejděte na /admin/add.  2. Vložte neplatné URL (např. "https://www.google.com/search?q=google.com").  3. Klikněte na "Uložit video".Zobrazí se chybová zpráva (např. "Invalid YouTube URL").TC-10: Duplicitní videoADMIN1. Proveďte TC-7.  2. Znovu vložte STEJNÉ YouTube URL.  3. Klikněte na "Uložit video".Zobrazí se chybová zpráva (např. "Video with this ID already exists").TC-11: Chybějící poleADMIN1. Přejděte na /admin/add.  2. Nevyplňte název.  3. Klikněte na "Uložit video".HTML5 validace (required) by měla odeslání zabránit. Pokud je obejdete, API vrátí chybu "Missing required fields".9. Krok 7: Nasazení na Produkci (Vercel)Po úspěšném lokálním testování nasadíme změny na produkci.KRITICKÝ KROK: Automatizace Migrace na VercelVercel musí při sestavování (build) aplikace spustit databázovou migraci. 
+
+K tomu musíme upravit build skript.Upravit package.json:package.json (aktualizace)4. 11. 20:35
+
+[...
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma migrate deploy && next build", // <-- ZMĚNIT TUTO ŘÁDKU
+        "start": "next start",
+        "lint": "eslint",
+    ...
+    ```
+    *(`prisma migrate deploy` je bezpečný příkaz pro produkci, který pouze aplikuje čekající migrace, na rozdíl od `migrate dev`, který může databázi i měnit.)*
+
+2.  **Commit a Push:**
+    Sloučíme naši větev do `main` (nebo jakou větev používáte pro produkční nasazení).
+
+    ```bash
+    git add .
+    git commit -m "Fáze 3: Implementace admin správy obsahu"
+    git checkout main
+    git merge feature/faze3-admin-content
+    git push origin main
+    ```
+
+3.  **Sledování nasazení:**
+    Otevřete Vercel dashboard a sledujte proces sestavení (build). Zkontrolujte logy, zda příkaz `prisma migrate deploy` proběhl úspěšně.
+
+## 10. Krok 8: Plán Produkčního Testování
+
+Po úspěšném nasazení provedeme rychlý "smoke test" na produkční URL (`*.vercel.app`).
+
+1.  **Vytvoření ADMINA:** Pokud na produkci ještě nemáte admin účet, budete ho muset vytvořit (registrovat se) a poté **manuálně** změnit jeho roli v produkční databázi (např. přes Vercel Data nebo jiný DB klienta propojeného na produkční DB).
+2.  **Provedení Testů:** Opakujte **Testovací Scénáře TC-1, TC-2, TC-4, TC-5, TC-6 a TC-7** na produkční URL.
+3.  **Ověření Produkční DB:** Ověřte (např. přes Vercel Data), že se video po TC-7 objevilo v produkční `Video` tabulce.
+
+---
+**Fáze 3 je tímto dokončena.** Administrátoři nyní mohou plnit databázi obsahem.]
+
+OtevřítTento plán pokrývá všechny body ze zadání, včetně úprav databáze, zabezpečení a vytvoření potřebných rozhraní. Až budete připraveni, můžeme se pustit do další fáze – zobrazení tohoto obsahu veřejnosti.
+
+JÁ_PROMPT:  
+Nasazení na produkci nyní proběhlo ok a test na produkci rovněž. Díky. ;-) Mohu nyní poprosit o souhrnou zprávu z této fáze realizace vyplývající z tohoto chatu. Tuto zprávu uložím jako záznam o všech zde provedených činnostech na projektu pro budoucí informaci o proběhlých činnostech v této fázi realizace aplikace - prosím i o podrobnosti z této fáte realizace a zejména pak ty významné podrobnosti do této souhrnné zprávy o této fázi realizace.
+
 
 AI_RESPONZE:
 
-pokr.
-9. Krok 7: Nasazení na Produkci (Vercel)
-Po úspěšném lokálním testování nasadíme změny na produkci.
+Samozřejmě, zde je souhrnná zpráva z Fáze 3, která detailně popisuje všechny provedené kroky, řešené problémy a dosažené výsledky.
+README_03_01REALIZACE_SOUHRN
+8. 11. 13:58
 
-KRITICKÝ KROK: Automatizace Migrace na Vercel Vercel musí při sestavování (build) aplikace spustit databázovou migraci. K tomu musíme upravit build skript.
+Otevřít
+
+[Souhrnná Zpráva Realizace: Fáze 3 - Správa Obsahu Administrátorem
+
+Projekt: Mediathek
+Datum: 4. listopadu 2025
+Autor: Realizační tým (AI & Developer)
+Verze: 1.0
+
+1. Cíl Fáze 3
+
+Hlavním cílem této fáze bylo implementovat základní funkce pro správu obsahu, které umožní administrátorovi (prvnímu kurátorovi) začít plnit aplikaci daty. Konkrétně šlo o vytvoření zabezpečeného rozhraní pro přidávání YouTube videí s vlastním názvem a manuálně vytvořeným shrnutím do databáze.
+
+2. Klíčové Dosažené Výsledky
+
+✅ Rozšíření Databáze: Úspěšně přidán model Video do schema.prisma a provedena migrace na lokální i produkční (Neon.tech) databázi.
+
+✅ Zabezpečený Backend: Vytvořen API endpoint /api/videos, který ověřuje roli ADMIN a ukládá data o nových videích.
+
+✅ Administrátorské Rozhraní: Vytvořena stránka /admin/add s formulářem pro vkládání videí.
+
+✅ Navigace a Ochrana Přístupu: Aktualizován Navbar (viditelný odkaz pouze pro adminy) a middleware.ts (ochrana /admin tras).
+
+✅ Produkční Nasazení: Aplikace úspěšně nasazena na Vercel s funkční automatickou migrací databáze.
+
+3. Detailní Průběh Realizace
+
+3.1. Příprava a Databáze
+
+Byla vytvořena feature větev feature/faze3-admin-content.
+
+Do prisma/schema.prisma byl přidán model Video:
+
+model Video {
+  id        String   @id @default(cuid())
+  youtubeId String   @unique
+  title     String
+  summary   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+}
 
 
-ID_chatu: https://gemini.google.com/u/1/app/df7ba85230d74bad
+Proběhla úspěšná lokální migrace: npm run prisma:migrate -- --name "add_video_model".
+
+3.2. Vývoj Backendu a Frontendu
+
+Middleware: Aktualizován pro ochranu tras začínajících na /admin, povolen přístup pouze pro roli ADMIN.
+
+API Route: Implementován POST handler v app/api/videos/route.ts, který extrahuje YouTube ID a validuje vstupní data.
+
+Frontend Formulář: Vytvořena React komponenta v app/admin/add/page.tsx pro sběr dat (URL, název, shrnutí) a jejich odeslání na API.
+
+3.3. Řešené Problémy a Významné Události
+
+Problém 1: TypeError: Cannot read properties of undefined (reading 'create') při lokálním testování
+
+Příčina: Vývojový server (next dev) běžel během databázové migrace a měl načtenou starou verzi Prisma Clienta, která neznala nový model Video.
+
+Řešení: Restart vývojového serveru, což vynutilo načtení nově vygenerovaného klienta.
+
+Problém 2: Selhání buildu na Vercelu (Type error: Property 'video' does not exist...)
+
+Příčina: Na produkčním prostředí se před kompilací TypeScript kódu nespustil prisma generate, takže Prisma Client nebyl aktualizován o nové typy.
+
+Řešení: Úprava build skriptu v package.json pro explicitní generování klienta před migrací a buildem.
+
+Původně: "build": "prisma migrate deploy && next build"
+
+Opraveno: "build": "prisma generate && prisma migrate deploy && next build"
+
+3.4. Testování
+
+Lokální testy: Ověřeno přihlášení za USER (bez přístupu) a ADMIN (s přístupem). Úspěšně přidáno testovací video a ověřeno v Prisma Studio.
+
+Produkční testy: Po nasazení na Vercel proveden stejný sad testů na živé aplikaci s úspěšným výsledkem.
+
+4. Závěr a Další Kroky
+
+Fáze 3 položila základ pro obsahovou část aplikace. Databáze je připravena a administrátor má nástroje pro její plnění.
+
+Příští kroky (Fáze 4):
+
+Vytvoření veřejné galerie na domovské stránce, která zobrazí přidaná videa.
+
+Implementace stránky detailu videa s přehrávačem.]
+
+Zpráva je připravena. Můžete si ji uložit do repozitáře. Gratuluji k úspěšnému dokončení této důležité fáze!
+
+
+
+ID_chatu: 
+https://gemini.google.com/u/1/app/0359c5d0ed9d445c

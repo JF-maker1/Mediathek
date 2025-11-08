@@ -1,4 +1,5 @@
 záloha:
+
 cd /home/pi/Projects
 sudo cp -r web_app_Mediathek /mnt/sd_root/
 ls -l /mnt/sd_root/web_app_Mediathek

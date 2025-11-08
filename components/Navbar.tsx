@@ -25,9 +25,10 @@
               
               {/* --- PŘIDAT TUTO PODMÍNKU --- */}
               {session.user?.role === 'ADMIN' && (
-                <Link href="/admin/add" style={{ fontWeight: 'bold' }}>
-                  Administrace
-                </Link>
+                <>
+                  <Link href="/admin/dashboard" className="hover:underline">Přehled obsahu</Link>
+                  <Link href="/admin/add" className="font-bold hover:underline">Přidat video</Link>
+                </>
               )}
               {/* --- KONEC PŘIDANÉ ČÁSTI --- */}
 
@@ -39,4 +40,3 @@
         </nav>
       );
     }
-    
