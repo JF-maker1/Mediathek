@@ -1,0 +1,116 @@
+JÁ_PROMPT:
+V příloze jsou dokumenty popisující stav funkční webové aplikace. Bylo by možné vytvořit nyní sled takových funkčních a i nefunkčních požadavků, které by vedly tedy od nuly k znovuvytvoření této aplikace a tento sled požadavků bude i optimální resp. povede nejefektivněji k znovuvytvoření této aplikace? Také při tomto zpětném inzenýringu kdy z kódu jsou odvozeny zpětně požadavky může také dojít ke zjištění nepotřebných součástí této aplikace ... ;-) 
+[README_03_03project_snapshot]
+
+AI_RESPONZE:
+
+Rozumím, skvělý nápad. Provedení zpětné revize (retrospektivy) a optimalizace plánu je klíčové pro udržení jasného směru.
+
+Prošel jsem všechny čtyři dodané dokumenty a analyzoval jsem vaše požadavky i mé navrhované odpovědi.
+
+Původní sled byl:
+* **Fáze 00:** Ověření pipeline (nasazení statické stránky).
+* **Fáze 01:** Implementace Auth a DB (základy pro uživatele a role).
+* **Fáze 02:** Admin "Create" (formulář pro přidání videa do DB).
+* **Fáze 03:** Admin "Read" (přehled pro zobrazení videí přidaných v Fázi 02).
+
+Tento postup je logický, ale jak se ukázalo ve Fázi 03 , Fáze 02 (vytvoření) bez Fáze 03 (čtení) zanechala administrátora "slepého" – mohl přidávat data, ale nemohl si je v aplikaci ověřit.
+
+Zde je **optimalizovaný sled**, který zpětně přehodnocuje a lépe uspořádává informace z našich předchozích diskuzí. Spojuje logicky související kroky (jako Fáze 02 a 03) do jednoho uceleného balíčku, čímž by byl vývoj efektivnější.
+
+---
+
+## 🏛️ Revidovaný a Optimalizovaný Plán Vývoje (Fáze 0-4)
+
+Zde je souhrn, jak by mohl vypadat ideální sled zadání na základě všech vašich cílů.
+
+### Fáze 0: Kick-off a Ověření Pipeline
+
+* **Já_PROMPT (Syntetizováno):**
+    Prosím o návrh zadání pro "výkop" projektu . Aplikace poběží na Vercelu, ale vyvíjet se bude na mém lokálním PC (Raspberry Pi 5) . Pro začátek potřebuji jen jednu statickou stránku, která ověří, že celý proces od vývoje po nasazení funguje . Na stránce bude pouze nadpis "Mediathek: Tvá sbírka Tvých videí" .
+
+* **AI_RESPONZE (Syntetizováno):**
+    Jasně, cílem Fáze 0 je **Ověření vývojového a deployment procesu** .
+    * **Technologie:** Použijeme Next.js (nebo SvelteKit) a Git pro verzování .
+    * **Proces:** Tým nastaví projekt lokálně na RPi 5 , založí Git repozitář a propojí ho s Vercel .
+    * **Požadavky:** Vytvořit jednu statickou stránku s nadpisem `<h1>Mediathek: Tvá sbírka Tvých videí</h1>` . Stránka musí být responzivní .
+    * **Akceptační kritéria:** Aplikace je veřejně dostupná na Vercel URL a zobrazuje správný nadpis .
+
+---
+
+### Fáze 1: Základy Aplikace (Autentizace a Databáze)
+
+* **Já_PROMPT (Syntetizováno):**
+    Pipeline funguje. Nyní potřebujeme skutečný základ pro "osobní složku" . Cílem je, aby aplikace rozlišovala uživatele. Prozatím budu "prvním kurátorem" (role ADMIN), který bude obsah tvořit . Do budoucna chci, aby si i běžní uživatelé (role USER) mohli vytvářet své knihovny . Pojďme tedy vytvořit systém přihlašování a databázi. Můžeme mít i nějakého veřejného uživatele pro náhled .
+
+* **AI_RESPONZE (Syntetizováno):**
+    Naprosto klíčový krok. Cílem Fáze 1 je **Implementace Uživatelské Autentizace a Databáze** . Toto je blokující prvek pro jakoukoliv personalizaci .
+    * **Technologie:** Použijeme **NextAuth.js** (ideálně s Google/GitHub providerem pro jednoduchost, nebo emailem a heslem) a **Vercel Postgres** jako databázi . Pro interakci s DB nasadíme **Prisma** .
+    * **Databáze:** Vytvoříme `schema.prisma` a v něm model `User` . Model bude obsahovat pole `role` s výchozí hodnotou `USER` a možností `ADMIN` .
+    * **Požadavky:**
+        * Implementovat stránky pro registraci a přihlášení .
+        * Vytvořit chráněnou stránku (např. `/dashboard`), která bude přístupná jen přihlášeným .
+        * UI v navigaci se musí měnit podle stavu přihlášení (Přihlásit se vs. Odhlásit se) .
+        * Prvnímu uživateli (vám) bude role `ADMIN` nastavena manuálně v databázi .
+
+---
+
+### Fáze 2: Základní Kurátorský Nástroj (Vytvoření a Zobrazení Obsahu)
+
+*(Toto je **optimalizované spojení** původní Fáze 02 a Fáze 03 , které řeší problém "slepého" přidávání.)*
+
+* **Já_PROMPT (Syntetizováno):**
+    Máme role a databázi . Nyní chci jako `ADMIN` začít plnit aplikaci obsahem . Potřebuji rozhraní (formulář) chráněné jen pro mě, kam vložím URL z YouTube a přidám **manuální název** a **manuální stručný popis/sumarizaci** (kterou si zatím vytvořím sám, např. pomocí AI) . Zároveň, abych mohl svou práci kontrolovat, potřebuji **ihned vidět seznam** všeho, co jsem přidal . Nechci přidávat data "do tmy" .
+
+* **AI_RESPONZE (Syntetizováno):**
+    Rozumím. Místo oddělení "Create" a "Read" je spojíme do jedné fáze. Cílem Fáze 2 je **Implementace Administrátorského Nástroje (CRUD)**.
+    * **Databáze:** Rozšíříme `schema.prisma` o nový model `Video` . Bude obsahovat pole jako `youtubeId`, `title` (manuální název), `summary` (manuální popis) a bude mít vztah (relation) k autorovi (uživateli s rolí ADMIN) .
+    * **Backend (API):** Vytvoříme API endpoint (např. `/api/videos`) , který přijme data z formuláře. Na serveru striktně ověří, že volající má roli `ADMIN` , a poté data uloží do DB pomocí Prisma .
+    * **Frontend (Admin Sekce):**
+        1.  Vytvoříme novou sekci (např. `/admin`). Přístup do ní bude chráněn pomocí `middleware.ts` a povolen pouze pro roli `ADMIN` .
+        2.  Na stránce (např. `/admin/add`) bude formulář pro zadání `youtubeId`, `title` a `summary` .
+        3.  Vytvoříme druhou stránku (např. `/admin/dashboard`) , která pomocí server-side (RSC) načte z DB (přes Prisma) všechna videa a zobrazí je adminovi v přehledné mřížce nebo tabulce .
+    * **Navigace:** Do `Navbar.tsx` přidáme odkazy na `/admin/add` a `/admin/dashboard`, které budou viditelné pouze po přihlášení s rolí `ADMIN` .
+    * **Akceptační kritéria:** Admin se přihlásí, vidí odkazy. Na `/admin/add` přidá video. Na `/admin/dashboard` toto video okamžitě vidí . Uživatel s rolí `USER` odkazy ani stránky nevidí .
+
+---
+
+### Fáze 3: Veřejná Galerie a Detail Videa
+
+* **Já_PROMPT (Syntetizováno):**
+    Výborně. Jako admin už mohu spravovat obsah. Nyní je čas ukázat tuto "galerii" a "přehlídku videí" veřejnosti . Chci, aby veřejná domovská stránka zobrazovala videa, která jsem přidal. Když na video uživatel klikne, měl by se dostat na stránku detailu, kde uvidí přehrávač a můj přidaný popis.
+
+* **AI_RESPONZE (Syntetizováno):**
+    Přesně tak. Tím aplikace získá smysl pro návštěvníky. Cílem Fáze 3 je **Zveřejnění Kurátorovaného Obsahu**.
+    * **Veřejná Galerie:** Upravíme hlavní stránku (`/`) . Zde (opět server-side) načteme všechna videa z DB a zobrazíme je jako veřejnou "výkladní skříň" , např. mřížku karet s názvem a náhledovým obrázkem (ten zatím můžeme tahat z YouTube).
+    * **Stránka Detailu Videa:** Vytvoříme dynamickou stránku (např. `/video/[id]`) .
+    * **Přehrávač a Obsah:** Na stránce detailu:
+        1.  Načteme data pro toto konkrétní video.
+        2.  Integrujeme YouTube přehrávač (např. pomocí `react-youtube`) .
+        3.  Zobrazíme metadata přidaná adminem (vlastní název, vlastní shrnutí) .
+    * **Akceptační kritéria:** Nepřihlášený uživatel přijde na (`/`), vidí galerii videí. Klikne na video, dostane se na `/video/123`, kde vidí přehrávač a adminovo shrnutí.
+
+---
+
+### Fáze 4: Implementace Klíčové Hodnoty (Časové Značky)
+
+* **Já_PROMPT (Syntetizováno):**
+    Galerie funguje. Ale jádro mé myšlenky je "snadná orientace" a "přehled obsahu videa jako obsah knihy" . Chci mít možnost k videím přidávat nejen shrnutí, ale **strukturovaný obsah s časovými značkami** . To je ta hlavní přidaná hodnota.
+
+* **AI_RESPONZE (Syntetizováno):**
+    Ano, nyní se dostáváme k jádru aplikace . Cílem Fáze 4 je **Implementace Správy Časových Značek**.
+    * **Databáze:** Rozšíříme `schema.prisma`. Vytvoříme nový model, např. `Timestamp` nebo `Chapter`. Bude mít vztah "mnoho-k-jednomu" k modelu `Video` . Bude obsahovat pole jako `timeInSeconds` (číslo) a `description` (text).
+    * **Rozšíření Admina:** Upravíme admin rozhraní (z Fáze 2), aby u každého videa mohl dynamicky přidávat, upravovat a mazat tyto časové značky .
+    * **Zobrazení v Detailu:** Na stránce detailu videa (z Fáze 3) zobrazíme pod přehrávačem tento seznam časových značek .
+    * **Interaktivita:** Seznam bude interaktivní. Kliknutí na časovou značku (např. "05:15 - Závěr") zavolá funkci na YouTube přehrávači a posune video na daný čas .
+    * **Akceptační kritéria:** Admin může k videu přidat 5 časových značek. Uživatel na stránce detailu vidí těchto 5 značek a může na ně klikat, čímž ovládá přehrávač.
+
+---
+
+Tento revidovaný sled spojuje logické celky (Admin Create+Read) a staví jasnou cestu od základní myšlenky (Fáze 0) až po implementaci klíčové konkurenční výhody (Fáze 4).
+
+Chcete, abychom na základě této optimalizované struktury připravili podrobnější plán pro budoucí Fázi 5 (např. "Osobní knihovny uživatelů" nebo "Kompilace obsahů")?
+
+id_chat: 
+https://gemini.google.com/u/1/app/3742ccfaecff67a6
+

@@ -1,0 +1,11 @@
+JÁ_PROMPT:
+Díky zpráva uložena pro jako info pro další vývoj aplikace - nyní pojdme ještě zrevidovat skript pro vytvoření snímku aplikace - v příloze je aktuální verze tohoto skriptu a výstupem budou změny potřebné pro jeho aktualizaci v souvislosti se zde provedenými změnami na aplikaci tak aby příští snímek co nejlépe a nejefektivněji vystihoval stav projektu resp. projektového adresáře a nastavení prostředí v kterém projekt je vyvíjen a i nasazován (resp. aby skript vystihoval jak vnitřní prostředí projektu tak i jeho vnější prostředí). Tyto vypsané případné potřebné změny skriptu poté manuálně implementuji do nové verze skriptu.
+
+AI_RESPONZE:
+
+
+JÁ_PROMPT_Claude:
+Prosím o realizaci následujícího zadání - výstupem bude kompletní nová verze skriptu [] [snapshot]
+
+
+AI_RESPONZE:

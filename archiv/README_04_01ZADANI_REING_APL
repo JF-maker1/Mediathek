@@ -1,0 +1,247 @@
+JÁ_PROMPT:
+V příloze jsou dokumenty popisující stav funkční webové aplikace. Bylo by možné vytvořit nyní sled takových funkčních a i nefunkčních požadavků, které by vedly tedy od nuly k znovuvytvoření této aplikace a tento sled požadavků bude i optimální resp. povede nejefektivněji k znovuvytvoření této aplikace? Také při tomto zpětném inzenýringu kdy z kódu jsou odvozeny zpětně požadavky může také dojít ke zjištění nepotřebných součástí této aplikace ... ;-) 
+[README_03_03project_snapshot]
+
+AI_RESPONZE:
+
+Ano, na základě dodaného snímku projektu je možné provést zpětné inženýrství a odvodit optimální sled funkčních i nefunkčních požadavků pro jeho znovuvytvoření.
+
+Tento proces nám umožňuje nejen zrekonstruovat zadání, ale také identifikovat klíčové architektonické rozhodnutí (jako je oddělení rolí nebo ochrana API) a potenciálně nadbytečné části.
+
+Zde je navrhovaný optimální sled požadavků, rozdělený do logických milníků, které by vedly k efektivnímu vývoji této aplikace.
+
+Milník 1: Základní Nastavení a Datový Model
+V této fázi definujeme technologický základ, strukturu databáze a základní veřejnou kostru aplikace.
+
+Nefunkční Požadavky (NFR)
+
+NFR 1 (Technologie): Aplikace musí být postavena na frameworku Next.js (verze ~16) , používat React (verze ~19) a TypeScript (verze ~5).
+
+
+
+
+
+NFR 2 (Stylování): Stylování musí být implementováno pomocí Tailwind CSS (verze ~4).
+
+
+
+NFR 3 (Databáze): Přístup k databázi (PostgreSQL ) musí být řízen přes ORM Prisma (verze ~6).
+
+
+
+
+
+NFR 4 (Kvalita Kódu): Projekt musí používat ESLint pro lintování kódu.
+
+
+
+NFR 5 (Fonty): Aplikace musí používat fonty Geist a Geist Mono.
+
+
+Funkční Požadavky (FR)
+FR 1 (Datový Model: Uživatel): Systém musí ukládat Uživatele. Každý uživatel musí mít id, unikátní email, heslo (hashované), roli (s výchozí hodnotou USER) a časová razítka.
+
+
+
+FR 2 (Datový Model: Role): Systém musí podporovat dvě uživatelské role: USER a ADMIN.
+
+FR 3 (Datový Model: Video): Systém musí ukládat Videa. Každé video musí mít id, unikátní youtubeId (string), název, shrnutí (delší text) a časová razítka.
+
+FR 4 (Datový Model: Relace): Každé video musí být propojeno s jedním uživatelem (autorem), který ho přidal. Uživatel může přidat více videí.
+
+
+
+FR 5 (Veřejná Stránka): Aplikace musí mít veřejně dostupnou domovskou stránku (/) zobrazující název aplikace.
+
+
+FR 6 (Globální Layout): Aplikace musí mít kořenový layout (layout.tsx), který načítá globální CSS a obaluje obsah do Providers (pro budoucí kontexty).
+
+
+Milník 2: Autentizace a Základní Uživatelský Tok
+Tato fáze se soustředí na kompletní proces správy uživatelů: registraci, přihlášení a odhlášení.
+
+Nefunkční Požadavky (NFR)
+
+NFR 6 (Autentizace): Autentizace musí být řešena pomocí NextAuth.js (verze ~4) s použitím strategie "Credentials" (email a heslo).
+
+
+
+NFR 7 (Hesla): Hesla uživatelů musí být v databázi ukládána jako hash (použitím bcrypt).
+
+
+
+NFR 8 (Session): Session musí být spravována pomocí JWT.
+
+
+NFR 9 (Typování Session): Standardní typy NextAuth musí být rozšířeny tak, aby session a JWT token obsahovaly i vlastní pole id a role.
+
+
+
+Funkční Požadavky (FR)
+
+FR 7 (Registrace: Stránka): Musí existovat veřejná stránka /register s formulářem pro zadání emailu a hesla.
+
+
+
+FR 8 (Registrace: API): Musí existovat POST API endpoint /api/register, který:
+
+Přijme email a heslo.
+
+Zkontroluje, zda uživatel již neexistuje.
+
+Zahashuje heslo a vytvoří nového uživatele v databázi.
+
+Vrátí chybovou hlášku, pokud uživatel existuje.
+
+
+
+FR 9 (Registrace: UX): Po úspěšné registraci musí být uživatel přesměrován na stránku přihlášení (/login).
+
+
+FR 10 (Přihlášení: Stránka): Musí existovat veřejná stránka /login s formulářem pro email a heslo.
+
+
+
+
+FR 11 (Přihlášení: Logika): Logika přihlášení (definovaná v [...nextauth]/route.ts) musí:
+
+Najít uživatele podle emailu.
+
+Ověřit platnost hesla pomocí bcrypt.compare.
+
+Při úspěchu vrátit data uživatele (včetně id a role).
+
+Propagovat id a role do JWT tokenu a následně do session objektu.
+
+
+
+FR 12 (Přihlášení: UX): Po úspěšném přihlášení musí být uživatel přesměrován na /dashboard. V případě chyby se zobrazí zpráva.
+
+
+
+FR 13 (Dashboard Uživatele): Musí existovat chráněná stránka /dashboard, která:
+
+Zobrazí přihlášenému uživateli jeho email a roli.
+
+Poskytne tlačítko pro odhlášení.
+
+
+FR 14 (Odhlášení): Po kliknutí na "Odhlásit se" musí být session zničena a uživatel přesměrován na domovskou stránku (/).
+
+Milník 3: Autorizace, Role a Navigace
+S funkční autentizací nyní zavádíme logiku oprávnění (kdo co smí vidět) a dynamickou navigaci.
+
+Funkční Požadavky (FR)
+
+FR 15 (Ochrana Stránek: Middleware): Musí být implementován middleware.ts, který:
+
+Chrání všechny trasy pod /dashboard/ a /admin/.
+
+Nepřihlášené uživatele přesměruje na /login.
+
+
+FR 16 (Ochrana Rolí: Middleware): Middleware musí dále kontrolovat role:
+
+Pokud se uživatel s rolí USER pokusí přistoupit na /admin/, musí být přesměrován na /dashboard.
+
+Uživatelé s rolí ADMIN musí mít přístup na /admin/.
+
+
+FR 17 (Globální Navigace): Aplikace musí mít globální komponentu Navbar.tsx zobrazenou v hlavním layoutu.
+
+
+FR 18 (Dynamická Navigace): Obsah navigace se musí měnit podle stavu přihlášení:
+
+
+Nepřihlášen: Zobrazí "Domů", "Přihlásit se" a "Registrovat".
+
+
+Přihlášen (USER): Zobrazí "Domů", "Můj Dashboard" a email uživatele.
+
+
+
+Přihlášen (ADMIN): Zobrazí totéž co USER a navíc odkazy "Přehled obsahu" (/admin/dashboard) a "Přidat video" (/admin/add).
+
+Milník 4: Funkce Administrace Obsahu
+Tento milník implementuje hlavní byznys logiku aplikace – správu videí, která je dostupná pouze administrátorům.
+
+Funkční Požadavky (FR)
+
+FR 19 (Přidání Videa: Stránka): Musí existovat chráněná admin stránka /admin/add.
+
+
+FR 20 (Přidání Videa: Formulář): Stránka musí obsahovat formulář s poli pro "YouTube URL", "Název videa" a "Shrnutí / Popis".
+
+
+
+
+
+FR 21 (Přidání Videa: API Endpoint): Musí existovat POST API endpoint /api/videos, který:
+
+Je chráněn a přístupný pouze pro roli ADMIN.
+
+Očekává youtubeUrl, title a summary.
+
+Obsahuje logiku pro extrakci 11místného ID z různých formátů YouTube URL.
+
+Vrátí chybu, pokud je URL neplatná.
+
+Vytvoří nový záznam Video v databázi, propojený s authorId přihlášeného admina.
+
+Vrátí chybu 409 Conflict, pokud video s daným youtubeId již existuje (díky P2002 chybě z Prisma).
+
+
+FR 22 (Přidání Videa: UX): Formulář na /admin/add musí komunikovat s /api/videos , zobrazovat stav načítání a zprávy o úspěchu či chybě. Po úspěchu se formulář vyprázdní.
+
+
+
+
+
+
+FR 23 (Přehled Videa: Stránka): Musí existovat chráněná admin stránka /admin/dashboard (Server Component).
+
+
+FR 24 (Přehled Videa: Zabezpečení): Stránka musí provádět dodatečnou kontrolu role na serveru (nad rámec middleware) a přesměrovat neoprávněné uživatele.
+
+
+
+FR 25 (Přehled Videa: Načtení Dat): Stránka musí načíst všechna videa z databáze, seřazená od nejnovějších, včetně emailu autora.
+
+
+FR 26 (Přehled Videa: Zobrazení): Videa musí být zobrazena v mřížce  jako karty. Každá karta musí obsahovat:
+
+Náhledový obrázek z YouTube (načtený pomocí youtubeId).
+
+Název videa.
+
+
+Shrnutí videa.
+
+Email autora a datum přidání.
+
+
+
+FR 27 (Přehled Videa: Akce): Stránka musí obsahovat odkaz pro přechod na stránku "Přidat nové video".
+
+Zjištění Nadbytečných Součástí
+Při zpětném inženýrství lze identifikovat soubory, které nejsou nutné pro samotnou funkcionalitu aplikace, ale jsou spíše artefakty vývoje nebo výchozího nastavení:
+
+
+Složka archiv/: Celá tato složka obsahuje pouze dokumentaci a předchozí snímky projektu. Není vůbec nutná pro běh aplikace a v produkčním nasazení by neměla existovat.
+
+
+Veřejné Obrázky (public/): Soubory jako next.svg, vercel.svg, globe.svg atd. jsou standardní assety z create-next-app. Podle obsahu stránek (app/page.tsx ) se zdá, že nejsou nikde aktivně využívány a mohou být odstraněny.
+
+
+
+Výchozí favicon.ico: Jedná se o výchozí ikonu Next.js, která by měla být nahrazena vlastní ikonou projektu.
+
+
+Nadměrné Environmentální Proměnné: Soubor .env.local obsahuje velké množství variant pro připojení k databázi (např. _UNPOOLED, PGHOST, POSTGRES_URL_NO_SSL). Ačkoliv jsou pravděpodobně vyžadovány specifickým hostingem (jako Vercel + Neon), pro základní vývoj je nutná pouze jediná proměnná DATABASE_URL, kterou Prisma očekává. Ostatní jsou specifické pro konkrétní nasazení.
+
+
+
+id_chat: 
+https://gemini.google.com/u/1/app/53d3ab1687169f07
+
+

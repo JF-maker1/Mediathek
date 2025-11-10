@@ -58,9 +58,10 @@ export default async function AdminDashboardPage() {
         // Mřížka karet s videi
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {videos.map((video) => (
-            <div
+            <Link
+              href={`/admin/video/${video.id}`}
               key={video.id}
-              className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden flex flex-col"
+              className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden flex flex-col transition-all duration-200 hover:shadow-lg hover:ring-2 hover:ring-indigo-500" // Přidán hover efekt
             >
               {/* Náhled videa z YouTube (volitelné, pro lepší orientaci) */}
               <div className="aspect-video bg-gray-100 relative">
@@ -96,7 +97,7 @@ export default async function AdminDashboardPage() {
                     </span>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}
