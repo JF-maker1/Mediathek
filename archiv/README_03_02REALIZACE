@@ -12,190 +12,69 @@ README_03_02REALIZACE_PLAN.md
 8. 11. 17:42
 
 [
-Realizační Plán: Fáze 4 - Administrátorský Přehled ObsahuVerze: 1.0Datum: 8. listopadu 2025Vychází ze zadání: $$README\_03\_01ZADANI$$Předchozí stav: $$README\_02\_03project\_snapshot$$1. Příprava a Ověření ProstředíNež začneme s implementací, ověříme, že výchozí bod je stabilní a funkční.1.1. Systémová kontrolaOvěření, že lokální prostředí odpovídá požadavkům (dle snapshotu).node -v
-# Očekáváno: v24.x.x (nebo kompatibilní LTS verze)
+
+Realizační Plán: Fáze 4 - Administrátorský Přehled ObsahuVerze: 1.1Datum: 8. listopadu 2025Vychází ze zadání: README_03_01ZADANIPředchozí stav: README_02_03project_snapshot1. Příprava a Ověření ProstředíNež začneme s implementací, ověříme, že výchozí bod je stabilní a funkční.1.1. Systémová kontrolaOvěření, že lokální prostředí odpovídá požadavkům.# Verze Node.js (očekáváno v24.x.x nebo LTS)
+node -v
+
+# Verze NPM (očekáváno 10.x.x+)
 npm -v
-# Očekáváno: 10.x.x+
+
+# Verze Git (očekáváno 2.x+)
 git --version
-# Očekáváno: 2.x+
 1.2. Projektová kontrolaUjistíme se, že máme aktuální verzi kódu a závislostí.# 1. Stažení nejnovější verze z hlavnní větve
 git checkout main
 git pull origin main
 
-# 2. Instalace závislostí (pro jistotu)
+# 2. Instalace závislostí
 npm install
 
-# 3. Ověření databázového schématu
-npx prisma generate
-# (Pokud neproběhly migrace z minula, spusťte: npx dotenv -e .env.local -- prisma migrate dev)
+# 3. Ověření/pře-generování Prisma Clienta
+# (Důležité: pokud .env.local není načten automaticky, použijte dotenv-cli)
+npx dotenv -e .env.local -- prisma generate
 
-# 4. Spuštění lokálního vývojového serveru pro ověření výchozího stavu
+# 4. Spuštění lokálního vývojového serveru
 npm run dev
-Akce: Otevřete prohlížeč na http://localhost:3000, přihlaste se jako admin a ověřte, že stávající funkce (přidání videa) funguje.2. Implementační Plán (Krok za Krokem)Tato fáze se zaměřuje na operaci "READ" nad modelem Video pro roli ADMIN.Krok 2.1: Vytvoření Admin Dashboardu (Server Component)Vytvoříme novou stránku, která bezpečně načte data na serveru.Cílový soubor: app/admin/dashboard/page.tsxAkce:Vytvořit nový adresář app/admin/dashboard.Vytvořit soubor page.tsx.Implementovat načtení dat pomocí Prisma (prisma.video.findMany).Vykreslit data do jednoduché mřížky nebo tabulky pomocí Tailwind CSS.Návrh struktury kódu (pseudokód pro implementaci):// app/admin/dashboard/page.tsx
-import { prisma } from '@/lib/prisma'; // (nebo přímý import PrismaClient pokud nemáte lib)
-import { redirect } from 'next/navigation';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-
-export default async function AdminDashboard() {
-  // 1. Bezpečnostní kontrola na serveru (pojistka k middleware)
-  const session = await getServerSession(authOptions);
-  if (session?.user?.role !== 'ADMIN') {
-    redirect('/dashboard');
-  }
-
-  // 2. Načtení dat
-  const videos = await prisma.video.findMany({
-    orderBy: { createdAt: 'desc' },
-    include: { author: { select: { email: true } } } // Volitelné: ukázat kdo přidal
-  });
-
-  // 3. Vykreslení (UI)
-  return (
-    <main className="p-8">
-      <h1 className="text-2xl font-bold mb-6">Přehled Obsahu</h1>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {videos.map(video => (
-          <div key={video.id} className="border p-4 rounded shadow bg-gray-800 text-white">
-             <h2 className="font-bold text-lg">{video.title}</h2>
-             <p className="text-gray-400 text-sm mb-2">ID: {video.youtubeId}</p>
-             <p className="line-clamp-3">{video.summary}</p>
-             {/* Zde v budoucnu přibudou tlačítka Edit/Delete */}
-          </div>
-        ))}
-      </div>
-    </main>
-  );
-}
-Krok 2.2: Aktualizace NavigaceAby se admin na novou stránku dostal, přidáme odkaz do hlavního menu.Cílový soubor: components/Navbar.tsxAkce:Najít sekci podmíněného vykreslování pro ADMIN roli.Přidat nový <Link href="/admin/dashboard">.Návrh změny:// Uvnitř podmínky {session.user?.role === 'ADMIN' && ( ... )}
-<Link href="/admin/dashboard" className="hover:underline">Přehled obsahu</Link>
-<Link href="/admin/add" className="font-bold hover:underline">Přidat video</Link>
-3. Plán Testování (QA)Testování proběhne nejprve lokálně, poté na produkčním prostředí (Vercel).3.1. Lokální TestováníSpusťte aplikaci: npm run devTestovací Případ (TC)ScénářOčekávaný VýsledekTC1: Admin PřístupPřihlásit se jako ADMIN. Zkontrolovat Navbar. Kliknout na "Přehled obsahu".Odkaz v menu je viditelný. Stránka /admin/dashboard se načte a zobrazí seznam videí z DB.TC2: Kontrola DatPorovnat zobrazená videa na dashboardu s daty v npx prisma studio.Názvy, shrnutí a YouTube ID odpovídají realitě v databázi.TC3: User PřístupOdhlásit se a přihlásit jako běžný USER. Zkontrolovat Navbar. Zkusit ručně zadat URL /admin/dashboard.Odkaz v menu NENÍ viditelný. Přímý přístup přesměruje (např. na domovskou stránku nebo dashboard uživatele).TC4: Anonym PřístupOdhlásit se úplně. Zkusit ručně zadat URL /admin/dashboard.Přesměrování na přihlašovací stránku (/login).3.2. Produkční Testování (po nasazení)Testovací Případ (TC)ScénářOčekávaný VýsledekTC5: Smoke TestOtevřít produkční URL. Přihlásit se jako ADMIN.Aplikace nespadne, admin sekce je funkční a zobrazuje data z produkční databáze.4. Postup Nasazení (Deployment)Jakmile lokální testy (TC1-TC4) projdou, nasadíme změny.4.1. Git OperaceUložení změn do repozitáře.# 1. Kontrola změn
+Akce: Otevřete prohlížeč na http://localhost:3000, přihlaste se jako admin a ověřte, že aplikace běží.2. Implementační Plán (Krok za Krokem)Krok 2.1: Vytvoření Admin Dashboardu (Server Component)Vytvoříme novou stránku app/admin/dashboard/page.tsx, která načte data na serveru a zobrazí je.(Kompletní kód pro tento soubor byl poskytnut v chatu výše)Krok 2.2: Aktualizace NavigacePřidáme odkaz do components/Navbar.tsx pro roli ADMIN.// Příklad umístění v kódu Navbar.tsx:
+{session.user?.role === 'ADMIN' && (
+  <>
+     <Link href="/admin/dashboard" className="...">Přehled obsahu</Link>
+     <Link href="/admin/add" className="...">Přidat video</Link>
+  </>
+)}
+3. Plán Testování (QA)3.1. Lokální TestováníProstředí: Localhost (npm run dev)IDTestovací PřípadPostup (Scénář)Očekávaný VýsledekStavTC1Admin Přístup1. Přihlásit se účtem s rolí ADMIN.2. Zkontrolovat horní menu (Navbar).3. Kliknout na nový odkaz "Přehled obsahu".- Odkaz je viditelný.- Stránka /admin/dashboard se načte.- Zobrazí se seznam videí (nebo prázdný stav).⬜TC2Kontrola Dat1. Otevřít dashboard (jako Admin).2. V novém terminálu spustit npx dotenv -e .env.local -- prisma studio.3. Porovnat data na webu s daty v Prisma Studio.- Názvy, shrnutí a ID videí na webu přesně odpovídají databázi.⬜TC3User Přístup1. Odhlásit se.2. Přihlásit se účtem s rolí USER.3. Zkontrolovat Navbar.4. Ručně zadat do adresního řádku /admin/dashboard.- Odkaz v menu NENÍ viditelný.- Přímý přístup přesměruje uživatele pryč (např. na domovskou stránku).⬜TC4Anonym Přístup1. Odhlásit se (být nepřihlášený).2. Ručně zadat do adresního řádku /admin/dashboard.- Automatické přesměrování na /login.⬜3.2. Produkční TestováníProstředí: Vercel (po nasazení)IDTestovací PřípadPostup (Scénář)Očekávaný VýsledekStavTC5Smoke Test1. Otevřít ostrou URL aplikace.2. Přihlásit se jako ADMIN.3. Navštívit Dashboard.- Aplikace funguje, data z produkční DB se načítají.⬜4. Postup Nasazení (Deployment)Jakmile projdou lokální testy (TC1–TC4):# 1. Kontrola změn
 git status
 
-# 2. Přidání souborů do stage
+# 2. Přidání souborů
 git add .
 
-# 3. Vytvoření commitu s popisem verze
-git commit -m "feat(admin): implement dashboard for content overview (Phase 4)"
+# 3. Commit
+git commit -m "feat(admin): implement content dashboard (Phase 4)"
 
-# 4. Odeslání na GitHub (spustí automatický deploy na Vercel)
+# 4. Push (spustí deploy)
 git push origin main
-4.2. Verifikace na VercelOtevřít Vercel Dashboard projektu.Sledovat průběh "Building" pro nejnovější commit.Po dokončení (Status: Ready) provést TC5 (Smoke Test) na produkční URL.5. Akceptace FázeFáze 4 je považována za dokončenou, pokud:[ ] Admin vidí seznam všech svých videí.[ ] Běžný uživatel se k tomuto seznamu nedostane.[ ] Aplikace je stabilní na produkci.
+
+
 ]
 
 Pokud budete chtít s některým krokem (např. napsáním samotného kódu pro page.tsx) pomoci detailněji, dejte vědět! Hodně štěstí s implementací.
 
 
-
-
-
-
-
-
-
 JÁ_PROMPT:  
-Nasazení na produkci nyní proběhlo ok a test na produkci rovněž. Díky. ;-) Mohu nyní poprosit o souhrnou zprávu z této fáze realizace vyplývající z tohoto chatu. Tuto zprávu uložím jako záznam o všech zde provedených činnostech na projektu pro budoucí informaci o proběhlých činnostech v této fázi realizace aplikace - prosím i o podrobnosti z této fáte realizace a zejména pak ty významné podrobnosti do této souhrnné zprávy o této fázi realizace.
-
+Testování na lokálním pc proběhlo ok - nasazení na produkci proběhlo také ok a test na produkci rovněž ok. Díky. ;-) Mohu nyní poprosit o souhrnou zprávu z této fáze realizace vyplývající z tohoto chatu k tomuto release. Tuto zprávu uložím jako záznam o všech zde provedených činnostech na projektu v tomto release pro budoucí informaci o proběhlých činnostech v této fázi realizace aplikace - prosím i o podrobnosti z této fáte realizace a zejména pak ty významné podrobnosti do této souhrnné zprávy o této fázi realizace.
 
 AI_RESPONZE:
 
-Samozřejmě, zde je souhrnná zpráva z Fáze 3, která detailně popisuje všechny provedené kroky, řešené problémy a dosažené výsledky.
-README_03_01REALIZACE_SOUHRN
-8. 11. 13:58
+Gratuluji k úspěšnému dokončení Fáze 4! Zde je souhrnná zpráva z této fáze realizace, kterou si můžete uložit pro budoucí referenci.
+README_03_02REALIZACE
+8. 11. 19:53
 
-Otevřít
+Tento dokument shrnuje vše podstatné, co se v této fázi odehrálo. Můžete ho uložit do repozitáře (např. do složky archiv/) jako trvalý záznam.
 
-[Souhrnná Zpráva Realizace: Fáze 3 - Správa Obsahu Administrátorem
-
-Projekt: Mediathek
-Datum: 4. listopadu 2025
-Autor: Realizační tým (AI & Developer)
-Verze: 1.0
-
-1. Cíl Fáze 3
-
-Hlavním cílem této fáze bylo implementovat základní funkce pro správu obsahu, které umožní administrátorovi (prvnímu kurátorovi) začít plnit aplikaci daty. Konkrétně šlo o vytvoření zabezpečeného rozhraní pro přidávání YouTube videí s vlastním názvem a manuálně vytvořeným shrnutím do databáze.
-
-2. Klíčové Dosažené Výsledky
-
-✅ Rozšíření Databáze: Úspěšně přidán model Video do schema.prisma a provedena migrace na lokální i produkční (Neon.tech) databázi.
-
-✅ Zabezpečený Backend: Vytvořen API endpoint /api/videos, který ověřuje roli ADMIN a ukládá data o nových videích.
-
-✅ Administrátorské Rozhraní: Vytvořena stránka /admin/add s formulářem pro vkládání videí.
-
-✅ Navigace a Ochrana Přístupu: Aktualizován Navbar (viditelný odkaz pouze pro adminy) a middleware.ts (ochrana /admin tras).
-
-✅ Produkční Nasazení: Aplikace úspěšně nasazena na Vercel s funkční automatickou migrací databáze.
-
-3. Detailní Průběh Realizace
-
-3.1. Příprava a Databáze
-
-Byla vytvořena feature větev feature/faze3-admin-content.
-
-Do prisma/schema.prisma byl přidán model Video:
-
-model Video {
-  id        String   @id @default(cuid())
-  youtubeId String   @unique
-  title     String
-  summary   String   @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  authorId  String
-  author    User     @relation(fields: [authorId], references: [id])
-}
-
-
-Proběhla úspěšná lokální migrace: npm run prisma:migrate -- --name "add_video_model".
-
-3.2. Vývoj Backendu a Frontendu
-
-Middleware: Aktualizován pro ochranu tras začínajících na /admin, povolen přístup pouze pro roli ADMIN.
-
-API Route: Implementován POST handler v app/api/videos/route.ts, který extrahuje YouTube ID a validuje vstupní data.
-
-Frontend Formulář: Vytvořena React komponenta v app/admin/add/page.tsx pro sběr dat (URL, název, shrnutí) a jejich odeslání na API.
-
-3.3. Řešené Problémy a Významné Události
-
-Problém 1: TypeError: Cannot read properties of undefined (reading 'create') při lokálním testování
-
-Příčina: Vývojový server (next dev) běžel během databázové migrace a měl načtenou starou verzi Prisma Clienta, která neznala nový model Video.
-
-Řešení: Restart vývojového serveru, což vynutilo načtení nově vygenerovaného klienta.
-
-Problém 2: Selhání buildu na Vercelu (Type error: Property 'video' does not exist...)
-
-Příčina: Na produkčním prostředí se před kompilací TypeScript kódu nespustil prisma generate, takže Prisma Client nebyl aktualizován o nové typy.
-
-Řešení: Úprava build skriptu v package.json pro explicitní generování klienta před migrací a buildem.
-
-Původně: "build": "prisma migrate deploy && next build"
-
-Opraveno: "build": "prisma generate && prisma migrate deploy && next build"
-
-3.4. Testování
-
-Lokální testy: Ověřeno přihlášení za USER (bez přístupu) a ADMIN (s přístupem). Úspěšně přidáno testovací video a ověřeno v Prisma Studio.
-
-Produkční testy: Po nasazení na Vercel proveden stejný sad testů na živé aplikaci s úspěšným výsledkem.
-
-4. Závěr a Další Kroky
-
-Fáze 3 položila základ pro obsahovou část aplikace. Databáze je připravena a administrátor má nástroje pro její plnění.
-
-Příští kroky (Fáze 4):
-
-Vytvoření veřejné galerie na domovské stránce, která zobrazí přidaná videa.
-
-Implementace stránky detailu videa s přehrávačem.]
-
-Zpráva je připravena. Můžete si ji uložit do repozitáře. Gratuluji k úspěšnému dokončení této důležité fáze!
+[
+Souhrnná Zpráva o Realizaci: Fáze 4 - Administrátorský Přehled ObsahuDatum: 8. listopadu 2025Verze Aplikace: 0.4.0Zodpovědná Osoba: [Vaše Jméno/Role]1. Cíl FázeCílem této fáze bylo vytvořit zabezpečené rozhraní (dashboard) pro roli ADMIN, které umožní přehledné zobrazení veškerého video obsahu dosud vloženého do databáze. Tím se uzavřel základní cyklus správy obsahu (Create -> Read).2. Realizované Funkce (Co bylo dodáno)2.1. Admin Dashboard (/admin/dashboard)Typ: Server Component (RSC) pro maximální bezpečnost a výkon.Funkcionalita: Načítá všechna data z modelu Video přímo z databáze.Zobrazení: Responzivní mřížka karet. Každá karta obsahuje:Náhled videa (automaticky generovaný z YouTube ID).Název videa.ID videa a email autora.Textové shrnutí (zkrácené pro přehlednost).Datum přidání.Zabezpečení: Stránka je přístupná pouze uživatelům s rolí ADMIN. Ostatní jsou automaticky přesměrováni.2.2. Aktualizace Navigace (Navbar)Přidán nový odkaz "Přehled obsahu" do hlavního navigačního menu.Odkaz je viditelný podmíněně pouze pro přihlášeného administrátora.3. Průběh Realizace a Klíčové Momenty3.1. Příprava ProstředíByla identifikována a vyřešena potřeba správného načítání environmentálních proměnných (DATABASE_URL) pro Prisma v lokálním prostředí pomocí dotenv-cli.Důležité ponaučení: Pro operace s databází (jako prisma generate nebo prisma studio) je nutné explicitně načíst .env.local, pokud není použit standardní .env.3.2. Vývoj a DebuggingBěhem implementace změn v Navbar.tsx došlo k drobné syntaktické chybě (nadbytečná čárka v JSX), která způsobila chybu při kompilaci.Chyba byla rychle identifikována díky chybové hlášce Next.js a obratem opravena.4. Testování (QA)Všechny plánované testovací scénáře byly úspěšně ověřeny:TestPopisVýsledekTC1Admin přístup k dashboardu a viditelnost odkazu v menu✅ OKTC2Shoda zobrazených dat s reálným stavem v databázi✅ OKTC3Odepření přístupu pro běžného uživatele (USER role)✅ OKTC4Odepření přístupu pro nepřihlášeného uživatele✅ OKTC5Smoke test na produkčním prostředí (Vercel) po nasazení✅ OK5. Závěr a Další KrokyFáze 4 byla úspěšně dokončena a nasazena. Administrátor má nyní plnou kontrolu nad tím, co do systému vložil.Příští kroky (návrh pro Fázi 5):Zpřístupnění tohoto obsahu veřejnosti na hlavní stránce (vytvoření veřejné galerie).Vytvoření detailu videa s přehrávačem.
+]
 
 
 
 ID_chatu: 
-https://gemini.google.com/u/1/app/0359c5d0ed9d445c
+https://gemini.google.com/u/1/app/7472d8821b8eda00
