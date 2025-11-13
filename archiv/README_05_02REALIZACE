@@ -1,0 +1,808 @@
+JÁ_PROMPT:  
+
+V příloze je zadání pro tvorbu webové aplikace pro správu videí a obsahu videí [README_05_01ZADANI]. Prosím ze zadání vytvořit konkrétní plán realizace (resp. jednotlivé příkazy, nastavení, instalace, ověření prostředí jak systémové, tak projektové a tak podobně) včetně plánu testování která potvrdí úspěšné ukončení realizační fáze vycházející ze zadání této realizační fáze viz zadání pro tuto fázi realizace příloze . Realizační fáze je ukončena testováním jak na lokálním prostředí tak i na produkčním prostředí. V příloze je rovněž snímek projektového adresáře po ukončení předchozí fáze realizace [README_04_03project_snapshot] který by měl poskytnout představu o podmínkávh jednak vnitřních v projektu tak podmínkách vnějších pro tento projekt tak i detailu. 
+
+AI_RESPONZE:
+
+Jasně, na základě schváleného zadání Fáze 6 (verze 6.0) a snímku projektu po Fázi 5  připravil jsem detailní plán realizace.
+
+
+Tento plán se zaměřuje na implementaci jádrové funkcionality – strukturovaného obsahu videa.
+
+📄 Plán realizace: Webová aplikace Mediathek (Fáze 6 - Strukturovaný Obsah Videa)
+Navazuje na: README_05_01ZADANI (Schválené zadání Fáze 6)
+
+Stav projektu před: README_04_03project_snapshot (Snímek po Fázi 5)
+
+🎯 Cíl Fáze
+Cílem je implementovat kompletní funkcionalitu pro vkládání (přes <textarea>), parsování (formát MTF-H), ukládání (nový model Chapter) a interaktivní zobrazování (klikací seznam kapitol) strukturovaného obsahu videa na stránce detailu videa.
+
+1. 🖥️ Příprava Prostředí
+Než začneme s kódem, zajistíme, že máme vše připraveno.
+
+Kontrola Git: Zkontrolujeme, že jsme na main větvi a máme stažené všechny změny.
+
+Bash
+
+git checkout main
+git pull origin main
+Nová Větev: Vytvoříme novou větev pro Fázi 6.
+
+Bash
+
+git checkout -b feature/faze-6-chapters
+Instalace Závislostí: Ověříme, že máme všechny závislosti (ačkoliv Fáze 6 nepřidává nové npm balíčky).
+
+Bash
+
+npm install
+Ověření Služeb: Spustíme lokální vývojové prostředí.
+
+Bash
+
+npm run dev
+Ověření: Aplikace běží na http://localhost:3000. Přihlášení (role ADMIN) funguje.
+
+2. 🗄️ Krok 1: Aktualizace Databázového Schématu (Prisma)
+Rozšíříme databázi o model Chapter pro ukládání kapitol.
+
+Úprava prisma/schema.prisma: Otevřete soubor a přidejte nový model Chapter a relaci do modelu Video. Soubor: prisma/schema.prisma
+
+Fragment kódu
+
+// ... stávající model User ...
+
+model Video {
+  id        String   @id @default(cuid())
+  youtubeId String   @unique
+  title     String
+  summary   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+
+  // --- PŘIDAT TUTO RELACI ---
+  chapters  Chapter[]
+  // --- KONEC PŘIDANÉ ČÁSTI ---
+}
+
+// --- PŘIDAT TENTP NOVÝ MODEL ---
+model Chapter {
+  id        String   @id @default(cuid())
+  text      String   // Zobrazený text (např. "1.1. Úvod...") [cite: 195]
+  startTime Int      // Čas "od" v sekundách [cite: 195]
+  endTime   Int?     // Čas "do" v sekundách (nepovinné) [cite: 196]
+  level     Int      // Úroveň zanoření (0 = kořen, 1 = podkapitola) [cite: 196]
+  order     Int      // Pořadí kapitoly v rámci videa [cite: 196]
+
+  // Relace k videu. Při smazání videa se smažou i kapitoly. [cite: 197]
+  video   Video  @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  videoId String
+}
+// --- KONEC PŘIDANÉ ČÁSTI ---
+Provedení Migrace: Vytvoříme novou databázovou migraci a aplikujeme ji.
+
+Bash
+
+npm run prisma:migrate
+Výzva: Zadejte název migrace, např: add_chapter_model
+
+Generování Klienta: (Mělo by proběhnout automaticky, ale pro jistotu)
+
+Bash
+
+npm run prisma:generate
+3. ⚙️ Krok 2: Vytvoření Logiky Parseru (MTF-H)
+Vytvoříme samostatnou utilitu pro parsování textu z <textarea>.
+
+Vytvoření Souboru: Vytvoříme nový soubor pro utility, např. lib/parser.ts. Soubor: lib/parser.ts
+
+TypeScript
+
+// Definujeme typ pro návratovou hodnotu
+export interface ParsedChapter {
+  text: string;
+  startTime: number;
+  endTime: number | null;
+  level: number;
+}
+
+/**
+ * Převede časový řetězec (MM:SS) na sekundy.
+ */
+function timeToSeconds(timeStr: string): number {
+  const parts = timeStr.split(':').map(Number);
+  if (parts.length === 2) {
+    return parts[0] * 60 + parts[1];
+  }
+  // TODO: Zvážit ošetření neplatného formátu, i když Regex by to měl chytit
+  return 0;
+}
+
+/**
+ * Parsování strukturovaného obsahu z formátu MTF-H [cite: 185]
+ */
+export function parseStructuredContent(
+  rawText: string
+): Omit<ParsedChapter, 'order'>[] {
+  const lines = rawText.split('\n').filter((line) => line.trim() !== ''); // Ignoruj prázdné řádky [cite: 218]
+  const chapters: Omit<ParsedChapter, 'order'>[] = [];
+
+  for (const line of lines) {
+    const trimmedLine = line.trim();
+
+    // 1. Extrakce časové značky na konci [cite: 201]
+    const timeRegex = /\((\d{1,2}:\d{2})(?:\s*-\s*(\d{1,2}:\d{2}))?\)$/;
+    const timeMatch = trimmedLine.match(timeRegex);
+
+    if (!timeMatch) {
+      throw new Error(
+        `Neplatný formát řádku: Chybí časová značka (MM:SS) na konci. Řádek: "${trimmedLine}"`
+      ); // 
+    }
+
+    const startTime = timeToSeconds(timeMatch[1]);
+    const endTime = timeMatch[2] ? timeToSeconds(timeMatch[2]) : null;
+
+    // 2. Extrakce základu (vše před časem) [cite: 202]
+    const baseText = trimmedLine.substring(0, timeMatch.index).trim();
+
+    // 3. Extrakce číslování a výpočet úrovně [cite: 203]
+    const numberingRegex = /^(\d+(?:\.\d+)*)\.?\s+/;
+    const numberingMatch = baseText.match(numberingRegex);
+
+    if (!numberingMatch) {
+      throw new Error(
+        `Neplatný formát řádku: Chybí hierarchické číslování (např. 1.1.) na začátku. Řádek: "${trimmedLine}"`
+      ); // 
+    }
+
+    // 4. Výpočet úrovně [cite: 204]
+    // "1." -> level 0
+    // "1.1." -> level 1
+    // "1.1.1." -> level 2
+    const level = numberingMatch[1].split('.').length - 1;
+
+    // 5. Uložení textu (včetně číslování) [cite: 205]
+    const text = baseText;
+
+    chapters.push({ text, startTime, endTime, level });
+  }
+
+  return chapters;
+}
+4. 📦 Krok 3: Aktualizace Backend API (Ukládání Videa)
+Upravíme app/api/videos/route.ts, aby přijímal, parsoval a ukládal kapitoly v databázové transakci.
+
+Úprava app/api/videos/route.ts: Soubor: app/api/videos/route.ts
+
+TypeScript
+
+import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { parseStructuredContent } from '@/lib/parser'; // <-- 1. IMPORT PARSERU
+
+const prisma = new PrismaClient();
+
+// ... stávající funkce extractYouTubeId ... [cite: 389-392]
+
+export async function POST(request: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || session.user?.role !== 'ADMIN') {
+      // ... stávající ošetření 403 ... [cite: 393]
+    }
+
+    const body = await request.json();
+    // 2. PŘIDÁNÍ `structuredContent`
+    const { youtubeUrl, title, summary, structuredContent } = body; // 
+
+    if (!youtubeUrl || !title || !summary) {
+      // ... stávající ošetření 400 ... [cite: 395]
+    }
+
+    const youtubeId = extractYouTubeId(youtubeUrl);
+    if (!youtubeId) {
+      // ... stávající ošetření 400 ... [cite: 397]
+    }
+
+    // 3. PARSOVÁNÍ KAPITOL (PŘED TRANSAKCÍ)
+    // Musíme to provést zde, aby případná chyba parseru 
+    // zabránila spuštění databázové transakce.
+    const parsedChapters = parseStructuredContent(structuredContent || '');
+
+    // 4. POUŽITÍ DATABÁZOVÉ TRANSAKCE
+    // Tím zajistíme, že se video a jeho kapitoly uloží
+    // buď obojí, nebo nic. [cite: 206]
+    const newVideo = await prisma.$transaction(async (tx) => {
+      // 4a. Vytvoření videa
+      const video = await tx.video.create({
+        data: {
+          youtubeId: youtubeId,
+          title: title,
+          summary: summary,
+          authorId: session.user.id,
+        },
+      });
+
+      // 4b. Vytvoření kapitol (pokud nějaké jsou)
+      if (parsedChapters.length > 0) {
+        const chapterData = parsedChapters.map((chapter, index) => ({
+          ...chapter,
+          order: index, // Přidání 'order' [cite: 205]
+          videoId: video.id, // Propojení s právě vytvořeným videem
+        }));
+
+        await tx.chapter.createMany({
+          data: chapterData,
+        });
+      }
+
+      return video;
+    });
+
+    return new NextResponse(JSON.stringify(newVideo), {
+      status: 201,
+      headers: { 'Content-Type': 'application/json' },
+    }); // [cite: 400]
+
+  } catch (error) {
+    // 5. OŠETŘENÍ CHYB PARSERU A DB
+    if (error instanceof Error) {
+      if (error.message.startsWith('Neplatný formát řádku')) {
+        // Chyba z našeho parseru 
+        return new NextResponse(JSON.stringify({ message: error.message }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+      if ((error as any).code === 'P2002') { // Prisma unique constraint
+        // ... stávající ošetření 409 ... [cite: 401]
+      }
+    }
+
+    console.error('API_VIDEOS_POST_ERROR', error);
+    // ... stávající ošetření 500 ... [cite: 404]
+  }
+}
+5. ⌨️ Krok 4: Aktualizace Formuláře pro Přidání Videa
+Přidáme <textarea> do formuláře app/admin/add/page.tsx.
+
+Úprava app/admin/add/page.tsx: Soubor: app/admin/add/page.tsx
+
+TypeScript
+
+"use client";
+
+import { useState, FormEvent } from 'react';
+
+export default function AddVideoPage() {
+  const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [title, setTitle] = useState('');
+  const [summary, setSummary] = useState('');
+  // 1. PŘIDÁNÍ NOVÉHO STAVU
+  const [structuredContent, setStructuredContent] = useState(''); // [cite: 178]
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const res = await fetch('/api/videos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        // 2. PŘIDÁNÍ structuredContent DO BODY
+        body: JSON.stringify({
+          youtubeUrl,
+          title,
+          summary,
+          structuredContent, // 
+        }),
+      });
+      // ... stávající kód ... [cite: 351]
+
+      setSuccess('Video bylo úspěšně přidáno!');
+      // 3. RESET I NOVÉHO POLE
+      setYoutubeUrl('');
+      setTitle('');
+      setSummary('');
+      setStructuredContent(''); // [cite: 353]
+    } catch (err: any) {
+      // ... stávající kód ... [cite: 354]
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
+      <h1 className="text-2xl font-bold mb-6">Přidat nové video</h1>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* ... pole youtubeUrl ... */} [cite: 357]
+        {/* ... pole title ... */} [cite: 359]
+        {/* ... pole summary (textarea) ... */} [cite: 361]
+
+        {/* 4. PŘIDÁNÍ NOVÉ TEXTAREA PRO KAPITOLY */}
+        <div>
+          <label htmlFor="structuredContent" className="block text-sm font-medium text-gray-300">
+            Strukturovaný Obsah (Kapitoly)
+          </label>
+          <textarea
+            id="structuredContent"
+            rows={15} // Větší pole
+            value={structuredContent}
+            onChange={(e) => setStructuredContent(e.target.value)}
+            className="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-white p-2 font-mono" // Font-mono pro lepší čitelnost formátu
+            placeholder={
+1. Kapitola 1 (0:00 - 1:30) 1.1. Podkapitola (0:15 - 0:45) 2. Kapitola 2 (1:30 - 3:00) } /> <p className="mt-2 text-xs text-gray-400"> Formát: "1.1. Text (MM:SS - MM:SS)". Hierarchie dle číslování.  </p> </div> {/* --- KONEC PŘIDANÉ ČÁSTI --- */}
+
+        <div>
+          <button
+            type="submit"
+            disabled={isLoading}
+            // ... stávající kód ... [cite: 364]
+          >
+            {isLoading ? 'Ukládání...' : 'Uložit video'}
+          </button>
+        </div>
+      </form>
+
+      {success && (
+        <p className="mt-4 text-sm text-green-500">{success}</p>
+      )}
+      {error && (
+        <p className="mt-4 text-sm text-red-500">{error}</p>
+      )}
+    </div>
+  );
+}
+```
+6. 🎬 Krok 5: Refaktor Stránky Detailu Videa (Propojení)
+Musíme refaktorovat app/admin/video/[id]/page.tsx. Původní RSC načte data, ale pro interaktivitu (player + seznam kapitol) potřebujeme klientské komponenty, které sdílí stav (přes useRef) .
+
+Úprava components/VideoPlayer.tsx: Musí přijímat onReady prop. Soubor: components/VideoPlayer.tsx
+
+TypeScript
+
+"use client";
+
+import YouTube from 'react-youtube';
+
+interface VideoPlayerProps {
+  youtubeId: string;
+  // 1. PŘIDÁNÍ onReady PROPU [cite: 209]
+  onReady?: (event: { target: any }) => void;
+}
+
+export default function VideoPlayer({ youtubeId, onReady }: VideoPlayerProps) {
+  const opts = {
+    height: '100%',
+    width: '100%',
+    playerVars: {
+      autoplay: 0,
+    },
+  };
+  return (
+    <YouTube
+      videoId={youtubeId}
+      opts={opts}
+      className="absolute top-0 left-0 w-full h-full"
+      // 2. PROPOJENÍ onReady
+      onReady={onReady}
+    />
+  );
+}
+Vytvoření components/ChapterList.tsx: Nová komponenta pro zobrazení kapitol. Soubor: components/ChapterList.tsx
+
+TypeScript
+
+"use client";
+
+import { Prisma } from '@prisma/client';
+import { RefObject } from 'react';
+
+// Explicitně definujeme typ, který očekáváme z Prisma dotazu
+type ChapterWithData = Prisma.ChapterGetPayload<{}>;
+
+interface ChapterListProps {
+  chapters: ChapterWithData[];
+  playerRef: RefObject<any>; // Reference na YouTube přehrávač
+}
+
+export default function ChapterList({ chapters, playerRef }: ChapterListProps) {
+  if (!chapters || chapters.length === 0) {
+    return <p className="text-gray-400">Pro toto video není dostupný strukturovaný obsah.</p>;
+  }
+
+  const handleChapterClick = (startTime: number) => {
+    playerRef.current?.seekTo(startTime); // Funkce pro skok v čase [cite: 212]
+    playerRef.current?.playVideo(); // Volitelné: rovnou spustit přehrávání
+  };
+
+  return (
+    <div className="space-y-2">
+      {chapters.map((chapter) => (
+        <button
+          key={chapter.id}
+          onClick={() => handleChapterClick(chapter.startTime)}
+          className="block w-full text-left p-3 rounded-md transition-colors text-gray-200 hover:bg-gray-700"
+          style={{
+            // Hierarchické odsazení na základě 'level' z DB [cite: 211]
+            marginLeft: `${chapter.level * 20}px`,
+            width: `calc(100% - ${chapter.level * 20}px)`,
+          }}
+        >
+          {/* Zobrazíme text (který již obsahuje číslování) [cite: 205] */}
+          {chapter.text}
+        </button>
+      ))}
+    </div>
+  );
+}
+Vytvoření components/VideoDetailClientWrapper.tsx: Klientská komponenta, která bude držet useRef a propojovat VideoPlayer a ChapterList. Soubor: components/VideoDetailClientWrapper.tsx
+
+TypeScript
+
+"use client";
+
+import { useRef } from 'react';
+import { Prisma } from '@prisma/client';
+import VideoPlayer from '@/components/VideoPlayer';
+import ChapterList from '@/components/ChapterList';
+
+// Přijímáme data načtená na serveru
+type ChapterWithData = Prisma.ChapterGetPayload<{}>;
+
+interface VideoDetailClientWrapperProps {
+  youtubeId: string;
+  chapters: ChapterWithData[];
+}
+
+export default function VideoDetailClientWrapper({
+  youtubeId,
+  chapters,
+}: VideoDetailClientWrapperProps) {
+  // Reference pro ovládání přehrávače [cite: 209]
+  const playerRef = useRef(null);
+
+  return (
+    <>
+      {/* Přehrávač Videa */}
+      <div
+        className="relative bg-black rounded-lg overflow-hidden"
+        style={{ paddingTop: '56.25%' /* Poměr 16:9 */ }}
+      >
+        <VideoPlayer
+          youtubeId={youtubeId}
+          onReady={(event) => (playerRef.current = event.target)} // [cite: 209]
+        />
+      </div>
+
+      {/* Strukturovaný Obsah */}
+      <div className="mt-8">
+        <h2 className="text-2xl font-semibold mb-4">Strukturovaný obsah</h2>
+        <ChapterList chapters={chapters} playerRef={playerRef} />
+      </div>
+    </>
+  );
+}
+Aktualizace app/admin/video/[id]/page.tsx: Zjednodušíme RSC stránku. Soubor: app/admin/video/[id]/page.tsx
+
+TypeScript
+
+import { PrismaClient } from '@prisma/client';
+import { notFound } from 'next/navigation';
+// 1. IMPORT NOVÉHO WRAPPERU
+import VideoDetailClientWrapper from '@/components/VideoDetailClientWrapper';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { getServerSession } from 'next-auth';
+
+const prisma = new PrismaClient();
+
+interface VideoDetailPageProps {
+  params: { // Oprava typu dle Next.js 14+ (params již není Promise)
+    id: string;
+  };
+}
+
+export const dynamic = 'force-dynamic'; // [cite: 412]
+
+export default async function VideoDetailPage({ params }: VideoDetailPageProps) {
+  const { id } = params; // [cite: 414]
+
+  const session = await getServerSession(authOptions);
+  if (!session || session.user?.role !== 'ADMIN') {
+    notFound(); // [cite: 415]
+  }
+
+  // 2. AKTUALIZACE PRISMA DOTAZU PRO NAČTENÍ KAPITOL [cite: 207]
+  const video = await prisma.video.findUnique({
+    where: { id: id },
+    include: {
+      chapters: {
+        orderBy: {
+          order: 'asc', // Seřadíme kapitoly dle 'order'
+        },
+      },
+    },
+  });
+
+  if (!video) {
+    notFound(); // [cite: 418]
+  }
+
+  return (
+    <main className="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
+      {/* Název Videa */}
+      <h1 className="text-3xl font-bold mb-5">{video.title}</h1>
+
+      {/* 3. POUŽITÍ KLIENTSKÉHO WRAPPERU */}
+      <VideoDetailClientWrapper
+        youtubeId={video.youtubeId}
+        chapters={video.chapters}
+      />
+
+      {/* Popis / Shrnutí */}
+      <div className="mt-8">
+        <h2 className="text-2xl font-semibold mb-4">Shrnutí</h2>
+        <p className="text-gray-300 whitespace-pre-wrap text-lg">
+          {video.summary}
+        </p>
+      </div>
+    </main>
+  );
+}
+7. 🧪 Krok 6: Lokální Testování a Ověření
+Ověříme všechny body z akceptačních kritérií .
+
+Spuštění:
+
+Bash
+
+npm run dev
+
+Test 1: Vytvoření videa (Happy Path) 
+
+Přejděte na /admin/add.
+
+Vyplňte URL, Název, Shrnutí.
+
+Do pole "Strukturovaný Obsah" vložte platný text (např. z README_05_01ZADANI ).
+
+Klikněte na "Uložit video".
+
+Očekáváno: Zobrazí se zpráva "Video bylo úspěšně přidáno!".
+
+
+Test 2: Kontrola Databáze 
+
+V novém terminálu spusťte npm run prisma:studio.
+
+Otevřete model Video a najděte nové video.
+
+Otevřete model Chapter.
+
+Očekáváno: Existují záznamy Chapter propojené s videoId. Hodnoty startTime (v sekundách, např. 62), level (např. 0, 1) a text jsou správně uloženy.
+
+
+Test 3: Zobrazení a Interaktivita 
+
+Přejděte na /admin/dashboard.
+
+Klikněte na právě přidané video.
+
+Očekáváno: Stránka /admin/video/[id] se načte.
+
+Očekáváno: Pod přehrávačem je vidět seznam kapitol.
+
+Očekáváno: Seznam je hierarchicky odsazený (podkapitoly jsou odsazeny).
+
+Klikněte na kapitolu s časem (např. 1.2. ... (1:02)).
+
+
+Očekáváno: Video v přehrávači skočí na čas 62 sekund a začne hrát.
+
+
+Test 4: Chyba Parseru (Chybný vstup) 
+
+Přejděte na /admin/add.
+
+Vyplňte všechna pole, ale do "Strukturovaný Obsah" vložte text bez časové značky na konci (např. 1. Jen text bez času).
+
+Klikněte na "Uložit video".
+
+
+Očekáváno: Formulář zobrazí chybovou hlášku (např. "Neplatný formát řádku...").
+
+Ověření: V Prisma Studio ověřte, že nebylo vytvořeno ani video, ani kapitoly (díky transakci).
+
+8. 🚀 Krok 7: Nasazení na Produkci (Vercel)
+Commit a Push:
+
+Bash
+
+git add .
+git commit -m "Fáze 6: Implementace strukturovaného obsahu (kapitol)"
+git push origin feature/faze-6-chapters
+Pull Request: Vytvořte Pull Request na GitHubu z feature/faze-6-chapters do main.
+
+Merge: Po kontrole proveďte merge.
+
+Deployment: Vercel automaticky detekuje push do main a spustí build.
+
+Build proces (dle package.json ) zahrnuje prisma generate && prisma migrate deploy, což automaticky aplikuje novou databázovou migraci na produkční Vercel Postgres databázi.
+
+9. 🌐 Krok 8: Testování na Produkci
+Po úspěšném nasazení provedeme stejné testy (Krok 6, Testy 1-4) na produkční URL (Vercel). Tím ověříme finální akceptační kritéria.
+
+✅ Závěr
+Po dokončení Kroku 8 a ověření funkčnosti na produkci je Fáze 6 považována za dokončenou. Aplikace nyní disponuje klíčovou funkcionalitou strukturovaného obsahu.
+
+Tento plán je připraven k předání do realizace.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+JÁ_PROMPT:  
+Testování na lokálním pc proběhlo ok - nasazení na produkci proběhlo také ok a test na produkci rovněž ok. Díky. ;-) Mohu nyní poprosit o souhrnou zprávu z této fáze realizace vyplývající z tohoto chatu k tomuto release. Tuto zprávu uložím jako záznam o všech zde provedených činnostech na projektu v tomto release pro budoucí informaci o proběhlých činnostech v této fázi realizace aplikace - prosím i o podrobnosti z této fáte realizace a zejména pak ty významné podrobnosti do této souhrnné zprávy o této fázi realizace.
+
+AI_RESPONZE:
+
+Zde je kompletní souhrnná zpráva o Fázi 5, která dokumentuje zadání, implementaci, řešení problémů a úspěšné dokončení.
+README_05_01REALIZACE
+10. 11. 21:14
+
+Tento dokument shrnuje vše podstatné a může sloužit jako výchozí bod pro zadání Fáze 6. Gratuluji k dalšímu úspěšnému kroku!
+
+[
+Souhrnná Zpráva o Realizaci: Fáze 5 - Detail Videa a PřehrávačDatum: 10. listopadu 2025Projekt: web_app_MediathekVerze Aplikace: 0.5.0Navazuje na: Fáze 4 (Admin Dashboard)1. Cíle Fáze 5Hlavním cílem této fáze bylo uzavřít základní administrátorský cyklus "Create -> Read -> Consume". Poté, co administrátor mohl videa přidávat (Fáze 3) a vidět je v seznamu (Fáze 4), bylo nutné umožnit jejich skutečné přehrání a zobrazení detailních informací.Klíčové Požadavky:Vytvoření dynamické stránky pro detail konkrétního videa.Implementace funkčního YouTube přehrávače přímo v aplikaci.Propojení stávajícího Admin Dashboardu s touto novou stránkou.Zajištění bezpečnosti (přístup pouze pro roli ADMIN).2. Realizované Změny2.1. Nové Komponenty a Stránkycomponents/VideoPlayer.tsx: Nová klientská komponenta ("use client") využívající knihovnu react-youtube. Zajišťuje responzivní přehrávání videa s parametry (např. vypnutý autoplay).app/admin/video/[id]/page.tsx: Nová serverová stránka (RSC), která:Dynamicky načítá data o videu z databáze na základě id v URL.Ověřuje oprávnění uživatele (musí být ADMIN).Zobrazuje název videa, vložený přehrávač a plné textové shrnutí.2.2. Úpravy Stávajícího Kóduapp/admin/dashboard/page.tsx: Karty videí v seznamu byly upraveny. Původní statické <div> elementy byly nahrazeny komponentou <Link>, která směřuje na novou detailní stránku. Byl přidán hover efekt pro lepší indikaci interaktivity.package.json: Přidána závislost react-youtube.3. Průběh Realizace a Řešení ProblémůBěhem implementace jsme narazili na několik technických výzev specifických pro Next.js 16 (a novější verze App Routeru), které jsme úspěšně vyřešili.3.1. Problém s Parserem (Importy)Symptom: Chybová hláška Expected ',', got ':' při importu authOptions.Příčina: Pravděpodobně kombinace specifického chování parseru v dev režimu při použití aliasů @ v cestách s hranatými závorkami [...], nebo neviditelné znaky v souboru.Řešení:Opravení syntaxe souboru a použití absolutní cesty s aliasem @ (která se ukázala jako funkční po vyčištění souboru).Přeuložení souboru components/VideoPlayer.tsx pro odstranění potenciálních neviditelných znaků (BOM).3.2. Asynchronní params v Next.js 16Symptom: Kritická chyba Error: Route "/admin/video/[id]" used params.id. params is a Promise....Příčina: V nejnovějších verzích Next.js jsou parametry dynamických rout (params, searchParams) asynchronní a musí se na ně čekat (await).Řešení: Aktualizace definice komponenty VideoDetailPage na asynchronní přístup k params:// Původně: const { id } = params;
+// Nově: const { id } = await params;
+Tím se vyřešila i následná chyba Prisma (Invalid invocation), která byla způsobena předáním undefined ID.4. Výsledek a OvěřeníLokální Testování: Všechny funkce byly ověřeny na vývojovém prostředí (RPi 5). Přehrávač funguje, data se načítají správně, zabezpečení role ADMIN je aktivní.Produkční Testování: Aplikace byla úspěšně nasazena na produkční prostředí (Vercel + Neon DB) a prošla stejnými testy bez chyb.5. Závěr Fáze 5Fáze 5 byla úspěšně dokončena. Aplikace Mediathek má nyní plně funkční jádro pro administrátora-kurátora, který může obsah nejen spravovat, ale i konzumovat.Připraveno pro další fáze:Tato implementace položila nezbytné základy pro budoucí klíčové funkce:Fáze 6 (plán): Veřejná galerie pro návštěvníky.Fáze 7 (plán): Správa a zobrazení časových značek (interaktivní obsah videa), což bude hlavní konkurenční výhoda aplikace.
+]
+
+JÁ_PROMPT:
+Nyní bych poprosil ještě zrevidovat můj snímkovač projektového adresáře vzhledem k nyní proběhlé relalizační fázi na projektu. V příloze je aktuální skript na snímkování projektového adresáře a nastavení vnitřních a vějších podmínek projektu, prosím o jeho revizi vzhledem k proběhlé realizační fázi, tak aby nový snímkovač pokrýval co neefektivněji a optuimálně celý projekt pro využití v další fázi projektu resp. předat jen ty nezbytné věci které definují unikátní vlastnosti aplikace a nastavení jejích vnitřních a vnějších podmínek. Prosím o výstup formou změnové zprávy k danému skriptu které poté manuálně zapracuji, tak abychom nemuseli vyjíždět celý skript kompletně, což by mohlo být náročné na výstup v responzi. Díky ;-)
+[project_snapshot.py]
+
+AI_RESPONZE:
+Jasně, tady je revize a návrh změn pro váš skript project_snapshot.py, aby reflektoval dokončenou Fázi 5.
+
+Cílem je aktualizovat skript tak, aby zachytil nové klíčové soubory, které definují funkcionalitu přehrávače, a také opravit drobnost, kdy se nedařilo detekovat verzi Prisma.
+
+Změnová Zpráva pro project_snapshot.py (Aktualizace na v7.0)
+Zde jsou doporučené úpravy pro váš skript project_snapshot.py, které manuálně zapracujte:
+
+1. Aktualizace Verze Skriptu
+Pro přehlednost doporučuji aktualizovat interní komentář verze.
+
+Místo:
+
+Python
+
+# --- KONFIGURACE (Verze 6.0 - Aktualizace po Fázi 4) ---
+Vložte:
+
+Python
+
+# --- KONFIGURACE (Verze 7.0 - Aktualizace po Fázi 5) ---
+2. Rozšíření FILES_TO_INCLUDE_CONTENT
+Musíme skriptu říct, aby zahrnul obsah dvou nových souborů, které byly jádrem Fáze 5.
+
+V sekci FILES_TO_INCLUDE_CONTENT:
+
+Python
+
+# ... (stávající soubory) ...
+
+    # Administrace (Fáze 3 & 4)
+    'app/admin/add/page.tsx',
+    'app/admin/dashboard/page.tsx',
+    'app/api/videos/route.ts'
+]
+Přidejte na konec sekce "Administrace" (nebo do nové sekce) tyto dva řádky:
+
+Python
+
+    # Administrace (Fáze 3 & 4)
+    'app/admin/add/page.tsx',
+    'app/admin/dashboard/page.tsx',
+    'app/api/videos/route.ts',
+
+    # Administrace (Fáze 5 - Přehrávač)
+    'components/VideoPlayer.tsx',
+    'app/admin/video/[id]/page.tsx'
+]
+3. Optimalizace get_env_info (Oprava detekce verze Prisma)
+Váš poslední snímek (README_03_03project_snapshot) ukázal Prisma verze: N/A. To znamená, že příkaz npx prisma -v selhal. Je robustnější číst verzi přímo z package.json, který již máte načtený.
+
+Nahraďte celou funkci get_env_info:
+
+Původní kód:
+
+Python
+
+def get_env_info(f):
+    f.write("## 4. Systémové Prostředí\n\n")
+    f.write("```\n")
+    f.write(f"Node.js verze: {run_command('node -v')}\n")
+    f.write(f"NPM verze:     {run_command('npm -v')}\n")
+    f.write(f"Prisma verze:  {run_command('npx prisma -v')}\n")
+    f.write(f"Git verze:     {run_command('git --version')}\n")
+    f.write(f"Systém:        {run_command('uname -a')}\n")
+    f.write("```\n\n")
+Nový kód: (Všimněte si, že funkce nyní přijímá data z package.json)
+
+Python
+
+def get_env_info(f, data):
+    f.write("## 4. Systémové Prostředí\n\n")
+    f.write("```\n")
+    f.write(f"Node.js verze: {run_command('node -v')}\n")
+    f.write(f"NPM verze:     {run_command('npm -v')}\n")
+    
+    # Robustnější čtení verze Prisma přímo z package.json
+    prisma_version = data.get('dependencies', {}).get('prisma', 'N/A')
+    if prisma_version == 'N/A':
+        prisma_version = data.get('devDependencies', {}).get('prisma', 'N/A')
+    f.write(f"Prisma verze:  {prisma_version} (z package.json)\n")
+
+    f.write(f"Git verze:     {run_command('git --version')}\n")
+    f.write(f"Systém:        {run_command('uname -a')}\n")
+    f.write("```\n\n")
+A nezapomeňte upravit volání této funkce v main():
+
+Původní kód v main():
+
+Python
+
+        get_env_info(f)
+Nový kód v main():
+
+Python
+
+        get_env_info(f, package_data)
+4. Rozšíření analyze_package_json (Detekce react-youtube)
+Aby byl snímek co nejpřesnější, přidejme rozpoznání nové knihovny z Fáze 5.
+
+Ve funkci analyze_package_json, uvnitř smyčky for dep, ver in deps.items():, přidejte novou podmínku:
+
+Přidejte tento řádek:
+
+Python
+
+        # ... (stávající if podmínky) ...
+        if 'bcrypt' in dep: purpose = "Knihovna pro hashování hesel"
+        if 'dotenv' in dep: purpose = "Nástroj pro správu env. proměnných"
+        
+        # NOVÁ PODMÍNKA PRO FÁZI 5
+        if 'react-youtube' in dep: purpose = "Knihovna pro vložení YouTube přehrávače"
+        
+        f.write(f"| `{dep}` | `{ver}` | {purpose} |\n")
+Po zapracování těchto čtyř změn bude váš skript perfektně připraven pro generování snímku po Fázi 5 a poskytne přesnější informace pro Fázi 6.
+
+
+
+ID_chatu: 
+https://gemini.google.com/u/1/app/d5bb4145c06e7ca8

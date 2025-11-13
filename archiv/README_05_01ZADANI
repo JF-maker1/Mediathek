@@ -1,0 +1,702 @@
+JÁ_PROMPT:
+V příloze jsou výsledky z předešlých fází 0 až 4 vývoje webové aplikace zaměřené na správu a strukturalizaci obsahu videí převážně zatím z youtube. Uživatel bude moci vytvářet své sbírky videí tzv. galerie videí a bude vytvářet strukturovaný obsah nad těmito videi tak aby jakýkoliv návštěvník jeho galerie mohl přehledně procházet obsah jeho sbírky videí a měl přehled o jejich obsahu. Tato aplikace by měla být jakási nadstavba na multimediální obsah na internetu tak aby galerista mohl prezentovat výsledky své sběratelské práce na internetu a zvát např další účastníky na shlednutí jeho sbírky obsahu. tímto způsobem bude i dále propagován obsah těchto videí a to i v kontextu dalšího obsahu. Vývoj této aplikace je stále ještě ve svých počátcích. Po aplikační stránce bude obsah samotné aplikace nejprve zrát pod administrátorem (resp. mnou) a postupně práva která jsou/budou pod administrátorem budou dále postupně předávána i ostatním uživatelům. Tímto způsobem bude aplikace otestována nejprve administrátorem a naplněna obsahem (galeriemi videí se strukturovaným obsahem) budou přizváni první návštěvbníci a teprve poté umožneno i jim vytvářet v aplikaci vlastní obsah. Z pohledu obsahu nyní aplikace stojí před úkolem vytvořit první strukturovaný obsah videa, pokud jím nebudeme vnímat možnost k videu přidat název videa a stručný popis videa. Ale i toto je svým způsobem již prezentace samotného obsahu videa. Nyní bychom tedy mohli pokročit do další úrovně popisu obsahu videa a to po názvu, stručném obsahu umožnit vytvořit i první strukturovaný obsah videa resp. obsah videa podobný jako je obsah knihy. resp. v tomto případě by se jednalo o nadpis kapitol a jednotlivých podkapitol, které by byly očíslovaný anotací např. 1., 1.1, 1.1.1., popisem odpovídající nadpisu až stručnému popisu a místo čísla stránek by byly časové značky od, do které by udávaly v jaké části videa je dané popsaná oblast uvedena. Jeden takový strukturovaný obsah videa by mohl vypadat např. takto [Hlavní téma: Nejvíce nebezpečný sacharid na světě (Industrial Starch)
+( 0:00 - 10:46 )
+🟢 1. Identifikace a dopady nejnebezpečnějšího sacharidu ( 0:00 - 2:03 )
+1.1. Úvod a negativní účinky ( 0:00 - 1:02 )
+1.1.1. Úvod a klasifikace (není cukr, ale způsobuje masivní vzestup krevního cukru) ( 0:00 - 0:19 )
+1.1.2. Zdravotní rizika (cukrovka, ztučnění jater, inzulinová rezistence, viscerální tuk, narušení mikrobů, zánět, LDL cholesterol) ( 0:21 - 1:02 )
+1.2. Marketing, ekonomika a spotřeba ( 1:02 - 2:03 )
+1.2.1. Nízká cena a dotace (nulový cukr, 20 centů/libru, dotace daňovými poplatníky) ( 1:02 - 1:22 )
+1.2.2. Účel a rozšířenost (plnidlo, průměrná spotřeba, roční produkce, výskyt v potravinách) ( 1:24 - 2:03 )
+🟢 2. Co je průmyslový škrob (Industrial Starch) a jeho chemické úpravy ( 2:03 - 6:07 )
+2.1. Definice a rafinace škrobu ( 2:03 - 3:32 )
+2.1.1. Typy (průmyslový, modifikovaný potravinářský, kukuřičný škrob, maltodextrin) ( 2:03 - 2:19 )
+2.1.2. Proces rafinace (řetězec molekul cukru, stripování "brnění," oslabení vazeb, rychlé rozkládání na cukr) ( 2:20 - 3:32 )
+2.2. Chemikálie a neviditelnost škrobu ( 3:32 - 6:07 )
+2.2.1. Chemikálie používané při modifikaci (fosforečnan sodno-triethylenový, vinylacetát, chlornan sodný - bělidlo) ( 3:32 - 4:16 )
+2.2.2. Regulace a zdravotní rizika chemikálií (narušení mitochondriálních funkcí, "obecně uznávané jako bezpečné - GRAS," nedostatečné testování) ( 4:17 - 4:48 )
+2.2.3. Neviditelnost v nutričních faktech (není uveden na etiketě, je "navíc po odečtení," nutnost číst složení) ( 4:48 - 5:20 )
+2.2.4. Další zdravotní problémy (poškozený protein, komplikace cukrovky, Alzheimerova choroba, fibróza/jizvy v játrech, aldehydy - "toxin z kocoviny") ( 5:21 - 6:07 )
+🟢 3. Propojení škrobu a ultra-zpracovaných potravin ( 6:07 - 10:46 )
+3.1. Složení junk food a příklady ( 6:07 - 8:30 )
+3.1.1. Toxická kombinace (cukr, škrob, semenné oleje - kombinace škrobu a oleje pod teplem) ( 6:07 - 6:25 )
+3.1.2. Příklady potravin (chipsy, krekry, cereálie, chléb, těstoviny, hranolky - procentuální obsah škrobu a oleje) ( 6:26 - 7:22 )
+3.1.3. Rozdíl mezi přírodním a průmyslovým škrobem (vs. brambora ze zahrady, vysoká míra zpracování) ( 7:23 - 8:30 )
+3.2. Definice "potraviny" a statistiky spotřeby ( 8:30 - 10:46 )
+3.2.1. Potraviny vs. ultra-zpracované potraviny (nesplňuje biologickou definici potravy, legální mezery) ( 8:30 - 9:02 )
+3.2.2. Hlavní složky ultra-zpracovaných potravin (cukr 5-20%, semenné oleje 20-35%, škroby 55-75%) ( 9:03 - 9:26 )
+3.2.3. Statistiky spotřeby (děti, teenageři, dospělí – procento kalorií z ultra-zpracovaných potravin a hmotnost průmyslového škrobu) ( 9:27 - 10:32 )
+3.2.4. Závěr a doporučení dalšího videa (o semenných olejích) ( 10:33 - 10:46 )] Jednotlivé řádky s časovými značkami budou responzivní resp. po rozkliku daného řádku proběhne v přehrávači přehrání daného úseku videa. Strukturovaný obsah bude ukládán uživatelem (nyní pouze administrátorem v rámci uložení nového videa tak jak probíhá nyní uložení nadpisu videa a stručného obsahu. Strukturovaný obsah videa bude vytvářen uživatelem před jeho vložením do naší webové aplikace pomocí nástroje AI a získaného přepisu videa z youtube.V rámci zadání této funkcionality vkládání a zobrazení strukturovaného obsahu videa je k diskuzi forma jakou má být tento strukturovaný obsah předáván do aplikace. Zda formou textu do textového pole či např. formou souboru kde strukturovaný obsah bude mít např. formu xml. Nebo případně ještě jinou formou což je k diskuzi. tento strukturovaný obsah by byl poté zřejmě parsován a ukládán do databáze v nějaké vhodné formě. Zobrazován by byl poté na stránce s přehrávačem videa podobně jako je nyní zobrazován nadpis videa a stručný popis videa. Nově by to byl nyní tedy i tento strukturovaný přehled videa s časovými značkami. Tento by byl tedy responzivní kdy po pokliku na danou odrážku videa by byl daný obsah přehrán videe v plném znění. Tímto způsobem by byla naimplementována první funkcionalita týkající se strukturované prezentace obsahu videa pokud tím nebudeme počítat i nadpis videa a stručný popis videa ale což svým způsobem je také prezentace obsahu videa. V příloze jsou uvedeny dokumenty týkajícíh se všech předchozích zadání této aplikace a také dokumenty týkající se všech fází realizace této aplikace pro představu jak byla tvořena zadání a jejich realizace. Nyní pojdme vytvořit zadání (pouze zadání nikoliv plán realizace) této problematiky prvního strukturovaného obsahu aplikace který je zde popsán výše. Vzhledem k tomu že půjde o technologicky zřejmě pokročilejší záležitost uvádím zde i aktuální snímek aplikace tak avby zadání mohlo být rozčleněno tak aby odpovídalo pojetí aplikace. V rámci zadání tohoto úkolu by bylo vhodné diskutovat jednak jeho náplň (resp. jakou nejjednodušší formou tento strukturovaný obsah implementovat) tak i diskutovat možnost rozdělení tohoto zadání do váce podzadání a podfází realizace resp. rozčlenění jednoho zadání do více podzadání a více realizačních fází tak aby tento úkol byl solidně a robustně a bezpečně splněn. v příloze jsou tyto dokumenty k prostudování. Nyní v rámci vytvoření tohoto zadání pojdme diskutovat jeho návrh z pohledu aby byl co nejjednodušší a vytvořil jádro pro jeho další rozvoj - týká se to např. formy jeho vkládání uživatelem (jako text, jako xml či jinak) a např. toho jak bude ukládán a zobrazován - resp. nyní by mělo být co nejvíce činností přenecháno uživateli před vložením a aplikace by se měla soustředit na správnou strukturu uložení a zobrazení s co nejlepším uživatelským zážitkem což by nyní zřejmě byla možnost vidět strukturovaný obsah a možnost jej rozkliknout pro danou časovou značku. Příklad takového strukturovaného obsahu vlaženého zde formou textu je také výše uvedeno. Pojdme na to jak toto zadání realizovat ... díky ;-) [README_00_01ZADANI][README_00_02REALIZACE_Kick-off][README_01_01ZADANI][README_01_02REALIZACE][README_02_01ZADANI][README_02_02REALIZACE][README_03_01ZADANI][README_03_02REALIZACE][README_04_01ZADANI][README_04_02REALIZACE] PS: v příloze je rovněž soubor popisující aktuální stav aplikace v souhrnné zprávě - soubor [README_04_01ZADANI_REING_APL]
+
+
+
+AI_RESPONZE:
+
+Výborně, posouváme se k naprostému jádru a hlavní přidané hodnotě celé aplikace Mediathek. Gratuluji k dokončení Fáze 5, nyní máme perfektní "kontejner" (stránku detailu videa s přehrávačem), do kterého můžeme začít vkládat ten nejdůležitější obsah.
+
+
+
+Prošel jsem všechny dodané materiály a plně chápu vaši vizi. Chcete vytvořit "knihovnu" nebo "televizní společnost" tvořenou kurátory (nejprve vámi, později i uživateli) , kde hlavní devizou není jen video samotné, ale jeho strukturovaný přehled – obsah podobný obsahu knihy.
+
+
+Váš dotaz na diskusi o formě vkládání a případném rozdělení úkolu je naprosto zásadní. Toto je technologicky složitější krok a je moudré ho pečlivě naplánovat.
+
+🏛️ Diskuze a Návrh Řešení (Před Zadáním)
+Než přejdeme k samotnému zadání, pojďme si vyjasnit klíčové body, které jste nadnesl:
+
+1. Forma Vkládání Dat (Text vs. XML vs. UI)
+
+Varianta A: Komplexní UI (Editor kapitol)
+
+Popis: Vytvořili bychom v admin rozhraní tlačítka "Přidat kapitolu", "Přidat podkapitolu", kde by pro každou byla políčka čas od, čas do, název.
+
+Výhoda: Nejuživatelsky přívětivější, data jsou strukturovaná od začátku.
+
+Nevýhoda: Extrémně náročné na implementaci (dynamické vnořené formuláře v Reactu). Pro tuto fázi nedoporučuji.
+
+Varianta B: Strukturovaný soubor (XML/JSON)
+
+Popis: Uživatel by nahrál soubor (.xml nebo .json), který by obsahoval strukturu.
+
+Výhoda: Spolehlivé parsování, žádná nejednoznačnost.
+
+Nevýhoda: Velmi špatná User Experience (UX). Vy (admin) byste musel obsah vytvářet externě a ukládat ho jako soubor, což je nepohodlné.
+
+Varianta C: Jednoduché Textové Pole (Textarea) - VÍTĚZ
+
+Popis: Přesně jak navrhujete. Do formuláře /admin/add přidáme jedno velké textové pole textarea.
+
+Výhoda: Nejlepší kompromis mezi jednoduchostí implementace a flexibilitou. Vy jako admin můžete snadno zkopírovat text (připravený manuálně nebo pomocí AI) a vložit ho. Veškerá "sazba" obsahu probíhá mimo aplikaci.
+
+Nevýhoda: Aplikace musí obsahovat logiku (parser), která tento text spolehlivě převede na strukturovaná data.
+
+Doporučení: Jednoznačně Varianta C. Veškerou složitost tvorby obsahu přenecháme vám (jak jste sám navrhl) a aplikace se soustředí "jen" na parsování, uložení a interaktivní zobrazení.
+
+2. Rozdělení Úkolu (Fáze 6 vs. Fáze 6 + 7)
+
+Máte pravdu, toto je velký úkol. Dalo by se to rozdělit:
+
+Fáze 6a: Backend (úprava DB, parser, uložení dat).
+
+Fáze 6b: Frontend (zobrazení dat, propojení s přehrávačem).
+
+Doporučení: Pojďme to implementovat najednou jako Fázi 6. Proč? Protože backendová část (ukládání) nemá žádnou hodnotu, dokud není vidět na frontendu. Oddělení by bylo neefektivní. Zvládneme to v jednom kroku, pokud budeme pečliví.
+
+Zde je tedy finální návrh zadání pro Fázi 6, který vychází z této diskuse.
+
+📄 Zadání projektu: Webová aplikace Mediathek (Fáze 6 - Strukturovaný Obsah Videa)
+Datum: 12. listopadu 2025 Verze: 6.0
+
+
+Navazuje na: Fáze 5 (Realizace přehrávače )
+
+
+1. Název projektu
+Mediathek
+
+2. Cíl Fáze
+Cílem této fáze je implementovat jádrovou funkcionalitu aplikace: schopnost administrátora-kurátora vložit ke každému videu strukturovaný obsah (časové značky, kapitoly, podkapitoly) a interaktivně jej zobrazit na stránce detailu videa. Tím se aplikace posune z "galerie odkazů" na skutečný "nástroj pro orientaci v obsahu" , který naplňuje vizi "obsahu knihy" pro videa.
+
+
+3. Rozsah pro Fázi 6
+Databáze: Rozšíření databázového schématu (Prisma) o nový model pro ukládání hierarchických časových značek.
+
+Admin UI (Vstup): Úprava stávajícího formuláře app/admin/add/page.tsx přidáním nového textového pole (<textarea>) pro vložení strukturovaného obsahu.
+
+Backend (Parser): Vytvoření serverové logiky (parseru), která přijme formátovaný text z textarea, zpracuje jej a uloží jako strukturované záznamy do nové databázové tabulky.
+
+Frontend (Zobrazení): Úprava stránky detailu videa (app/admin/video/[id]/page.tsx) tak, aby načetla a zobrazila tento strukturovaný obsah pod přehrávačem.
+
+Interaktivita (UX): Zajištění, že každá položka (kapitola) ve zobrazeném obsahu je klikatelná a po kliknutí posune přehrávač videa (react-youtube) na odpovídající čas.
+
+Mimo rozsah: Automatická generace obsahu (ta probíhá manuálně/AI mimo aplikaci), vizuální editor pro tvorbu kapitol (použijeme textarea), editace/mazání jednotlivých kapitol (v této fázi bude nutné upravit celý textový blok a uložit ho znovu).
+
+4. Návrh Řešení a Architektura
+4.1. Formát Vstupu (Mediathek Timestamps - MTF) Definujeme jednoduchý formát založený na vašem příkladu. Administrátor bude vkládat text, kde:
+
+Každý řádek představuje jednu kapitolu.
+
+Hierarchie (vnoření) je určena odsazením (počtem mezer nebo tabulátorů na začátku řádku).
+
+Časový kód musí být na začátku řádku ve formátu (MM:SS - MM:SS) nebo jen (MM:SS).
+
+Příklad vkládaného textu do <textarea>:
+
+(0:00 - 10:46) Hlavní téma: Nejvíce nebezpečný sacharid
+  (0:00 - 2:03) 1. Identifikace a dopady
+    (0:00 - 1:02) 1.1. Úvod a negativní účinky
+      (0:00 - 0:19) 1.1.1. Úvod a klasifikace
+    (1:02 - 2:03) 1.2. Marketing a ekonomika
+  (2:03 - 6:07) 2. Co je průmyslový škrob
+    (2:03 - 3:32) 2.1. Definice a rafinace
+4.2. Databázový Model (Prisma) Upravíme prisma/schema.prisma a přidáme nový model.
+
+Fragment kódu
+
+// V existujícím modelu Video přidáme relaci
+model Video {
+  // ... stávající pole (id, youtubeId, title, summary, authorId, atd.)
+  timestamps Chapter[] // Nová relace
+}
+
+// Nový model pro kapitoly/časové značky
+model Chapter {
+  id        String   @id @default(cuid())
+  text      String   // Zobrazený text (např. "1.1. Úvod a negativní účinky")
+  startTime Int      // Čas "od" v sekundách
+  endTime   Int?     // Čas "do" v sekundách (nepovinné)
+  level     Int      // Úroveň zanoření (0 = kořen, 1 = podkapitola, atd.)
+  order     Int      // Pořadí kapitoly v rámci videa
+
+  video   Video  @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  videoId String
+}
+Poznámka: onDelete: Cascade zajistí, že při smazání videa se smažou i všechny jeho kapitoly.
+
+4.3. Backend (Parser a API)
+
+Admin UI: Do app/admin/add/page.tsx přidáme <textarea name="structuredContent" />.
+
+API Logika: (Pravděpodobně v Server Action spojené s formulářem)
+
+Přijme structuredContent jako surový text.
+
+Vytvoříme novou servisní funkci (např. utils/timestampParser.ts).
+
+Tato funkce (parseContent(text: string)):
+
+Rozdělí text na řádky.
+
+Pro každý řádek (s order indexem):
+
+Spočítá level (např. radek.search(/\S|$/) / 2 pro 2 mezery odsazení).
+
+Pomocí Regex extrahuje startTime (převede MM:SS na sekundy) a text.
+
+Vrátí pole objektů: { text, startTime, endTime, level, order }.
+
+Ukládání: Při vytváření nového Video záznamu (v prisma.video.create) použijeme vnořený createMany (nebo v transakci) k uložení všech zparsovaných kapitol do tabulky Chapter.
+
+4.4. Frontend (Zobrazení a Interakce)
+
+Načítání Dat: V app/admin/video/[id]/page.tsx upravíme dotaz Prisma:
+
+JavaScript
+
+const video = await prisma.video.findUnique({
+  where: { id: params.id },
+  include: {
+    chapters: { // Načteme i kapitoly
+      orderBy: { order: 'asc' }
+    }
+  }
+});
+Propojení Přehrávače: (Navazuje na Fázi 5)
+
+Stránka page.tsx musí být klientská komponenta ("use client";) nebo musí logiku přehrávače a kapitol přesunout do klientské komponenty, aby mohla sdílet stav.
+
+Vytvoříme useRef pro přehrávač: const playerRef = useRef(null);.
+
+Komponentě <VideoPlayer> (z react-youtube) předáme prop: onReady={(event) => playerRef.current = event.target}.
+
+Zobrazení Kapitol:
+
+Vytvoříme novou komponentu components/ChapterList.tsx.
+
+Předáme jí chapters={video.chapters} a player={playerRef}.
+
+Uvnitř ChapterList mapujeme pole chapters a renderujeme seznam:
+
+Hierarchii (odsazení) zařídíme pomocí style={{ marginLeft: \${chapter.level * 20}px` }}`.
+
+Každá položka bude tlačítko <button>:
+
+JavaScript
+
+<button
+  onClick={() => player.current?.seekTo(chapter.startTime)}
+  className="text-left hover:text-indigo-400"
+>
+  {chapter.text}
+</button>
+5. Funkční Požadavky (FR)
+FR1 (Admin Vstup): Formulář pro přidání videa musí obsahovat nové, velké textové pole pro "Strukturovaný Obsah".
+
+FR2 (Parsování): Systém musí úspěšně zpracovat textový vstup (formát MTF viz 4.1), odvodit hierarchii z odsazení a extrahovat časy (MM:SS).
+
+FR3 (Ukládání): Zparsovaná data (text, časy v sekundách, úroveň) musí být uložena jako samostatné záznamy v tabulce Chapter, propojené se správným Video záznamem.
+
+FR4 (Zobrazení): Na stránce detailu videa se musí pod přehrávačem zobrazit seznam kapitol, který vizuálně reflektuje hierarchii (odsazení).
+
+FR5 (Interaktivita): Kliknutí na název kapitoly v seznamu musí způsobit, že YouTube přehrávač skočí na startTime dané kapitoly.
+
+6. Nefunkční Požadavky (NFR)
+NFR1 (Chyby Parseru): Pokud administrátor vloží text v neplatném formátu (např. chybějící časové značky), API musí vrátit srozumitelnou chybu (např. "Chyba na řádku 5: Neplatný formát času") a neuložit video.
+
+NFR2 (Robustnost): Parser musí ignorovat prázdné řádky v textovém poli.
+
+NFR3 (Výkon): Načtení detailu videa nesmí být znatelně zpomaleno načítáním kapitol (ani při 100+ kapitolách).
+
+7. Technologický Stack a Nástroje
+Využívá se stávající stack: Next.js (App Router), Prisma, NextAuth.js, Tailwind CSS.
+
+Nová databázová tabulka: Chapter.
+
+Úprava react-youtube  komponenty pro externí ovládání pomocí useRef.
+
+8. Akceptační Kriteria (Definice "Hotovo")
+Tato fáze je dokončena, když:
+
+Byla spuštěna databázová migrace pro model Chapter.
+
+Admin může vložit video s formátovaným textem kapitol (viz 4.1) a úspěšně ho uložit.
+
+V databázi (ověřeno např. přes Prisma Studio) existují záznamy v tabulce Chapter se správnými startTime (v sekundách), level a text.
+
+Na stránce /admin/video/[id] je viditelný hierarchický seznam kapitol.
+
+Kliknutí na kapitolu (např. "1.1. Úvod a negativní účinky" s časem (0:00)) posune video na 0 sekund.
+
+Kliknutí na "1.2. Marketing a ekonomika" (s časem (1:02)) posune video na 62 sekund.
+
+Vložení textu bez časových značek vrátí chybu 400 (Bad Request).
+
+Veškerý kód je nahrán do main větve a úspěšně nasazen na Vercel.
+
+9. Budoucí Rozvoj (Mimo Rozsah Této Fáze)
+Fáze 7: Vytvoření veřejné galerie (na hlavní stránce /), která bude zobrazovat videa a odkazovat na jejich veřejné stránky detailu (např. /video/[id]).
+
+Fáze 8: Implementace CRUD operací pro admina (Editace a Mazání videí a jejich kapitol).
+
+
+Fáze 9: Otevření aplikace uživatelům (roli USER) pro vytváření vlastních soukromých knihoven.
+
+
+
+JÁ_PROMPT:
+Díky za návrh tohoto zadání - pozorně jsem si jej pročetl a v zásadě souhlasím zejména s volbou varianty C resp. [Varianta C: Jednoduché Textové Pole (Textarea) - VÍTĚZ
+
+
+
+Popis: Přesně jak navrhujete. Do formuláře /admin/add přidáme jedno velké textové pole textarea.
+
+Výhoda: Nejlepší kompromis mezi jednoduchostí implementace a flexibilitou. Vy jako admin můžete snadno zkopírovat text (připravený manuálně nebo pomocí AI) a vložit ho. Veškerá "sazba" obsahu probíhá mimo aplikaci.
+
+Nevýhoda: Aplikace musí obsahovat logiku (parser), která tento text spolehlivě převede na strukturovaná data.] ...zdy bych k diskuzi viděl možnost parsovat dle očíslovaných kapitol a časových značek na konci dané odrážky ... resp. parsovat by bylo možné spolehlivě dle hierarchického číslování kapitol a podkapitol ( viz. 1. , 1.1., 1.1.1. apod) a toho že daná odrážka by končila vždy časovými značkami ve formátu např. ( 0:00 - 1:02 ) jako v řádku 1.1. Úvod a negativní účinky ( 0:00 - 1:02 ) - začátek je hierarchické číslo 1.1. a konec časová značka ( 0:00 - 1:02 ) - příklad vkládaného textu by tedy nebyl "(0:00 - 1:02) 1.1. Úvod a negativní účinky" ale příklad vkládaného textu by byl "1.1. Úvod a negativní účinky (0:00 - 1:02)". Umožní toto dále zpřehlednit toto zádání? ... prosím o jeho revizi a znovuuvedení k další analýze a diskuzi a případně již schválení ... je toto možné?
+
+
+AI_RESPONZE:
+
+To je vynikající postřeh a skvělé vylepšení.
+
+Máte naprostou pravdu. Váš návrh na parsování je mnohem robustnější a spolehlivější než můj původní návrh založený na odsazení.
+
+Hierarchické číslování (např. 1.1.1.) je explicitní. Odsazení je implicitní a velmi náchylné k chybám (špatný počet mezer, smíchání mezer a tabulátorů atd.).
+
+Čas na konci je čitelnější a přirozenější pro manuální psaní.
+
+Tato změna výrazně snižuje riziko chyb při parsování a zjednodušuje logiku, která určuje úroveň zanoření. Plně váš návrh akceptuji a zapracoval jsem ho do revidovaného zadání.
+
+Zde je revidovaný návrh zadání Fáze 6, který již tuto novou, robustnější logiku obsahuje.
+
+📄 Zadání projektu: Webová aplikace Mediathek (Fáze 6 - Strukturovaný Obsah Videa)
+Datum: 12. listopadu 2025 Verze: 6.1 (Revidováno) Navazuje na: Fáze 5 (Realizace přehrávače)
+
+1. Název projektu
+Mediathek
+
+2. Cíl Fáze
+Cílem této fáze je implementovat jádrovou funkcionalitu aplikace: schopnost administrátora-kurátora vložit ke každému videu strukturovaný obsah (časové značky, kapitoly, podkapitoly) a interaktivně jej zobrazit na stránce detailu videa. Tím se aplikace posune z "galerie odkazů" na skutečný "nástroj pro orientaci v obsahu", který naplňuje vizi "obsahu knihy" pro videa.
+
+3. Rozsah pro Fázi 6
+Databáze: Rozšíření databázového schématu (Prisma) o nový model pro ukládání hierarchických časových značek.
+
+Admin UI (Vstup): Úprava stávajícího formuláře app/admin/add/page.tsx přidáním nového textového pole (<textarea>) pro vložení strukturovaného obsahu.
+
+Backend (Parser): Vytvoření serverové logiky (parseru), která přijme formátovaný text z textarea (viz Formát MTF-H níže), zpracuje jej a uloží jako strukturované záznamy do nové databázové tabulky.
+
+Frontend (Zobrazení): Úprava stránky detailu videa (app/admin/video/[id]/page.tsx) tak, aby načetla a zobrazila tento strukturovaný obsah pod přehrávačem.
+
+Interaktivita (UX): Zajištění, že každá položka (kapitola) ve zobrazeném obsahu je klikatelná a po kliknutí posune přehrávač videa (react-youtube) na odpovídající čas.
+
+Mimo rozsah: Automatická generace obsahu (ta probíhá manuálně/AI mimo aplikaci), vizuální editor pro tvorbu kapitol (použijeme textarea), editace/mazání jednotlivých kapitol.
+
+4. Návrh Řešení a Architektura
+4.1. Formát Vstupu (Mediathek Timestamps Format - Hierarchical / MTF-H) (Revidováno) Definujeme formát založený na vaší revizi. Administrátor vkládá text, kde každý řádek představuje jednu kapitolu a řídí se těmito pravidly:
+
+Struktura řádku: [Číslování] [Text kapitoly] [Časová značka]
+
+Číslování (Povinné): Řádek musí začínat hierarchickým číslováním (např. 1., 1.1., 1.1.1.). Tečka na konci je volitelná.
+
+Hierarchie: Úroveň zanoření (level) bude odvozena z počtu čísel v číslování (např. 1.1.1. = úroveň 2).
+
+Časová značka (Povinná): Řádek musí končit časovou značkou ve formátu (MM:SS) nebo (MM:SS - MM:SS).
+
+Příklad vkládaného textu do <textarea>:
+
+1. Identifikace a dopady (0:00 - 2:03)
+  1.1. Úvod a negativní účinky (0:00 - 1:02)
+    1.1.1. Úvod a klasifikace (0:00 - 0:19)
+    1.1.2. Zdravotní rizika (0:21 - 1:02)
+  1.2. Marketing, ekonomika a spotřeba (1:02 - 2:03)
+2. Co je průmyslový škrob (2:03 - 6:07)
+  2.1. Definice a rafinace škrobu (2:03 - 3:32)
+(Poznámka: Odsazení na začátku řádků bude parserem ignorováno; je pouze pro lidskou čitelnost při vkládání. Hierarchie se řídí výhradně číslováním 1.1.1.)
+
+4.2. Databázový Model (Prisma) Tento návrh zůstává nezměněn, protože je dostatečně robustní. Parser pouze dodá data (zejména level) jiným způsobem.
+
+Fragment kódu
+
+// V existujícím modelu Video přidáme relaci
+model Video {
+  // ... stávající pole (id, youtubeId, title, summary, authorId, atd.)
+  chapters Chapter[] // Nová relace
+}
+
+// Nový model pro kapitoly/časové značky
+model Chapter {
+  id        String   @id @default(cuid())
+  text      String   // Zobrazený text (např. "1.1. Úvod a negativní účinky")
+  startTime Int      // Čas "od" v sekundách
+  endTime   Int?     // Čas "do" v sekundách (nepovinné)
+  level     Int      // Úroveň zanoření (0 = kořen, 1 = podkapitola, atd.)
+  order     Int      // Pořadí kapitoly v rámci videa
+
+  video   Video  @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  videoId String
+}
+4.3. Backend (Parser a API) (Revidováno)
+
+Admin UI: Do app/admin/add/page.tsx přidáme <textarea name="structuredContent" />.
+
+API Logika: (Např. v Server Action spojené s formulářem)
+
+Přijme structuredContent jako surový text.
+
+Vytvoříme novou servisní funkci (např. utils/timestampParser.ts).
+
+Tato funkce (parseContent(text: string)):
+
+Rozdělí text na řádky a ignoruje prázdné.
+
+Pro každý řádek (s order indexem):
+
+Extrakce času: Pomocí Regex najde časovou značku na konci řádku (např. /\((...)\)$/). Převede MM:SS na startTime v sekundách.
+
+Extrakce základu: Vezme zbytek řádku (před časovou značkou) a ořízne mezery (baseText).
+
+Extrakce číslování: Z baseText pomocí Regex extrahuje úvodní číslování (např. /^(\d+(\.\d+)*)\.?\s/).
+
+Výpočet úrovně: level = numberingString.split('.').length - 1. (Tedy 1. je level 0, 1.1. je level 1 atd.).
+
+Extrakce textu: text = baseText (Uložíme celý text včetně číslování, např. "1.1. Úvod a negativní účinky").
+
+Vrátí pole objektů: { text, startTime, endTime, level, order }.
+
+Ukládání: Při vytváření Video záznamu použijeme vnořený createMany k atomickému uložení všech zparsovaných kapitol do tabulky Chapter.
+
+4.4. Frontend (Zobrazení a Interakce) Tento návrh zůstává nezměněn.
+
+Načítání Dat: V app/admin/video/[id]/page.tsx načteme video včetně kapitol, seřazených podle order.
+
+Propojení Přehrávače: Použijeme useRef pro získání kontroly nad přehrávačem (playerRef.current = event.target).
+
+Zobrazení Kapitol:
+
+Vytvoříme komponentu components/ChapterList.tsx, která přijme chapters a player.
+
+Mapujeme pole chapters a renderujeme seznam:
+
+Odsazení (hierarchii) řídíme pomocí style={{ marginLeft: \${chapter.level * 20}px` }}. (Data pro level` nám dodal parser).
+
+Každá položka bude klikatelné tlačítko <button>:
+
+JavaScript
+
+<button
+  onClick={() => player.current?.seekTo(chapter.startTime)}
+  className="text-left hover:text-indigo-400"
+>
+  {chapter.text}
+</button>
+5. Funkční Požadavky (FR) (Revidováno)
+FR1 (Admin Vstup): Formulář pro přidání videa musí obsahovat nové, velké textové pole pro "Strukturovaný Obsah".
+
+FR2 (Parsování): Systém musí úspěšně zpracovat textový vstup (formát MTF-H viz 4.1), odvodit hierarchii z hierarchického číslování (např. 1.1.) a extrahovat časy z konce řádku.
+
+FR3 (Ukládání): Zparsovaná data (text, časy v sekundách, úroveň) musí být uložena jako samostatné záznamy v tabulce Chapter, propojené se správným Video záznamem.
+
+FR4 (Zobrazení): Na stránce detailu videa se musí pod přehrávačem zobrazit seznam kapitol. Vizuální odsazení musí odpovídat level (odvozenému z číslování).
+
+FR5 (Interaktivita): Kliknutí na text kapitoly v seznamu musí způsobit, že YouTube přehrávač skočí na startTime dané kapitoly.
+
+6. Nefunkční Požadavky (NFR) (Revidováno)
+NFR1 (Chyby Parseru): Pokud administrátor vloží text v neplatném formátu (např. řádek bez číslování nebo řádek bez časové značky na konci), API musí vrátit srozumitelnou chybu (např. "Chyba na řádku 5: Chybí časová značka na konci řádku") a neuložit video.
+
+NFR2 (Robustnost): Parser musí ignorovat prázdné řádky v textovém poli.
+
+NFR3 (Výkon): Načtení detailu videa nesmí být znatelně zpomaleno načítáním kapitol (ani při 100+ kapitolách).
+
+7. Technologický Stack a Nástroje
+Beze změny.
+
+8. Akceptační Kriteria (Definice "Hotovo") (Revidováno)
+...
+
+Admin může vložit video s formátovaným textem kapitol (viz 4.1) a úspěšně ho uložit.
+
+V databázi (ověřeno např. přes Prisma Studio) existují záznamy v tabulce Chapter se správnými startTime (v sekundách), level (odvozeno z 1.1. atd.) a text.
+
+Na stránce /admin/video/[id] je viditelný hierarchický seznam kapitol (odsazený).
+
+Kliknutí na kapitolu (např. "1.2. Marketing..." s časem (1:02)) posune video na 62 sekund.
+
+Vložení textu, kde řádku chybí časová značka na konci, vrátí chybu 400 (Bad Request).
+
+...
+
+9. Budoucí Rozvoj (Mimo Rozsah Této Fáze)
+Beze změny.
+
+Souhlasíte s tímto revidovaným zadáním (v6.1), které je postaveno na vašem návrhu robustnějšího parsování?
+
+
+JÁ_PROMPT:
+
+Ano zadání je ok - prosím o vypracování jeho kompletního znění ve standardní struktuře pro tento webový projekt. díky ;-)
+
+
+AI_RESPONZE:
+
+Jasně, tady je kompletní, finální znění zadání pro Fázi 6, které vychází z naší diskuze a obsahuje váš návrh na robustnější parsování.
+
+Toto je oficiální dokument zadání pro realizační tým.
+
+📄 Zadání projektu: Webová aplikace Mediathek (Fáze 6 - Strukturovaný Obsah Videa)
+Datum: 12. listopadu 2025 Verze: 6.0 Navazuje na: Fáze 5 (Realizace přehrávače, README_04_02REALIZACE)
+
+1. Název projektu
+Mediathek
+
+2. Cíl Fáze
+Cílem této fáze je implementovat jádrovou funkcionalitu celé aplikace: schopnost administrátora-kurátora vložit ke každému videu strukturovaný obsah (časové značky, kapitoly, podkapitoly) a interaktivně jej zobrazit na stránce detailu videa.
+
+Tím se aplikace posune z "galerie odkazů" na skutečný "nástroj pro orientaci v obsahu" a naplní vizi "obsahu knihy" pro videa.
+
+
+3. Rozsah pro Fázi 6
+Implementace bude zahrnovat následující oblasti:
+
+Databáze: Rozšíření databázového schématu (Prisma) o nový model pro ukládání hierarchických časových značek.
+
+
+Admin UI (Vstup): Úprava stávajícího formuláře app/admin/add/page.tsx přidáním nového textového pole (<textarea>) pro vložení strukturovaného obsahu.
+
+
+Backend (Parser): Vytvoření serverové logiky (parseru), která přijme formátovaný text z textarea (viz Formát 4.1), zpracuje jej a uloží jako strukturované záznamy do nové databázové tabulky.
+
+
+Frontend (Zobrazení): Úprava stránky detailu videa (app/admin/video/[id]/page.tsx) tak, aby načetla a zobrazila tento strukturovaný obsah pod přehrávačem.
+
+
+Interaktivita (UX): Zajištění, že každá položka (kapitola) ve zobrazeném obsahu je klikatelná a po kliknutí posune přehrávač videa (react-youtube) na odpovídající čas.
+
+Mimo rozsah této fáze:
+
+Automatická generace obsahu (ta probíhá manuálně/AI mimo aplikaci).
+
+Vizuální editor pro tvorbu kapitol (použijeme textarea).
+
+Editace nebo mazání jednotlivých kapitol (v této fázi bude nutné upravit celý textový blok a uložit ho znovu).
+
+4. Návrh Řešení a Architektura
+4.1. Formát Vstupu (Mediathek Timestamps Format - Hierarchical / MTF-H) Pro zajištění robustnosti a flexibility definujeme jednoduchý textový formát, který bude administrátor vkládat. Veškerá složitost formátování je přenesena na admina, aplikace se stará pouze o parsování.
+
+Každý řádek představuje jednu kapitolu a řídí se pravidly:
+
+Struktura řádku: [Číslování] [Text kapitoly] [Časová značka]
+
+Číslování (Povinné): Řádek musí začínat hierarchickým číslováním (např. 1., 1.1., 1.1.1.). Tečka na konci je volitelná.
+
+Hierarchie: Úroveň zanoření (level) bude odvozena z počtu čísel v číslování (např. 1.1.1. = úroveň 2).
+
+Časová značka (Povinná): Řádek musí končit časovou značkou ve formátu (MM:SS) nebo (MM:SS - MM:SS).
+
+Příklad vkládaného textu do <textarea>:
+
+1. Identifikace a dopady (0:00 - 2:03)
+  1.1. Úvod a negativní účinky (0:00 - 1:02)
+    1.1.1. Úvod a klasifikace (0:00 - 0:19)
+    1.1.2. Zdravotní rizika (0:21 - 1:02)
+  1.2. Marketing, ekonomika a spotřeba (1:02 - 2:03)
+2. Co je průmyslový škrob (2:03 - 6:07)
+  2.1. Definice a rafinace škrobu (2:03 - 3:32)
+(Poznámka: Odsazení na začátku řádků bude parserem ignorováno; je pouze pro lidskou čitelnost. Hierarchie se řídí výhradně číslováním 1.1.1.)
+
+4.2. Databázový Model (Prisma) Soubor prisma/schema.prisma bude rozšířen o nový model Chapter a relaci v modelu Video.
+
+Fragment kódu
+
+// V existujícím modelu Video přidáme relaci
+model Video {
+  // ... stávající pole (id, youtubeId, title, summary, authorId, atd.) [cite: 351]
+  chapters Chapter[] // Nová relace
+}
+
+// Nový model pro kapitoly/časové značky
+model Chapter {
+  id        String   @id @default(cuid())
+  text      String   // Zobrazený text (např. "1.1. Úvod a negativní účinky")
+  startTime Int      // Čas "od" v sekundách
+  endTime   Int?     // Čas "do" v sekundách (nepovinné)
+  level     Int      // Úroveň zanoření (0 = kořen, 1 = podkapitola, atd.)
+  order     Int      // Pořadí kapitoly v rámci videa
+
+  // Relace k videu. Při smazání videa se smažou i kapitoly.
+  video   Video  @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  videoId String
+}
+4.3. Backend (Parser a API)
+
+Admin UI: Do app/admin/add/page.tsx bude přidáno nové pole <textarea name="structuredContent" /> do existujícího formuláře.
+
+API Logika: (Pravděpodobně implementováno pomocí Server Action)
+
+Přijme structuredContent jako surový text.
+
+Bude vytvořena nová servisní funkce (např. utils/timestampParser.ts).
+
+Tato funkce (parseContent(text: string)) provede následující:
+
+Rozdělí text na řádky (ignoruje prázdné).
+
+Pro každý řádek (s order indexem):
+
+Extrakce času: Pomocí Regex najde časovou značku na konci řádku (např. /\((...)\)$/). Převede MM:SS na startTime v sekundách.
+
+Extrakce základu: Vezme zbytek řádku (před časovou značkou) a ořízne mezery (baseText).
+
+Extrakce číslování: Z baseText pomocí Regex extrahuje úvodní číslování (např. /^(\d+(\.\d+)*)\.?\s/).
+
+Výpočet úrovně: level = numberingString.split('.').length - 1. (Tedy 1. je level 0, 1.1. je level 1 atd.).
+
+Extrakce textu: text = baseText (Uložíme celý text včetně číslování).
+
+Vrátí pole objektů: { text, startTime, endTime, level, order }.
+
+Ukládání: Při vytváření Video záznamu se použije vnořený createMany k atomickému uložení všech zparsovaných kapitol do tabulky Chapter.
+
+4.4. Frontend (Zobrazení a Interakce)
+
+
+Načítání Dat: V app/admin/video/[id]/page.tsx bude upraven dotaz Prisma, aby zahrnoval i kapitoly:
+
+JavaScript
+
+const video = await prisma.video.findUnique({
+  where: { id: params.id },
+  include: {
+    chapters: { // Načteme i kapitoly
+      orderBy: { order: 'asc' }
+    }
+  }
+});
+
+Propojení Přehrávače: (Navazuje na Fázi 5 )
+
+Stránka app/admin/video/[id]/page.tsx (nebo její nová podkomponenta) musí být klientská komponenta ("use client";), aby mohla sdílet stav mezi seznamem kapitol a přehrávačem.
+
+Vytvoříme useRef pro přehrávač: const playerRef = useRef(null);.
+
+Komponentě <VideoPlayer> (z react-youtube)  předáme prop: onReady={(event) => playerRef.current = event.target}.
+
+Zobrazení Kapitol:
+
+Vytvoříme novou komponentu components/ChapterList.tsx.
+
+Předáme jí chapters={video.chapters} a player={playerRef}.
+
+Uvnitř ChapterList mapujeme pole chapters a renderujeme seznam:
+
+Hierarchie (odsazení) bude řízena pomocí style={{ marginLeft: \${chapter.level * 20}px` }}`.
+
+Každá položka bude klikatelné tlačítko <button>:
+
+JavaScript
+
+<button
+  onClick={() => player.current?.seekTo(chapter.startTime)}
+  className="text-left hover:text-indigo-400"
+>
+  {chapter.text}
+</button>
+5. Funkční Požadavky (FR)
+
+FR1 (Admin Vstup): Formulář pro přidání videa  musí obsahovat nové, velké textové pole pro "Strukturovaný Obsah".
+
+FR2 (Parsování): Systém musí úspěšně zpracovat textový vstup (formát MTF-H viz 4.1), odvodit hierarchii z hierarchického číslování (např. 1.1.) a extrahovat časy z konce řádku.
+
+
+FR3 (Ukládání): Zparsovaná data (text, časy v sekundách, úroveň) musí být uložena jako samostatné záznamy v tabulce Chapter, propojené se správným Video záznamem.
+
+
+FR4 (Zobrazení): Na stránce detailu videa  se musí pod přehrávačem zobrazit seznam kapitol. Vizuální odsazení musí odpovídat level (odvozenému z číslování).
+
+FR5 (Interaktivita): Kliknutí na text kapitoly v seznamu musí způsobit, že YouTube přehrávač skočí na startTime dané kapitoly.
+
+6. Nefunkční Požadavky (NFR)
+NFR1 (Chyby Parseru): Pokud administrátor vloží text v neplatném formátu (např. řádek bez číslování nebo řádek bez časové značky na konci), API musí vrátit srozumitelnou chybu (např. "Chyba na řádku 5: Chybí časová značka na konci řádku") a neuložit video.
+
+NFR2 (Robustnost): Parser musí ignorovat prázdné řádky v textovém poli.
+
+NFR3 (Výkon): Načtení detailu videa nesmí být znatelně zpomaleno načítáním kapitol (ani při 100+ kapitolách).
+
+
+NFR4 (Konzistence): Ochrana stránky app/admin/video/[id]/page.tsx musí být nadále zajištěna existujícím middlewarem pro roli ADMIN.
+
+7. Technologický Stack a Nástroje
+Využívá se stávající stack: Next.js (App Router) , Prisma , NextAuth.js , Tailwind CSS.
+
+Databáze: Vercel Postgres.
+
+Klíčové knihovny: react-youtube  (propojení pomocí useRef).
+
+8. Akceptační Kriteria (Definice "Hotovo")
+Tato fáze je dokončena, když:
+
+Byla spuštěna databázová migrace pro model Chapter (npm run prisma:migrate) na lokálním i produkčním prostředí.
+
+
+Admin může vložit video s formátovaným textem kapitol (viz 4.1) a úspěšně ho uložit.
+
+V databázi (ověřeno např. přes npm run prisma:studio)  existují záznamy v tabulce Chapter se správnými startTime (v sekundách), level (odvozeno z 1.1. atd.) a text.
+
+Na stránce /admin/video/[id] je viditelný hierarchický seznam kapitol (odsazený).
+
+Kliknutí na kapitolu (např. "1.2. Marketing..." s časem (1:02)) posune video na 62 sekund.
+
+Vložení textu, kde řádku chybí časová značka na konci, vrátí chybu 400 (Bad Request).
+
+Veškerý kód je nahrán do main větve a úspěšně nasazen na Vercel.
+
+9. Budoucí Rozvoj (Mimo Rozsah Této Fáze)
+
+Fáze 7: Vytvoření veřejné galerie (na hlavní stránce /), která bude zobrazovat videa a odkazovat na jejich veřejné stránky detailu (např. /video/[id]).
+
+
+
+Fáze 8: Implementace CRUD operací pro admina (Editace a Mazání videí a jejich kapitol).
+
+
+Fáze 9: Otevření aplikace uživatelům (roli USER) pro vytváření vlastních soukromých knihoven.
+
+
+
+Budoucnost: Kompilace obsahů z více videí do souhrnných článků.
+
+
+
+id_chat: 
+https://gemini.google.com/u/1/app/733b90285e42ab9e
+
+

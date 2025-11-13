@@ -38,4 +38,19 @@
       // Propojení na autora
       authorId  String
       author    User     @relation(fields: [authorId], references: [id])
+
+      chapters  Chapter[]
+    }
+
+    model Chapter {
+      id        String   @id @default(cuid())
+      text      String   // Zobrazený text (např. "1.1. Úvod...") [cite: 195]
+      startTime Int      // Čas "od" v sekundách [cite: 195]
+      endTime   Int?     // Čas "do" v sekundách (nepovinné) [cite: 196]
+      level     Int      // Úroveň zanoření (0 = kořen, 1 = podkapitola) [cite: 196]
+      order     Int      // Pořadí kapitoly v rámci videa [cite: 196]
+
+      // Relace k videu. Při smazání videa se smažou i kapitoly. [cite: 197]
+      video   Video  @relation(fields: [videoId], references: [id], onDelete: Cascade)
+      videoId String
     }

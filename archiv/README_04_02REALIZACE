@@ -3,7 +3,324 @@ V příloze je zadání pro tvorbu webové aplikace pro správu videí a obsahu 
 
 AI_RESPONZE:
 
+Rozumím. Zde je podrobný plán realizace Fáze 5, který navazuje na zadání a vychází z aktuálního stavu projektu .
 
+
+Tento dokument slouží jako technický realizační plán pro vývojový tým.
+
+📄 Realizační plán: Webová aplikace Mediathek (Fáze 5)
+
+Projekt: web_app_mediathek  Fáze: 5 - Detail Videa a Přehrávač Navazuje na: README_04_01ZADANI Stav před Fází 5: README_03_03project_snapshot 
+
+
+
+1. 🚀 Příprava a Kontrola Prostředí
+Než začnete s implementací, ověřte, že je vaše prostředí správně nastaveno a projekt je v konzistentním stavu.
+
+Kontrola Systému: Ověřte, že vaše verze Node.js a npm odpovídají těm v projektu (nebo jsou kompatibilní). Projektový snímek uvádí Node.js v24.11.0 a npm 11.6.1.
+
+Kontrola Git: Přejděte do kořenového adresáře projektu.
+
+Ujistěte se, že jste na main větvi: git checkout main
+
+Stáhněte poslední změny (i když by neměly být žádné): git pull origin main
+
+Vytvořte novou větev pro tuto fázi: git checkout -b feature/faze-5-video-player
+
+Instalace Závislostí: Ujistěte se, že máte všechny stávající balíčky:
+
+Bash
+
+npm install
+Lokální Spuštění: Ověřte, že stávající projekt (Fáze 4) běží bezchybně:
+
+Bash
+
+npm run dev
+Otevřete http://localhost:3000 a ověřte, že se aplikace načte.
+
+2. 🛠️ Implementace
+Následující kroky popisují instalaci nových knihoven a úpravy/vytvoření souborů dle zadání .
+
+Krok 1: Instalace react-youtube
+Dle zadání  nainstalujeme knihovnu pro přehrávání YouTube videí.
+
+
+
+Bash
+
+npm install react-youtube
+Krok 2: Vytvoření Klientské Komponenty Přehrávače
+Vytvoříme specializovanou klientskou komponentu pro přehrávač.
+
+Vytvořte soubor: components/VideoPlayer.tsx
+
+Vložte kód:
+
+TypeScript
+
+"use client"; [cite: 329]
+
+import YouTube from 'react-youtube'; [cite: 321]
+
+interface VideoPlayerProps {
+  youtubeId: string; [cite: 329]
+}
+
+/**
+ * Responzivní komponenta pro přehrávání YouTube videí.
+ * Očekává, že bude vložena do rodičovského kontejneru
+ * s definovaným poměrem stran (např. 16:9).
+ */
+export default function VideoPlayer({ youtubeId }: VideoPlayerProps) {
+  
+  const opts = {
+    height: '100%', // Přizpůsobí se kontejneru
+    width: '100%',  // Přizpůsobí se kontejneru
+    playerVars: {
+      autoplay: 0, // Přehrávání se nespustí automaticky
+    },
+  };
+
+  return (
+    <YouTube
+      videoId={youtubeId}
+      opts={opts}
+      // Responzivní třídy pro roztažení v kontejneru
+      className="absolute top-0 left-0 w-full h-full"
+    />
+  );
+}
+Krok 3: Vytvoření Dynamické Stránky Detailu Videa
+Vytvoříme novou serverovou komponentu (RSC), která bude načítat data a zobrazovat detail videa.
+
+
+Vytvořte adresář: app/admin/video/[id]
+
+Vytvořte soubor: app/admin/video/[id]/page.tsx
+
+Vložte kód:
+
+TypeScript
+
+import { PrismaClient } from '@prisma/client';
+import { notFound } from 'next/navigation';
+import VideoPlayer from '@/components/VideoPlayer'; // Import naší nové komponenty [cite: 329]
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'; [cite: 136]
+import { getServerSession } from 'next-auth';
+
+const prisma = new PrismaClient(); [cite: 138]
+
+// Definuje typ pro parametry z URL
+interface VideoDetailPageProps {
+  params: {
+    id: string;
+  };
+}
+
+// Zajistí, že stránka bude vždy dynamicky generována (SSR)
+export const dynamic = 'force-dynamic'; [cite: 139]
+
+/**
+ * Stránka detailu videa pro administrátory.
+ * Načítá data na serveru (RSC).
+ */
+export default async function VideoDetailPage({ params }: VideoDetailPageProps) {
+  const { id } = params;
+
+  // 1. Ověření role na serveru (dvojitá kontrola, i když middleware již existuje) [cite: 220, 335]
+  const session = await getServerSession(authOptions);
+  if (!session || session.user?.role !== 'ADMIN') { [cite: 140]
+     // Middleware by měl zasáhnout dříve, ale toto je pojistka
+     notFound(); 
+  }
+
+  // 2. Načtení dat o videu [cite: 317, 325]
+  const video = await prisma.video.findUnique({
+    where: { id: id },
+  }); [cite: 326]
+
+  // 3. Ošetření nenalezeného videa [cite: 327, 337]
+  if (!video) {
+    notFound();
+  }
+
+  // 4. Vykreslení stránky [cite: 319, 333]
+  return (
+    <main className="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
+      {/* Název Videa */}
+      <h1 className="text-3xl font-bold mb-5">{video.title}</h1>
+
+      {/* Přehrávač Videa (design "plátna") [cite: 339, 340] */}
+      {/* Kontejner s poměrem stran 16:9 */}
+      <div className="relative bg-black rounded-lg overflow-hidden" style={{ paddingTop: '56.25%' /* Poměr 16:9 */ }}>
+        <VideoPlayer youtubeId={video.youtubeId} /> [cite: 334]
+      </div>
+
+      {/* Popis / Shrnutí */}
+      <div className="mt-8">
+        <h2 className="text-2xl font-semibold mb-4">Shrnutí</h2>
+        {/* `whitespace-pre-wrap` zachová formátování (nové řádky) ze shrnutí */}
+        <p className="text-gray-300 whitespace-pre-wrap text-lg">
+          {video.summary}
+        </p>
+      </div>
+    </main>
+  );
+}
+Krok 4: Úprava Admin Dashboardu (Propojení)
+Upravíme stávající dashboard app/admin/dashboard/page.tsx , aby karty videa fungovaly jako odkazy.
+
+
+
+Otevřete soubor: app/admin/dashboard/page.tsx
+
+Upravte kód:
+
+Ujistěte se, že Link je importován: import Link from 'next/link'; (již by měl být ).
+
+Najděte smyčku videos.map((video) => ...).
+
+Nahraďte úvodní div  komponentou Link a přesuňte na ni key.
+
+
+Původní kód (začátek smyčky):
+
+TypeScript
+
+{videos.map((video) => (
+   <div
+      key={video.id}
+      className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden flex flex-col"
+   >
+     {/* ... zbytek karty ... */}
+Nový kód (nahraďte):
+
+TypeScript
+
+{videos.map((video) => (
+   <Link
+      href={`/admin/video/${video.id}`} [cite: 322, 332]
+      key={video.id}
+      className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden flex flex-col transition-all duration-200 hover:shadow-lg hover:ring-2 hover:ring-indigo-500" // Přidán hover efekt
+   >
+     {/* ... zbytek karty (img [cite: 147], title [cite: 149], summary [cite: 150] atd.) ... */}
+3. 🧪 Plán Testování (Lokální Prostředí)
+Po dokončení implementace spusťte aplikaci a proveďte následující testy pro ověření akceptačních kritérií .
+
+Start Aplikace:
+
+Bash
+
+npm run dev
+
+T1: Ověření Zabezpečení (Nepřihlášený Uživatel) 
+
+
+
+Otevřete anonymní okno prohlížeče.
+
+Zkuste přejít na /admin/dashboard.
+
+Očekávaný výsledek: Jste přesměrováni na /login.
+
+Zkuste přejít na URL detailu (i když neznáte ID): /admin/video/test-id.
+
+Očekávaný výsledek: Jste přesměrováni na /login.
+
+
+T2: Ověření Zabezpečení (Role 'USER') 
+
+
+
+Zaregistrujte nového uživatele (role USER je výchozí ).
+
+Přihlaste se jako tento USER.
+
+Zkuste přejít na /admin/dashboard.
+
+Očekávaný výsledek: Jste přesměrováni na /dashboard (uživatelský).
+
+Zkuste přejít na /admin/video/test-id.
+
+Očekávaný výsledek: Jste přesměrováni na /dashboard.
+
+T3: Ověření Funkce (Role 'ADMIN') - Přidání Videa
+
+Přihlaste se jako ADMIN.
+
+Přejděte na /admin/add.
+
+Přidejte nové testovací video (např. URL https://www.youtube.com/watch?v=dQw4w9WgXcQ, Název: "Test Video Fáze 5", Shrnutí: "Testovací shrnutí...").
+
+
+Očekávaný výsledek: Video je úspěšně přidáno.
+
+
+T4: Ověření Propojení (Admin Dashboard) 
+
+
+Přejděte na /admin/dashboard.
+
+Najděte kartu "Test Video Fáze 5".
+
+Najetím myši ověřte, že se jedná o odkaz (zobrazí se URL, změní se kurzor, aktivuje se hover efekt).
+
+Očekávaný výsledek: Karta je klikatelná.
+
+
+T5: Ověření Detailu Videa (Obsah) 
+
+Klikněte na kartu "Test Video Fáze 5".
+
+Očekávaný výsledek: Jste přesměrováni na /admin/video/[id-videa].
+
+Na stránce se zobrazí:
+
+Název "Test Video Fáze 5".
+
+Text "Testovací shrnutí...".
+
+YouTube přehrávač.
+
+
+
+T6: Ověření Přehrávače 
+
+
+Na stránce detailu klikněte na tlačítko "Play" v přehrávači.
+
+Očekávaný výsledek: Video (dQw4w9WgXcQ) se začne přehrávat.
+
+
+T7: Ověření Chybového Stavu (Not Found) 
+
+Změňte manuálně URL na neexistující ID (např. /admin/video/neexistujici-id).
+
+Očekávaný výsledek: Zobrazí se standardní 404 stránka Next.js (díky notFound()).
+
+4. 🌐 Nasazení a Testování (Produkce)
+Po úspěšném lokálním testování je čas nasadit změny na produkci.
+
+Commit a Push:
+
+Bash
+
+git add .
+git commit -m "Realizace Fáze 5: Stránka detailu videa a přehrávač"
+git push origin feature/faze-5-video-player
+Merge: Vytvořte Pull Request na GitHubu/GitLabu, zkontrolujte změny a proveďte merge do main větve.
+
+
+Deployment: Předpokládá se automatické nasazení na Vercel po pushi do main (jak naznačují proměnné prostředí ). Počkejte na dokončení nasazení.
+
+Produkční Ověření:
+
+Otevřete produkční URL aplikace.
+
+Zopakujte testy T1, T3, T4, T5, T6 a T7 na produkčním prostředí, abyste ověřili, že vše funguje správně s produkční databází a proměnnými.
+
+Úspěšné dokončení všech produkčních testů potvrzuje dokončení Fáze 5.
 
 
 JÁ_PROMPT:  
@@ -11,15 +328,137 @@ Testování na lokálním pc proběhlo ok - nasazení na produkci proběhlo tak�
 
 AI_RESPONZE:
 
-Gratuluji k úspěšnému dokončení Fáze 4! Zde je souhrnná zpráva z této fáze realizace, kterou si můžete uložit pro budoucí referenci.
-README_03_02REALIZACE
-8. 11. 19:53
+Zde je kompletní souhrnná zpráva o Fázi 5, která dokumentuje zadání, implementaci, řešení problémů a úspěšné dokončení.
+README_05_01REALIZACE
+10. 11. 21:14
 
-Tento dokument shrnuje vše podstatné, co se v této fázi odehrálo. Můžete ho uložit do repozitáře (např. do složky archiv/) jako trvalý záznam.
+Tento dokument shrnuje vše podstatné a může sloužit jako výchozí bod pro zadání Fáze 6. Gratuluji k dalšímu úspěšnému kroku!
 
 [
-Souhrnná Zpráva o Realizaci: Fáze 4 - Administrátorský Přehled ObsahuDatum: 8. listopadu 2025Verze Aplikace: 0.4.0Zodpovědná Osoba: [Vaše Jméno/Role]1. Cíl FázeCílem této fáze bylo vytvořit zabezpečené rozhraní (dashboard) pro roli ADMIN, které umožní přehledné zobrazení veškerého video obsahu dosud vloženého do databáze. Tím se uzavřel základní cyklus správy obsahu (Create -> Read).2. Realizované Funkce (Co bylo dodáno)2.1. Admin Dashboard (/admin/dashboard)Typ: Server Component (RSC) pro maximální bezpečnost a výkon.Funkcionalita: Načítá všechna data z modelu Video přímo z databáze.Zobrazení: Responzivní mřížka karet. Každá karta obsahuje:Náhled videa (automaticky generovaný z YouTube ID).Název videa.ID videa a email autora.Textové shrnutí (zkrácené pro přehlednost).Datum přidání.Zabezpečení: Stránka je přístupná pouze uživatelům s rolí ADMIN. Ostatní jsou automaticky přesměrováni.2.2. Aktualizace Navigace (Navbar)Přidán nový odkaz "Přehled obsahu" do hlavního navigačního menu.Odkaz je viditelný podmíněně pouze pro přihlášeného administrátora.3. Průběh Realizace a Klíčové Momenty3.1. Příprava ProstředíByla identifikována a vyřešena potřeba správného načítání environmentálních proměnných (DATABASE_URL) pro Prisma v lokálním prostředí pomocí dotenv-cli.Důležité ponaučení: Pro operace s databází (jako prisma generate nebo prisma studio) je nutné explicitně načíst .env.local, pokud není použit standardní .env.3.2. Vývoj a DebuggingBěhem implementace změn v Navbar.tsx došlo k drobné syntaktické chybě (nadbytečná čárka v JSX), která způsobila chybu při kompilaci.Chyba byla rychle identifikována díky chybové hlášce Next.js a obratem opravena.4. Testování (QA)Všechny plánované testovací scénáře byly úspěšně ověřeny:TestPopisVýsledekTC1Admin přístup k dashboardu a viditelnost odkazu v menu✅ OKTC2Shoda zobrazených dat s reálným stavem v databázi✅ OKTC3Odepření přístupu pro běžného uživatele (USER role)✅ OKTC4Odepření přístupu pro nepřihlášeného uživatele✅ OKTC5Smoke test na produkčním prostředí (Vercel) po nasazení✅ OK5. Závěr a Další KrokyFáze 4 byla úspěšně dokončena a nasazena. Administrátor má nyní plnou kontrolu nad tím, co do systému vložil.Příští kroky (návrh pro Fázi 5):Zpřístupnění tohoto obsahu veřejnosti na hlavní stránce (vytvoření veřejné galerie).Vytvoření detailu videa s přehrávačem.
+Souhrnná Zpráva o Realizaci: Fáze 5 - Detail Videa a PřehrávačDatum: 10. listopadu 2025Projekt: web_app_MediathekVerze Aplikace: 0.5.0Navazuje na: Fáze 4 (Admin Dashboard)1. Cíle Fáze 5Hlavním cílem této fáze bylo uzavřít základní administrátorský cyklus "Create -> Read -> Consume". Poté, co administrátor mohl videa přidávat (Fáze 3) a vidět je v seznamu (Fáze 4), bylo nutné umožnit jejich skutečné přehrání a zobrazení detailních informací.Klíčové Požadavky:Vytvoření dynamické stránky pro detail konkrétního videa.Implementace funkčního YouTube přehrávače přímo v aplikaci.Propojení stávajícího Admin Dashboardu s touto novou stránkou.Zajištění bezpečnosti (přístup pouze pro roli ADMIN).2. Realizované Změny2.1. Nové Komponenty a Stránkycomponents/VideoPlayer.tsx: Nová klientská komponenta ("use client") využívající knihovnu react-youtube. Zajišťuje responzivní přehrávání videa s parametry (např. vypnutý autoplay).app/admin/video/[id]/page.tsx: Nová serverová stránka (RSC), která:Dynamicky načítá data o videu z databáze na základě id v URL.Ověřuje oprávnění uživatele (musí být ADMIN).Zobrazuje název videa, vložený přehrávač a plné textové shrnutí.2.2. Úpravy Stávajícího Kóduapp/admin/dashboard/page.tsx: Karty videí v seznamu byly upraveny. Původní statické <div> elementy byly nahrazeny komponentou <Link>, která směřuje na novou detailní stránku. Byl přidán hover efekt pro lepší indikaci interaktivity.package.json: Přidána závislost react-youtube.3. Průběh Realizace a Řešení ProblémůBěhem implementace jsme narazili na několik technických výzev specifických pro Next.js 16 (a novější verze App Routeru), které jsme úspěšně vyřešili.3.1. Problém s Parserem (Importy)Symptom: Chybová hláška Expected ',', got ':' při importu authOptions.Příčina: Pravděpodobně kombinace specifického chování parseru v dev režimu při použití aliasů @ v cestách s hranatými závorkami [...], nebo neviditelné znaky v souboru.Řešení:Opravení syntaxe souboru a použití absolutní cesty s aliasem @ (která se ukázala jako funkční po vyčištění souboru).Přeuložení souboru components/VideoPlayer.tsx pro odstranění potenciálních neviditelných znaků (BOM).3.2. Asynchronní params v Next.js 16Symptom: Kritická chyba Error: Route "/admin/video/[id]" used params.id. params is a Promise....Příčina: V nejnovějších verzích Next.js jsou parametry dynamických rout (params, searchParams) asynchronní a musí se na ně čekat (await).Řešení: Aktualizace definice komponenty VideoDetailPage na asynchronní přístup k params:// Původně: const { id } = params;
+// Nově: const { id } = await params;
+Tím se vyřešila i následná chyba Prisma (Invalid invocation), která byla způsobena předáním undefined ID.4. Výsledek a OvěřeníLokální Testování: Všechny funkce byly ověřeny na vývojovém prostředí (RPi 5). Přehrávač funguje, data se načítají správně, zabezpečení role ADMIN je aktivní.Produkční Testování: Aplikace byla úspěšně nasazena na produkční prostředí (Vercel + Neon DB) a prošla stejnými testy bez chyb.5. Závěr Fáze 5Fáze 5 byla úspěšně dokončena. Aplikace Mediathek má nyní plně funkční jádro pro administrátora-kurátora, který může obsah nejen spravovat, ale i konzumovat.Připraveno pro další fáze:Tato implementace položila nezbytné základy pro budoucí klíčové funkce:Fáze 6 (plán): Veřejná galerie pro návštěvníky.Fáze 7 (plán): Správa a zobrazení časových značek (interaktivní obsah videa), což bude hlavní konkurenční výhoda aplikace.
 ]
+
+JÁ_PROMPT:
+Nyní bych poprosil ještě zrevidovat můj snímkovač projektového adresáře vzhledem k nyní proběhlé relalizační fázi na projektu. V příloze je aktuální skript na snímkování projektového adresáře a nastavení vnitřních a vějších podmínek projektu, prosím o jeho revizi vzhledem k proběhlé realizační fázi, tak aby nový snímkovač pokrýval co neefektivněji a optuimálně celý projekt pro využití v další fázi projektu resp. předat jen ty nezbytné věci které definují unikátní vlastnosti aplikace a nastavení jejích vnitřních a vnějších podmínek. Prosím o výstup formou změnové zprávy k danému skriptu které poté manuálně zapracuji, tak abychom nemuseli vyjíždět celý skript kompletně, což by mohlo být náročné na výstup v responzi. Díky ;-)
+[project_snapshot.py]
+
+AI_RESPONZE:
+Jasně, tady je revize a návrh změn pro váš skript project_snapshot.py, aby reflektoval dokončenou Fázi 5.
+
+Cílem je aktualizovat skript tak, aby zachytil nové klíčové soubory, které definují funkcionalitu přehrávače, a také opravit drobnost, kdy se nedařilo detekovat verzi Prisma.
+
+Změnová Zpráva pro project_snapshot.py (Aktualizace na v7.0)
+Zde jsou doporučené úpravy pro váš skript project_snapshot.py, které manuálně zapracujte:
+
+1. Aktualizace Verze Skriptu
+Pro přehlednost doporučuji aktualizovat interní komentář verze.
+
+Místo:
+
+Python
+
+# --- KONFIGURACE (Verze 6.0 - Aktualizace po Fázi 4) ---
+Vložte:
+
+Python
+
+# --- KONFIGURACE (Verze 7.0 - Aktualizace po Fázi 5) ---
+2. Rozšíření FILES_TO_INCLUDE_CONTENT
+Musíme skriptu říct, aby zahrnul obsah dvou nových souborů, které byly jádrem Fáze 5.
+
+V sekci FILES_TO_INCLUDE_CONTENT:
+
+Python
+
+# ... (stávající soubory) ...
+
+    # Administrace (Fáze 3 & 4)
+    'app/admin/add/page.tsx',
+    'app/admin/dashboard/page.tsx',
+    'app/api/videos/route.ts'
+]
+Přidejte na konec sekce "Administrace" (nebo do nové sekce) tyto dva řádky:
+
+Python
+
+    # Administrace (Fáze 3 & 4)
+    'app/admin/add/page.tsx',
+    'app/admin/dashboard/page.tsx',
+    'app/api/videos/route.ts',
+
+    # Administrace (Fáze 5 - Přehrávač)
+    'components/VideoPlayer.tsx',
+    'app/admin/video/[id]/page.tsx'
+]
+3. Optimalizace get_env_info (Oprava detekce verze Prisma)
+Váš poslední snímek (README_03_03project_snapshot) ukázal Prisma verze: N/A. To znamená, že příkaz npx prisma -v selhal. Je robustnější číst verzi přímo z package.json, který již máte načtený.
+
+Nahraďte celou funkci get_env_info:
+
+Původní kód:
+
+Python
+
+def get_env_info(f):
+    f.write("## 4. Systémové Prostředí\n\n")
+    f.write("```\n")
+    f.write(f"Node.js verze: {run_command('node -v')}\n")
+    f.write(f"NPM verze:     {run_command('npm -v')}\n")
+    f.write(f"Prisma verze:  {run_command('npx prisma -v')}\n")
+    f.write(f"Git verze:     {run_command('git --version')}\n")
+    f.write(f"Systém:        {run_command('uname -a')}\n")
+    f.write("```\n\n")
+Nový kód: (Všimněte si, že funkce nyní přijímá data z package.json)
+
+Python
+
+def get_env_info(f, data):
+    f.write("## 4. Systémové Prostředí\n\n")
+    f.write("```\n")
+    f.write(f"Node.js verze: {run_command('node -v')}\n")
+    f.write(f"NPM verze:     {run_command('npm -v')}\n")
+    
+    # Robustnější čtení verze Prisma přímo z package.json
+    prisma_version = data.get('dependencies', {}).get('prisma', 'N/A')
+    if prisma_version == 'N/A':
+        prisma_version = data.get('devDependencies', {}).get('prisma', 'N/A')
+    f.write(f"Prisma verze:  {prisma_version} (z package.json)\n")
+
+    f.write(f"Git verze:     {run_command('git --version')}\n")
+    f.write(f"Systém:        {run_command('uname -a')}\n")
+    f.write("```\n\n")
+A nezapomeňte upravit volání této funkce v main():
+
+Původní kód v main():
+
+Python
+
+        get_env_info(f)
+Nový kód v main():
+
+Python
+
+        get_env_info(f, package_data)
+4. Rozšíření analyze_package_json (Detekce react-youtube)
+Aby byl snímek co nejpřesnější, přidejme rozpoznání nové knihovny z Fáze 5.
+
+Ve funkci analyze_package_json, uvnitř smyčky for dep, ver in deps.items():, přidejte novou podmínku:
+
+Přidejte tento řádek:
+
+Python
+
+        # ... (stávající if podmínky) ...
+        if 'bcrypt' in dep: purpose = "Knihovna pro hashování hesel"
+        if 'dotenv' in dep: purpose = "Nástroj pro správu env. proměnných"
+        
+        # NOVÁ PODMÍNKA PRO FÁZI 5
+        if 'react-youtube' in dep: purpose = "Knihovna pro vložení YouTube přehrávače"
+        
+        f.write(f"| `{dep}` | `{ver}` | {purpose} |\n")
+Po zapracování těchto čtyř změn bude váš skript perfektně připraven pro generování snímku po Fázi 5 a poskytne přesnější informace pro Fázi 6.
 
 
 
