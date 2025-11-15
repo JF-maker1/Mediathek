@@ -19,12 +19,17 @@ export default async function AdminManagePage() {
   }
 
   // Načítání dat na základě role (příprava na budoucí roli KURATOR)
-  const dataQuery =
-    session.user.role === 'ADMIN'
-      ? prisma.video.findMany // Admin vidí vše
-      : prisma.video.findMany({ where: { authorId: session.user.id } }); // Ostatní jen své
+  // OPRAVA CHYBY: Musíme sestavit argumenty a zavolat findMany jen jednou.
+     
+  // 1. Definujeme 'where' podmínku na základě role
+  const whereCondition = 
+    session.user.role === 'ADMIN' 
+    ? {} // Admin vidí vše (prázdná podmínka)
+    : { authorId: session.user.id }; // Ostatní jen své
 
-  const videos = await dataQuery({
+  // 2. Zavoláme findMany POUZE JEDNOU s finálními argumenty
+  const videos = await prisma.video.findMany({
+    where: whereCondition, // Aplikujeme podmínku
     orderBy: {
       createdAt: 'desc',
     },
