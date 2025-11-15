@@ -62,8 +62,8 @@ export function parseStructuredContent(
     // "1.1.1." -> level 2
     const level = numberingMatch[1].split('.').length - 1;
 
-    // 5. Uložení textu (včetně číslování) [cite: 205]
-    const text = baseText;
+    // 5. Uložení textu (ZMĚNA: Ukládáme celý původní řádek) [cite: 205]
+    const text = trimmedLine; // Celý řádek včetně časové značky
 
     chapters.push({ text, startTime, endTime, level });
   }

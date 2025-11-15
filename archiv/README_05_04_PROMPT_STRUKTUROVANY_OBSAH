@@ -1,0 +1,28 @@
+Proveď detailní binární rozklad (binární strom) přiloženého přepisu videa.
+Požadavky na strukturu a formát:
+Hlavní Téma (Kořen): Identifikuj nejdůležitější hlavní téma (ústřední myšlenku) celého videa. Uveď ho jako číslovaný bod "0. Hlavní téma" (nultá úroveň hierarchie).
+Binární Rozklad (Strom): Rozlož Hlavní téma do hierarchické struktury číslovaného seznamu (např. 1., 2., 1.1., 1.2., 2.1., 2.2. atd.). Každý nadřazený pojem (tam, kde je to logické pro obsah videa) rozděl na dva podřízené pojmy (např. bod 1. se rozdělí na 1.1. a 1.2.).
+Hloubka Rozkladu: Pokračuj v binárním rozkladu, ale zastav se na maximálně třetí úrovni (např. na úrovni 1.1.1.). Již nevytvářej čtvrtou úroveň (např. 1.1.1.1.).
+Časové Úseky: Ke každému bodu na každé úrovni hierarchie přidej přesný časový úsek ve formátu (MM:SS - MM:SS). Tento formát musí být dodržen přesně, tj. bez jakýchkoli mezer uvnitř závorek nebo kolem pomlčky.
+Formát závorek:
+Pro časové úseky používej výhradně kulaté závorky ().
+Pro jakékoli doplňující poznámky, shrnutí obsahu nebo popisky (které nejsou hlavním názvem tématu daného bodu) používej výhradně hranaté závorky []. Každý řádek smí obsahovat pouze jedny kulaté závorky (pro čas).
+Jazyk: Použij češtinu.
+Oddělovače: Mezi hlavními částmi (např. mezi body 1. a 2. nejvyšší úrovně) použij horizontální oddělovač (---).
+Přiložený Přepis Videa: [Zde vložte přepis videa]
+
+
+------------------------------------------------------------------------
+
+Proveď detailní binární rozklad (binární strom) přiloženého přepisu videa.
+Požadavky na strukturu a formát:
+Hlavní Téma (Kořen): Identifikuj nejdůležitější hlavní téma (ústřední myšlenku) celého videa. Uveď ho jako číslovaný bod "0. Hlavní téma" (nultá úroveň hierarchie).
+Binární Rozklad (Strom): Rozlož Hlavní téma do hierarchické struktury číslovaného seznamu (např. 1., 2., 1.1., 1.2., 2.1., 2.2. atd.). Každý nadřazený pojem (tam, kde je to logické pro obsah videa) rozděl na dva podřízené pojmy (např. bod 1. se rozdělí na 1.1. a 1.2.).
+Hloubka Rozkladu: Pokračuj v binárním rozkladu, ale zastav se na maximálně třetí úrovni (např. na úrovni 1.1.1.). Již nevytvářej čtvrtou úroveň (např. 1.1.1.1.).
+Časové Úseky: Ke každému bodu na každé úrovni hierarchie přidej přesný časový úsek ve formátu (MM:SS - MM:SS). Tento formát musí být dodržen přesně (tj. bez jakýchkoli mezer uvnitř závorek nebo kolem pomlčky). Časová značka musí být vždy umístěna až na samém konci daného bodu (řádku).
+Formát závorek:
+Kulaté závorky () smějí být použity výhradně a pouze pro časové úseky na konci řádku.
+Pro jakékoli doplňující poznámky, shrnutí obsahu nebo popisky (které nejsou hlavním názvem tématu daného bodu) používej výhradně hranaté závorky []. Je povoleno i vnořování hranatých závorek (např. jako [text1 [text2] text3]).
+Jazyk: Použij češtinu.
+Oddělovače: Mezi hlavními částmi (např. mezi body 1. a 2. nejvyšší úrovně) použij horizontální oddělovač (---).
+Přiložený Přepis Videa: [Zde by byl vložen kompletní přepis videa]

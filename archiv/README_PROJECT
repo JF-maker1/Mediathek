@@ -1,4 +1,6 @@
+------------------------------------------------------------------------
 Záloha - prostá
+------------------------------------------------------------------------
 
 # Přepnutí do pracovní složky
 cd /home/pi/Projects
@@ -13,6 +15,7 @@ sudo cp -r web_app_Mediathek /mnt/sd_root/
 # 3. Kontrola nově vytvořené zálohy
 ls -l /mnt/sd_root/web_app_Mediathek
 
+------------------------------------------------------------------------
 Záloha - synchronizace - rychlé
 
 # Není potřeba 'cd', používáme absolutní cesty
@@ -23,3 +26,5 @@ sudo rsync -av --delete /home/pi/Projects/web_app_Mediathek /mnt/sd_root/
 
 # 3. Kontrola zálohy (zůstává stejná)
 ls -l /mnt/sd_root/web_app_Mediathek
+
+------------------------------------------------------------------------

@@ -2,9 +2,12 @@ import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { parseStructuredContent } from '@/lib/parser'; // 1. IMPORT PARSERU
+import { parseStructuredContent } from '@/lib/parser';
 
-const prisma = new PrismaClient();
+// Singleton pattern pro PrismaClient (best practice)
+const globalForPrisma = global as unknown as { prisma: PrismaClient };
+const prisma = globalForPrisma.prisma || new PrismaClient();
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
 /**
  * Pomocná funkce pro extrakci YouTube ID z různých formátů URL
@@ -30,7 +33,7 @@ export async function POST(request: Request) {
 
     // 2. Zpracování požadavku
     const body = await request.json();
-    const { youtubeUrl, title, summary, structuredContent } = body; // 2. PŘIDÁNÍ `structuredContent`
+    const { youtubeUrl, title, summary, structuredContent } = body;
 
     if (!youtubeUrl || !title || !summary) {
       return new NextResponse(JSON.stringify({ message: 'Missing required fields' }), {
@@ -48,16 +51,16 @@ export async function POST(request: Request) {
       });
     }
 
-    // 3. PARSOVÁNÍ KAPITOL (PŘED TRANSAKCÍ)
+    // 4. PARSOVÁNÍ KAPITOL (PŘED TRANSAKCÍ)
     // Musíme to provést zde, aby případná chyba parseru 
     // zabránila spuštění databázové transakce.
     const parsedChapters = parseStructuredContent(structuredContent || '');
 
-    // 4. POUŽITÍ DATABÁZOVÉ TRANSAKCE
+    // 5. POUŽITÍ DATABÁZOVÉ TRANSAKCE
     // Tím zajistíme, že se video a jeho kapitoly uloží
     // buď obojí, nebo nic.
     const newVideo = await prisma.$transaction(async (tx) => {
-      // 4a. Vytvoření videa
+      // 5a. Vytvoření videa
       const video = await tx.video.create({
         data: {
           youtubeId: youtubeId,
@@ -67,11 +70,13 @@ export async function POST(request: Request) {
         },
       });
 
-      // 4b. Vytvoření kapitol (pokud nějaké jsou)
+      // 5b. Vytvoření kapitol (pokud nějaké jsou)
       if (parsedChapters.length > 0) {
+        // Parser nyní vrací kompletní data včetně 'text' jako plný řádek
+        // (= Zdroj Pravdy), takže automaticky ukládáme správná data
         const chapterData = parsedChapters.map((chapter, index) => ({
           ...chapter,
-          order: index, // Přidání 'order'
+          order: index, // Pořadí kapitoly
           videoId: video.id, // Propojení s právě vytvořeným videem
         }));
 
@@ -89,17 +94,17 @@ export async function POST(request: Request) {
     });
 
   } catch (error) {
-    // 5. OŠETŘENÍ CHYB PARSERU A DB
+    // 6. OŠETŘENÍ CHYB PARSERU A DB
     if (error instanceof Error) {
+      // Chyba z našeho parseru
       if (error.message.startsWith('Neplatný formát řádku')) {
-        // Chyba z našeho parseru
         return new NextResponse(JSON.stringify({ message: error.message }), {
           status: 400,
           headers: { 'Content-Type': 'application/json' },
         });
       }
+      // Prisma unique constraint violation
       if ((error as any).code === 'P2002') {
-        // Prisma unique constraint violation
         return new NextResponse(JSON.stringify({ message: 'Video with this ID already exists' }), {
           status: 409, // Conflict
           headers: { 'Content-Type': 'application/json' },
