@@ -1,0 +1,858 @@
+JÁ_PROMPT:
+V příloze jsou výsledky z předešlých fází 0 až 5 vývoje webové aplikace zaměřené na správu a strukturalizaci obsahu videí. Přiložené dokumenty mají mezi sebou takovou strukturu, že jeden dokument z jednoho kroku vývoje [soubor README_XX_01ZADANI] je diskuze na zadáním dalšího vývoje této webové aplikace v tomto kroku vývoje resp. vývoj má za sebou 6 kroků vývoje [soubory 00 až 05]. Prosím o projití těchto dokumentů a vytvoření souhrnné zprávy o dosavadním vývoji této aplikace. V těchto jednotlivých zprávách jsou i poznámky o možném dalším vývoji této aplikace což jsou pomyslné větve tohoto kmene vývoje. Prosím aby zpráva o doasavadním vývoji této aplikace naznačila tento strom vývoje jehož kmenem je to co bylo realizováno a větve jsou možné výhonky jeho dalšího směřování resp. ony dosud nerezilované části zmíněné v diskuzích a dalším vývoji aplikaci v těchto dokumentech o zadání pro další krok vývoje aplikace. přílohy:[README_00_01ZADANI][README_01_01ZADANI][README_02_01ZADANI][README_03_01ZADANI][README_04_01ZADANI][README_05_01ZADANI]
+
+AI_RESPONZE:
+
+Jistě, zde je souhrnná zpráva o dosavadním vývoji vaší aplikace "Mediathek" na základě šesti poskytnutých dokumentů (fáze 0 až 5).
+
+Zpráva je strukturována dle vaší metafory "stromu vývoje", kde popisuji hlavní "kmen" (co bylo zadáno k realizaci) a "větve" (plánovaný, ale dosud nerealizovaný budoucí rozvoj).
+
+🌳 Souhrnná Zpráva o Vývoji Aplikace Mediathek (Fáze 0-5)
+Aplikace Mediathek je vyvíjena s vizí vytvořit specializovanou platformu pro správu a prezentaci video obsahu, primárně z YouTube. Cílem není jen shromažďovat videa, ale poskytovat nad nimi strukturovaný obsah (podobný obsahu knihy s časovými značkami) , který uživatelům umožní rychlou orientaci ve vzdělávacích a jiných videích.
+
+
+
+
+
+Konečnou vizí je "televizní společnost tvořená kurátorstvím jejich uživatelů" , kde prvním kurátorem je administrátor (vy) , který aplikaci naplní obsahem a otestuje, než bude tato možnost otevřena i ostatním uživatelům.
+
+
+
+
+
+Kmen: Realizovaná Cesta Vývoje (Zadání Fází 0-5)
+Hlavní kmen vývoje představuje dosud zadané a realizované kroky, které budovaly funkčnost postupně, se zaměřením na roli Administrátora jako prvního kurátora obsahu.
+
+🌱 Fáze 0: Založení a "Kick-off"
+
+Cíl: Počáteční "výkop" projektu.
+
+
+
+Zadáno: Vytvoření základní jednostránkové aplikace s názvem "Mediathek: Tvá sbírka Tvých videí". Hlavním úkolem bylo ověření celého technologického řetězce: lokální vývoj (na Raspberry Pi 5) , nastavení Git a automatické nasazení na platformu Vercel.
+
+
+
+
+
+🌲 Fáze 1 (Zadání pro Fázi 2): Kořeny – Autentizace a Databáze
+
+Cíl: Vytvořit základ pro personalizovanou aplikaci.
+
+
+
+Zadáno: Implementace uživatelské autentizace (přihlášení/registrace) , výběr a nastavení databáze (např. Vercel Postgres) a vytvoření databázového schématu pro uživatele (včetně rozlišení rolí, např. USER a ADMIN).
+
+
+
+
+🌲 Fáze 2 (Zadání pro Fázi 3): První Výhonek – Admin "Create"
+
+Cíl: Dát roli ADMIN první skutečnou funkci a začít plnit databázi obsahem.
+
+
+
+
+Zadáno: Vytvoření nového databázového modelu Video propojeného s uživatelem (autorem). Dále vytvoření zabezpečené administrátorské stránky (formuláře) , kde může admin manuálně vložit URL videa, vlastní název a vlastní stručné shrnutí.
+
+
+
+
+
+🌲 Fáze 3 (Zadání pro Fázi 4): Kontrola – Admin "Read"
+
+Cíl: Umožnit administrátorovi vidět a kontrolovat obsah, který vložil.
+
+
+
+
+
+Zadáno: Vytvoření nové, zabezpečené stránky "Admin Dashboard" (/admin/dashboard). Tato stránka načte a zobrazí seznam všech videí (např. formou mřížky nebo tabulky) , která administrátor přidal, včetně jejich názvu a shrnutí.
+
+
+
+
+
+🌲 Fáze 4 (Zadání pro Fázi 5): Kontejner – Admin "Consume"
+
+Cíl: Uzavřít základní administrátorský cyklus (Create -> Read -> Consume).
+
+
+
+Zadáno: Vytvoření dynamické stránky detailu videa (např. /admin/video/[id]). Položky na Admin Dashboardu (z Fáze 3) se staly klikatelnými odkazy na tuto novou stránku. Zde byl integrován YouTube přehrávač (např. react-youtube) a zobrazen plný název a shrnutí videa. Tato stránka byla navržena jako "kontejner" pro budoucí strukturovaný obsah.
+
+
+
+
+
+🌳 Fáze 5 (Zadání pro Fázi 6): Jádro Hodnoty – Strukturovaný Obsah
+
+Cíl: Implementovat klíčovou a unikátní funkci aplikace – "obsah knihy" pro videa.
+
+
+
+
+Zadáno:
+
+
+Vstup: Přidání jednoduchého textového pole (<textarea>) do admin formuláře (tzv. Varianta C).
+
+
+
+
+Formát: Po diskuzi byl schválen robustní formát (MTF-H) založený na hierarchickém číslování (např. 1.1.1.) pro určení úrovně a časové značce na konci řádku (např. (0:00 - 0:19)).
+
+
+
+
+
+
+Backend: Vytvoření nového databázového modelu Chapter a parseru, který tento text zpracuje, extrahuje level, startTime a text a uloží je do databáze.
+
+
+
+
+
+
+Frontend: Zobrazení tohoto obsahu na stránce detailu videa (z Fáze 4) s vizuálním odsazením podle úrovně.
+
+
+
+Interaktivita: Propojení seznamu kapitol s přehrávačem – kliknutí na kapitolu posune video na daný čas (seekTo).
+
+
+Větve: Plánovaný Budoucí Rozvoj
+Tyto "větve" představují nápady a plány zmíněné v diskuzích o zadání, které dosud nebyly prioritizovány pro implementaci, ale tvoří mapu budoucího směřování projektu.
+
+Větev 1: Zpřístupnění Veřejnosti (Veřejná Galerie)
+Toto je nejčastěji zmiňovaný a nejpřímější další krok.
+
+
+Plán: Vytvořit veřejnou, nespravovanou verzi galerie (např. na domovské stránce /) a veřejnou verzi stránky detailu videa (např. /video/[id]), aby mohl obsah konzumovat kdokoli.
+
+
+
+
+
+Větev 2: Otevření Uživatelům (Uživatelé jako Kurátoři)
+Toto je druhý pilíř hlavní vize.
+
+
+Plán: Umožnit přihlášeným uživatelům (roli USER) vytvářet si vlastní, osobní knihovny videí. To by zahrnovalo buď ukládání videí z hlavní galerie, nebo (jako větší krok) umožnění jim přidávat a strukturovat vlastní videa, stejně jako to nyní dělá admin.
+
+
+
+
+
+Větev 3: Plná Správa Obsahu (Admin CRUD)
+Současnému admin rozhraní chybí klíčové operace.
+
+
+Plán: Implementovat plné CRUD (Create, Read, Update, Delete) operace. Konkrétně chybí tlačítka a formuláře pro Editaci (Update) a Mazání (Delete) již přidaných videí a jejich kapitol.
+
+
+
+Větev 4: Pokročilá Práce s Obsahem (Vize)
+Toto jsou pokročilejší, vizionářské nápady.
+
+
+Kompilace obsahu: Vytváření "článků" nebo "knih", které kompilují strukturovaný obsah z více videí do jednoho souhrnného celku.
+
+
+
+
+
+
+Sledování pokroku: Možnost pro uživatele sledovat, co již ve videích viděli.
+
+
+
+Automatizace: Případná budoucí implementace automatického generování přepisů videí nebo jejich shrnutí pomocí AI, ačkoliv současný plán je založen na manuální/externí přípravě obsahu administrátorem.
+
+
+
+JÁ_PROMPT:
+Podobnou zprávu o dosavadním technologickém vývoji aplikace prosím prosím vytvořit nyní i z dokumentů popisující konkrétní realizaci této webové aplikace. Tato zpráva by měla obsahovat zprávu o technologické konstrukci této aplikace resp. o dosavadním technologickém vývoji této aplikace včetně zde zmíněných tipů pro její další vývoj, což odráží i technologické možnosti této aplikace o jejím dalším možném vývoji. Přiložené dokumenty mají mezi sebou takovou strukturu, že jeden dokument z jednoho kroku vývoje [soubor README_XX_02REALIZACE] je diskuze nad samotnou realizací této webové aplikace vycházejícího z příslušného zadání v tomto kroku vývoje resp. vývoj má za sebou 6 kroků vývoje resp. vývoje zadání a vývoje realizace resp architektury [soubory 00 až 05]. Příloha: [README_00_02REALIZACE_Kick-off][README_01_02REALIZACE][README_02_02REALIZACE][README_03_02REALIZACE][README_04_02REALIZACE][README_05_02REALIZACE]
+
+
+AI_RESPONZE:
+
+Jistě, zde je souhrnná zpráva o dosavadním technologickém vývoji aplikace Mediathek, sestavená výhradně z přiložených dokumentů o realizaci (soubory README_XX_02REALIZACE).
+
+Tato zpráva mapuje, jak byla aplikace technologicky konstruována, jaké klíčové problémy byly řešeny a jaká technologická vylepšení byla navržena pro budoucí vývoj.
+
+🛠️ Souhrnná Zpráva o Technologickém Vývoji Aplikace Mediathek (Fáze 0-5)
+Technologický vývoj aplikace Mediathek představuje postupný proces od základního nastavení moderního webového stacku až po implementaci komplexní, na data napojené interaktivní komponenty. Klíčovým prvkem celého vývoje bylo řešení a ladění integrace mezi jednotlivými technologiemi (Next.js, Prisma, Vercel, NextAuth.js), což vytvořilo robustní základ pro budoucí funkce.
+
+Kmen: Realizovaná Technologická Konstrukce
+Zde je popsán postupný vývoj hlavní technologické "kostry" aplikace.
+
+Fáze 0: Založení Projektu a Konfigurace Prostředí
+
+Technologický Stack: Projekt byl inicializován pomocí npx create-next-app. Byl zvolen základní stack: Next.js 14+ (s App Router), TypeScript a Tailwind CSS.
+
+
+
+
+
+Vývojové Prostředí: Vývoj probíhá na Raspberry Pi 5 (Debian 13).
+
+
+
+Deployment: Cílová platforma byla od začátku nastavena na Vercel.
+
+
+Klíčový Problém (Git): První technologickou výzvou bylo nastavení verzování. Autentizace přes heslo na GitHub selhala (funkce je zastaralá).
+
+
+Řešení (Git): Bylo implementováno trvalé a bezpečné řešení přechodem na autentizaci pomocí SSH klíčů (typ Ed25519). To vyžadovalo změnu git remote set-url origin z HTTPS na SSH formát. Byl také vyřešen problém s git push --set-upstream origin main pro první odeslání.
+
+
+
+
+Fáze 1: Implementace Backendu (Autentizace a Databáze)
+Technologický Stack (Rozšíření): Do projektu byly integrovány klíčové backendové technologie:
+
+
+Databáze: Vercel Postgres (dříve Neon.tech).
+
+
+
+ORM: Prisma pro správu databázového schématu a dotazování.
+
+
+
+
+
+Autentizace: NextAuth.js s využitím CredentialsProvider (přihlášení e-mailem a heslem).
+
+
+
+
+
+
+Zabezpečení: bcrypt pro hashování hesel v databázi.
+
+
+
+Klíčové Problémy a Řešení (Integrace): Tato fáze byla technologicky nejnáročnější kvůli problémům s integrací Prisma a Vercel.
+
+
+Chyba Prisma CLI: prisma migrate dev selhávalo, protože nástroje Prisma automaticky nečtou .env.local. Řešením bylo přidání knihovny dotenv-cli a úprava package.json skriptů (např. npm run prisma:migrate) tak, aby explicitně načítaly proměnné.
+
+
+
+Chyba Prisma DB: Bylo zjištěno, že Vercel Postgres vyžaduje Non-Pooling (přímý) připojovací řetězec pro migrační příkazy, zatímco aplikace sama používá Pooling URL.
+
+
+Chyba Vercel Buildu (Typy): Build selhal kvůli typovým chybám v NextAuth. Řešením bylo vytvoření souboru types/next-auth.d.ts pro rozšíření modulů (module augmentation), kde byly definovány vlastní vlastnosti (jako id a role) pro Session a JWT token.
+
+
+
+Chyba Vercel Buildu (Middleware): Další selhání buildu bylo způsobeno nekompatibilní syntaxí export { default } v middleware. Řešením byl přepis na explicitní import { withAuth } a export default withAuth(...).
+
+
+
+Chyba API: Byla sjednocena chybová hlášení z API endpointů, aby vždy vracela JSON formát (NextResponse.json({ message: "..." })) namísto čistého textu, což způsobovalo chyby při parsování na frontendu.
+
+Fáze 2: První Funkce (Admin "Create")
+Technologický Stack (Rozšíření):
+
+
+Prisma: Schéma bylo rozšířeno o model Video s relací na User.
+
+
+
+API: Vytvořen první chráněný API endpoint (app/api/videos/route.ts) s logikou pro ověření role ADMIN ze serverové session.
+
+
+
+
+Frontend: Vytvořena první klientská komponenta ("use client") s formulářem (app/admin/add/page.tsx).
+
+
+Klíčové Problémy a Řešení (Build Pipeline):
+
+
+Chyba Vercel Buildu (Prisma Client): Build selhal s chybou Property 'video' does not exist.... Příčinou bylo, že Vercel sice spustil migraci (prisma migrate deploy), ale nevygeneroval nový Prisma Client.
+
+Řešení: Build skript v package.json byl finálně upraven na prisma generate && prisma migrate deploy && next build. Tím je zajištěno, že se nejprve vygeneruje klient odpovídající schématu, pak se aplikují migrace a až poté se sestaví aplikace.
+
+
+Chyba Lokálního Vývoje: Byla zaznamenána chyba TypeError při lokálním testování. Řešením byl restart next dev serveru, který si do té doby držel v paměti starou verzi Prisma Clienta.
+
+
+Fáze 3: Načítání Dat (Admin "Read")
+Technologický Stack (Architektura): Tato fáze definovala klíčový architektonický vzor aplikace.
+
+React Server Component (RSC): Stránka app/admin/dashboard/page.tsx byla implementována jako RSC. To znamená, že veškeré načítání dat z databáze probíhá bezpečně na straně serveru (přímým voláním prisma.video.findMany()) ještě před odesláním stránky klientovi.
+
+Fáze 4: Integrace Klienta (Admin "Consume")
+Technologický Stack (Rozšíření):
+
+
+Knihovna: Přidána knihovna react-youtube pro vložení přehrávače.
+
+
+
+Frontend: Vytvořena první dynamická trasa (app/admin/video/[id]/page.tsx) a specializovaná klientská komponenta components/VideoPlayer.tsx.
+
+
+
+
+
+Propojení: Stávající dashboard (/admin/dashboard) byl upraven tak, aby jeho položky byly obaleny v Next.js komponentě <Link> a odkazovaly na dynamickou stránku.
+
+
+
+Klíčový Problém (Next.js): Během vývoje se objevila kritická chyba Error: params is a Promise.... Ačkoliv byla původně řešena pomocí await params , pozdější analýza (viz Fáze 5) ukázala, že šlo o nesprávnou definici typu a params ve skutečnosti Promise není.
+
+
+
+Fáze 5: Jádrová Architektura (Strukturovaný Obsah)
+Technologický Stack (Architektura): Toto byla technologicky nejsložitější fáze, která definovala finální architektonický vzor pro interaktivní komponenty.
+
+Parser (Backend): Vytvořena serverová utilita lib/parser.ts, která implementuje logiku MTF-H formátu. Pomocí Regex parsuje hierarchické číslování (např. 1.1.) a časové značky na konci řádku (např. (1:02)).
+
+
+
+
+
+Databáze (Backend): Do modelu Chapter byla přidána vazba onDelete: Cascade pro zajištění datové integrity (smazání videa smaže i kapitoly).
+
+
+API (Backend): Endpoint /api/videos byl refaktorován, aby používal prisma.$transaction. Tím je zajištěna atomická operace – buď se uloží video I všechny jeho kapitoly, nebo se v případě chyby parseru neuloží nic.
+
+
+Frontend (RSC/Client Pattern): Byl zaveden klíčový vzor pro propojení serverových dat a klientské interaktivity:
+
+
+page.tsx (RSC) načte všechna data (video vč. kapitol).
+
+
+Data předá klientské komponentě VideoDetailClientWrapper.tsx ("use client"), která drží stav (useRef) pro přehrávač.
+
+
+Tato komponenta pak data a referenci předá "hloupým" komponentám VideoPlayer.tsx (který přes onReady referenci nastaví) a ChapterList.tsx (který z reference volá seekTo(time)).
+
+
+
+
+Větve: Budoucí Technologické Možnosti
+Tyto nápady a plány byly zmíněny v realizačních dokumentech jako možné další kroky, které staví na stávajícím technologickém základě.
+
+Meta-Vývoj (Snímkovací Skript): Nejkonzistentnější "větví" je samotný vývoj nástroje project_snapshot.py. Po Fázi 1 , Fázi 4 i Fázi 5 byl skript revidován, aby lépe zachycoval novou realitu projektu – sledování prisma/schema.prisma , middleware.ts , typových definic *.d.ts , nových komponent přehrávače a parseru.
+
+
+
+
+
+
+Zpřístupnění Aplikace (Frontend): Vytvoření veřejně přístupných stránek (galerie na / a detailu na /video/[id]), které by zřejmě znovu využily RSC vzor pro načítání dat.
+
+
+
+
+Plné Admin Oprávnění (Backend/Frontend): Implementace chybějících CRUD operací – především Editace a Mazání. To by vyžadovalo nové API endpointy (PUT, DELETE) a nové frontendové formuláře.
+
+
+Otevření Uživatelům (Backend Architektura): Technologicky náročný krok, který by vyžadoval přenesení práv pro přidávání a správu videí z role ADMIN i na roli USER, a tím zavedení multi-tenancy (každý uživatel vidí jen svá videa).
+
+
+
+JÁ_PROMPT:
+Je možné nyní vytvořit doporučení pro další vývoj této webové aplikace z hlediska dosavadního vývoje zadání této webové aplikace i jejího technologického vývoje? Prosím o vytvoření seznamu dalších možných kroků vývoje této aplikace tak aby se vyvíjela zádrně jak z hlediska svého zadání resp. jejího účelu tak z hlediska technologického. Aplikace by měla defacto vytvořit nadstavbu nad množinou vložených videí z hlediska popisu jejích obsahů resp. to co jednotlivý kurátor vidí. Aplikace bude tedy nabízet sbírky videí resp. obsahu, což je nyní běžná funkce např. youtube ale nadto umožní spravovat a vytvářet popisky těchto videí. Tyto popisky videí se pak budou moci přímo odkazovat časovými značkami na zdroj. Návštěvník těchto galerií pak bude moci procházet strukturovaný obsah i více videí najednou a rychle dohledat původní materiál právě v kontextu i dalších materiálů v konkrétních sbírkách. Toto je asi vize která stále vytváří kontext této rodící se aplikace. Nyní prosím o vytvoření sledu možných vlastností této aplikace i z hlediska technologického vývoje které budou směřovat k této vizi. Tyto vlastnosti prosím seřadit dle priority. Jednu z nich poté vyberu a ta bude dalším zadáním ve vývoji této aplikace. díky ;-)
+
+
+AI_RESPONZE:
+Jasně, naprosto rozumím. Vaše vize je krystalicky čistá: nejde jen o sbírku, ale o vytvoření strukturované, kontextuální vrstvy nad videi, která návštěvníkům umožní procházet "obsahy" videí, jako by listovali v knihovně, a rychle nacházet relevantní informace.
+
+Prošel jsem kompletní historii vývoje (všechny soubory "ZADANI" i "REALIZACE" od Fáze 0 do 5). Postavili jsme neuvěřitelně silný technologický "kmen":
+
+
+Autentizace (F1): Máme robustní systém rolí ADMIN a USER .
+
+
+
+Správa (F2-F4): Administrátor má kompletní (i když zatím jednosměrný) pracovní postup: "Vytvořit" video , "Zobrazit" seznam a "Přehrát" video.
+
+
+
+Jádro (F5): Implementovali jsme vaši klíčovou myšlenku. Admin může vkládat strukturovaný obsah (kapitoly) , který je parsován (díky vašemu návrhu formátu MTF-H) , ukládán do databáze (Chapter model) a interaktivně propojen s přehrávačem (seekTo).
+
+
+
+
+Aplikace je nyní jako dokonale připravené divadlo s jedním hercem (adminem), který má skvělé rekvizity, ale hraje zatím jen sám pro sebe v zamčeném sále.
+
+Zde je seznam navrhovaných dalších kroků, seřazený dle priority, které aplikaci posunou k vaší vizi "knihovny pro návštěvníky".
+
+Seznam Následujících Funkcí (Seřazeno dle Priority)
+1. Veřejná Galerie a Veřejný Detail Videa (Otevření Aplikace)
+Popis: Toto je nejpřímější a nejlogičtější další krok. V současné chvíli je veškerý obsah (seznam i detail videa) přístupný pouze přihlášenému administrátorovi . Tento krok by vytvořil veřejně přístupné stránky:
+
+
+
+Nová hlavní stránka (/): Veřejná "výkladní skříň" nebo galerie, která zobrazí všechna videa (nebo vybraná) kurátorovaná administrátorem. Využila by stejnou technologii načítání dat (RSC) jako admin dashboard.
+
+
+Nová stránka detailu (/video/[id]): Veřejná verze stránky, kterou jsme vytvořili ve Fázi 5. Zobrazila by název, přehrávač a především interaktivní seznam kapitol  komukoli, kdo přijde na web.
+
+
+Priorita / Zdůvodnění: Nejvyšší. Vaše vize je o "návštěvnících", ale ti zatím nemají co navštívit. Admin strávil 5 fází přípravou obsahu; nyní je čas ten obsah zveřejnit. Technologicky je to velmi efektivní, protože znovu použijeme téměř 90 % již vytvořených komponent (VideoPlayer, ChapterList atd.).
+
+2. Plná Správa Obsahu pro Admina (CRUD: Editace a Mazání)
+
+Popis: Administrátor může obsah pouze vytvářet (Create) a číst (Read). Nemůže však Upravit (Editovat) video, které přidal (např. opravit překlep v názvu, nebo aktualizovat strukturovaný obsah), ani jej Smazat (Delete). Tento krok by přidal:
+
+
+Tlačítka "Upravit" a "Smazat" na admin dashboardu (/admin/dashboard).
+
+Nové API endpointy (např. PUT a DELETE v /api/videos/[id]).
+
+Novou stránku s formulářem pro editaci (/admin/edit/[id]), která by předvyplnila stávající data.
+
+Priorita / Zdůvodnění: Vysoká (téměř shodná s #1). Toto je zásadní funkce pro kvalitu kurátorské práce. Bez ní je každá chyba admina trvalá. Pokud video na YouTube zmizí nebo admin najde lepší strukturu kapitol, nemůže to opravit. Pro dlouhodobou udržitelnost obsahu je to nezbytné.
+
+3. Osobní Knihovny Uživatelů (Uživatel jako Kurátor)
+
+Popis: Tento krok naplňuje druhou část vaší vize: "postupně se kurátorství rozšíří i na uživatele". Umožnili bychom přihlášeným uživatelům (role USER) vytvářet si vlastní sbírky. Technologicky by to znamenalo:
+
+
+Rozšíření oprávnění pro API (aby i USER mohl volat POST /api/videos).
+
+Klíčová změna: Úprava databázového schématu a všech dotazů Prisma, aby byla zajištěna multi-tenancy – uživatel smí vidět a spravovat pouze svá vlastní videa (např. prisma.video.findMany({ where: { authorId: session.user.id } })).
+
+Využití stávající stránky /dashboard (která je nyní prázdná)  jako jejich osobního "Admin Dashboardu".
+
+
+Priorita / Zdůvodnění: Střední. Toto je obrovský, strategický krok, který mění aplikaci z "blogu" na "platformu". Je technologicky náročný (multi-tenancy je komplexní) a měl by přijít až poté, co je základní "admin-veřejnost" model plně funkční (krok #1) a stabilní (krok #2).
+
+4. Kompilovaný Obsah (Prohledávání Napříč Videi)
+
+Popis: Toto je implementace vaší ultimátní vize: "procházet strukturovaný obsah i více videí najednou" . Místo procházení galerie videí by uživatel mohl prohledávat obsah kapitol. Např. hledat klíčové slovo "inzulinová rezistence" a aplikace by vrátila seznam kapitol (např. 1.1.2. Zdravotní rizika) z různých videí, které toto téma zmiňují, i s přímým odkazem na daný čas.
+
+
+Priorita / Zdůvodnění: Nízká (Budoucí Vize). Toto je technologicky nejsložitější krok. Vyžadovalo by to buď pokročilé full-text vyhledávání přímo v PostgreSQL databázi (prohledávání modelu Chapter) nebo zavedení specializovaného vyhledávacího enginu (jako MeiliSearch, Algolia atd.), který by byl synchronizován s naší databází. Je to cíl, ke kterému směřujeme, ale musí mu předcházet kroky 1-3.
+
+Prosím, vyberte jednu z těchto vlastností, a já připravím podrobné zadání pro realizační tým.
+
+
+
+JÁ_PROMPT:
+Je možné nyní vytvořit doporučení pro další vývoj této webové aplikace z hlediska dosavadního vývoje zadání této webové aplikace i jejího technologického vývoje? Prosím o vytvoření seznamu dalších možných kroků vývoje této aplikace tak aby se vyvíjela zádrně jak z hlediska svého zadání resp. jejího účelu tak z hlediska technologického. Aplikace by měla defacto vytvořit nadstavbu nad množinou vložených videí z hlediska popisu jejích obsahů resp. to co jednotlivý kurátor vidí. Aplikace bude tedy nabízet sbírky videí resp. obsahu, což je nyní běžná funkce např. youtube ale nadto umožní spravovat a vytvářet popisky těchto videí. Tyto popisky videí se pak budou moci přímo odkazovat časovými značkami na zdroj. Návštěvník těchto galerií pak bude moci procházet strukturovaný obsah i více videí najednou a rychle dohledat původní materiál právě v kontextu i dalších materiálů v konkrétních sbírkách. Toto je asi vize která stále vytváří kontext této rodící se aplikace. Nyní prosím o vytvoření sledu možných vlastností této aplikace i z hlediska technologického vývoje které budou směřovat k této vizi. Tyto vlastnosti prosím seřadit dle priority. Jednu z nich poté vyberu a ta bude dalším zadáním ve vývoji této aplikace. díky ;-)
+
+
+AI_RESPONZE:
+Jasně, naprosto rozumím. Vaše vize je krystalicky čistá: nejde jen o sbírku, ale o vytvoření strukturované, kontextuální vrstvy nad videi, která návštěvníkům umožní procházet "obsahy" videí, jako by listovali v knihovně, a rychle nacházet relevantní informace.
+
+Prošel jsem kompletní historii vývoje (všechny soubory "ZADANI" i "REALIZACE" od Fáze 0 do 5). Postavili jsme neuvěřitelně silný technologický "kmen":
+
+
+Autentizace (F1): Máme robustní systém rolí ADMIN a USER .
+
+
+
+Správa (F2-F4): Administrátor má kompletní (i když zatím jednosměrný) pracovní postup: "Vytvořit" video , "Zobrazit" seznam a "Přehrát" video.
+
+
+
+Jádro (F5): Implementovali jsme vaši klíčovou myšlenku. Admin může vkládat strukturovaný obsah (kapitoly) , který je parsován (díky vašemu návrhu formátu MTF-H) , ukládán do databáze (Chapter model) a interaktivně propojen s přehrávačem (seekTo).
+
+
+
+
+Aplikace je nyní jako dokonale připravené divadlo s jedním hercem (adminem), který má skvělé rekvizity, ale hraje zatím jen sám pro sebe v zamčeném sále.
+
+Zde je seznam navrhovaných dalších kroků, seřazený dle priority, které aplikaci posunou k vaší vizi "knihovny pro návštěvníky".
+
+Seznam Následujících Funkcí (Seřazeno dle Priority)
+1. Veřejná Galerie a Veřejný Detail Videa (Otevření Aplikace)
+Popis: Toto je nejpřímější a nejlogičtější další krok. V současné chvíli je veškerý obsah (seznam i detail videa) přístupný pouze přihlášenému administrátorovi . Tento krok by vytvořil veřejně přístupné stránky:
+
+
+
+Nová hlavní stránka (/): Veřejná "výkladní skříň" nebo galerie, která zobrazí všechna videa (nebo vybraná) kurátorovaná administrátorem. Využila by stejnou technologii načítání dat (RSC) jako admin dashboard.
+
+
+Nová stránka detailu (/video/[id]): Veřejná verze stránky, kterou jsme vytvořili ve Fázi 5. Zobrazila by název, přehrávač a především interaktivní seznam kapitol  komukoli, kdo přijde na web.
+
+
+Priorita / Zdůvodnění: Nejvyšší. Vaše vize je o "návštěvnících", ale ti zatím nemají co navštívit. Admin strávil 5 fází přípravou obsahu; nyní je čas ten obsah zveřejnit. Technologicky je to velmi efektivní, protože znovu použijeme téměř 90 % již vytvořených komponent (VideoPlayer, ChapterList atd.).
+
+2. Plná Správa Obsahu pro Admina (CRUD: Editace a Mazání)
+
+Popis: Administrátor může obsah pouze vytvářet (Create) a číst (Read). Nemůže však Upravit (Editovat) video, které přidal (např. opravit překlep v názvu, nebo aktualizovat strukturovaný obsah), ani jej Smazat (Delete). Tento krok by přidal:
+
+
+Tlačítka "Upravit" a "Smazat" na admin dashboardu (/admin/dashboard).
+
+Nové API endpointy (např. PUT a DELETE v /api/videos/[id]).
+
+Novou stránku s formulářem pro editaci (/admin/edit/[id]), která by předvyplnila stávající data.
+
+Priorita / Zdůvodnění: Vysoká (téměř shodná s #1). Toto je zásadní funkce pro kvalitu kurátorské práce. Bez ní je každá chyba admina trvalá. Pokud video na YouTube zmizí nebo admin najde lepší strukturu kapitol, nemůže to opravit. Pro dlouhodobou udržitelnost obsahu je to nezbytné.
+
+3. Osobní Knihovny Uživatelů (Uživatel jako Kurátor)
+
+Popis: Tento krok naplňuje druhou část vaší vize: "postupně se kurátorství rozšíří i na uživatele". Umožnili bychom přihlášeným uživatelům (role USER) vytvářet si vlastní sbírky. Technologicky by to znamenalo:
+
+
+Rozšíření oprávnění pro API (aby i USER mohl volat POST /api/videos).
+
+Klíčová změna: Úprava databázového schématu a všech dotazů Prisma, aby byla zajištěna multi-tenancy – uživatel smí vidět a spravovat pouze svá vlastní videa (např. prisma.video.findMany({ where: { authorId: session.user.id } })).
+
+Využití stávající stránky /dashboard (která je nyní prázdná)  jako jejich osobního "Admin Dashboardu".
+
+
+Priorita / Zdůvodnění: Střední. Toto je obrovský, strategický krok, který mění aplikaci z "blogu" na "platformu". Je technologicky náročný (multi-tenancy je komplexní) a měl by přijít až poté, co je základní "admin-veřejnost" model plně funkční (krok #1) a stabilní (krok #2).
+
+4. Kompilovaný Obsah (Prohledávání Napříč Videi)
+
+Popis: Toto je implementace vaší ultimátní vize: "procházet strukturovaný obsah i více videí najednou" . Místo procházení galerie videí by uživatel mohl prohledávat obsah kapitol. Např. hledat klíčové slovo "inzulinová rezistence" a aplikace by vrátila seznam kapitol (např. 1.1.2. Zdravotní rizika) z různých videí, které toto téma zmiňují, i s přímým odkazem na daný čas.
+
+
+Priorita / Zdůvodnění: Nízká (Budoucí Vize). Toto je technologicky nejsložitější krok. Vyžadovalo by to buď pokročilé full-text vyhledávání přímo v PostgreSQL databázi (prohledávání modelu Chapter) nebo zavedení specializovaného vyhledávacího enginu (jako MeiliSearch, Algolia atd.), který by byl synchronizován s naší databází. Je to cíl, ke kterému směřujeme, ale musí mu předcházet kroky 1-3.
+
+Prosím, vyberte jednu z těchto vlastností, a já připravím podrobné zadání pro realizační tým.
+
+
+JÁ_PROMPT:
+Nyní bych zvolil k vypracování standardního zadání pro další dokument zadání dalšího stupně vývoje této webové aplikace [README_07_01ZADANI] tento bod [2. Plná Správa Obsahu pro Admina (CRUD: Editace a Mazání)
+
+Popis: Administrátor může obsah pouze vytvářet (Create) a číst (Read). Nemůže však Upravit (Editovat) video, které přidal (např. opravit překlep v názvu, nebo aktualizovat strukturovaný obsah), ani jej Smazat (Delete). Tento krok by přidal:
+
+Tlačítka "Upravit" a "Smazat" na admin dashboardu (/admin/dashboard).
+
+Nové API endpointy (např. PUT a DELETE v /api/videos/[id]).
+
+Novou stránku s formulářem pro editaci (/admin/edit/[id]), která by předvyplnila stávající data.
+
+Priorita / Zdůvodnění: Vysoká (téměř shodná s #1). Toto je zásadní funkce pro kvalitu kurátorské práce. Bez ní je každá chyba admina trvalá. Pokud video na YouTube zmizí nebo admin najde lepší strukturu kapitol, nemůže to opravit. Pro dlouhodobou udržitelnost obsahu je to nezbytné.] Prosím o návrhy řešení z pohledu konkrétního uživatelského zadání i z pohledu technologického řešení. Zřejmě by bylo možné doplnit funkční tlačítka k jednotlivým položkám přehledu obsahu jako je tlačítko "delete" a "edit". V případě delete by došlo ke zrušení videa (po potvrzení o jeho zrušení) a v případě edit by došlo k otevření nové stránky pro editaci, kde by byl formulář shodný jako pro uložení videa na stránce "Přidat video" s tím rozdílem že by byl formulář již předvyplněn a po stisku tlačítka "uložit video" by nedošlo k uložení nového videa resp. záznamu ale k aktualizaci příslušných záznamů videa a zobrazilo by se hlášení "Záznamy k tomuto videu byly aktualizovány". Zde je potřeba ještě prodiskutovat jak tuto funkcionalitu U(update) a D(delete) zorganizovat. Také místo tlačíte "delete" a "edit" (které by se zobrazovaly jen tomu kdo má práva delete a edit) u každého videa na stránce "Přehled obsahu" vytvořit novou stránku "Správa obsahu" kde by byl seznam všech videí formou přehledové tabulky, kde každý řádek tabulky by byly jedno video a kde bylo možné sledovat jednotlivé parametry tohoto videa po stránce např. kdy bylo přidáno do sbírky, kdy bylo naposledy aktualizováno, které údaje jsou k videu vyplněny, v kterých sbírkách je zahrnuto (zatím není implementováno, ale uživatel by měl moci vytvářet různé sbírky které budou obsahovat určitým způsobem související videa s nějakou tématikou - je to typická sběratelská činnost vytvářet určité sbírky apod). V této tabulce by pak bylo možné vidět případně i tlačítka "delete" a "edit" pokud by mohl daný uživatel této sbírky tyto parametry měnit. Jde v podstatě o to jak nyní zorganizovat stránky s ohledem na budoucí CRUD aplikace a přidělování uživatelských práv k jednotlivým sbírkám. Je možné nyní dále rozpracovat tento vybraný bod s ohledem na organizaci CRUD v rámci této webové aplikace s ohledem na přidělování práv k jednotlivým sbírkám pro jednotlivé uživatele. Administrátor bude moci mít plná práva ke všemu. Kurátoři plná práva ke svým sbírkám, Návšěvnici pouze práva k Prohlížení ... jak toto uchopit v rámci tohoto bodu k vytvoření dalšího zadání. Prosím o varianty řešení a jejich vyhodnocení. Pak jedno z nich vyberu a vypracujeme z něj podrobné zadání, které teprve potom postoupí k realizaci.
+
+AI_RESPONZE:
+Ahoj, to je naprosto excelentní a klíčový postřeh. Přesně v této fázi se rozhoduje o budoucí architektuře a škálovatelnosti celé aplikace.
+
+Vaše úvaha "jak nyní zorganizovat stránky s ohledem na budoucí CRUD a přidělování práv"  je to nejdůležitější. Kdybychom to teď udělali "rychle", za pár fází bychom museli vše přepsat.
+
+Pojďme si rozebrat dvě hlavní varianty, které jste sám nastínil, a vyhodnotit je z hlediska vaší vize (Kurátoři, Sbírky). 
+
+Varianta A: Rychlé Doplnění (Tlačítka na Dashboardu)
+Tato varianta odpovídá vašemu prvnímu návrhu:
+
+
+Co: Přidáme tlačítka "Editovat" a "Smazat" přímo na stávající stránku app/admin/dashboard/page.tsx ke každé "kartě" videa. 
+
+
+Editace: Odkaz "Editovat" by vedl na novou stránku app/admin/edit/[id], která by byla kopií formuláře app/admin/add/page.tsx, ale s předvyplněnými daty. 
+
+
+Mazání: Tlačítko "Smazat" by po potvrzení (window.confirm) zavolalo API endpoint pro smazání. 
+
+Vyhodnocení
+Výhody:
+
+Rychlá implementace: Je to relativně snadné na přidání. Využíváme existující stránku.
+
+Nevýhody:
+
+Špatné "Oddělení Odpovědností" (Separation of Concerns): Stránka /admin/dashboard byla navržena jako vizuální přehled a náhled (jak to uvidí návštěvník). Pleteme dohromady "prohlížení" a "správu", což je z hlediska UX (uživatelského zážitku) matoucí.
+
+Není škálovatelné: Až budete mít 100 videí, bude kartový přehled pro správu nepoužitelný.
+
+
+Není připraveno na budoucnost: Jak jste sám řekl, chybí místo pro metadata (datum přidání, status, sbírky).  Karty na to nejsou stavěné.
+
+Varianta B: Strategická Stránka "Správa Obsahu" (Doporučeno)
+Toto je váš druhý, propracovanější návrh, který plně podporuji.
+
+Co: Vytvoříme zcela novou, samostatnou stránku v administraci, např. app/admin/manage/page.tsx.
+
+
+UI: Tato stránka nebude obsahovat karty, ale přehledovou tabulku (<table>), jak jste navrhl. 
+
+Sloupce tabulky:
+
+Název videa
+
+Stav (např. "Publikováno" / "Koncept" - budoucí)
+
+Obsah (✅ / ❌ - zda má video kapitoly)
+
+Datum přidání 
+
+Datum posl. úpravy 
+
+Akce (zde budou odkazy/tlačítka [Editovat] a [Smazat])
+
+Editace/Mazání: Funkce by byla stejná jako ve Variantě A (nová stránka edit a delete API), ale přístupná z této nové tabulky.
+
+Vyhodnocení
+Výhody:
+
+Čistá Architektura: Perfektně oddělíme odpovědnosti:
+
+/admin/dashboard: "Jak vypadá moje galerie?" (Vizuální náhled)
+
+/admin/manage: "Jaká mám data a co s nimi chci dělat?" (Pracovní nástroj)
+
+Škálovatelnost: Tabulka je pro správu dat standard. Může mít stránkování a snadno pojme tisíce záznamů.
+
+Připraveno na Budoucnost: Toto je klíčové. Až příště přidáme "Sbírky", jednoduše do této tabulky přidáme nový sloupec "Sbírky".  Nemusíme nic předělávat.
+
+🔥 Jak to Vyřeší Role (Admin vs. Kurátor)?
+Toto je nejdůležitější část vašeho dotazu.  Varianta B to řeší elegantně, pokud ji od začátku správně navrhneme.
+
+Musíme implementovat "Kontrolu Vlastnictví" (Ownership-aware) na úrovni API a dat.
+
+Backend (API):
+
+Nové API endpointy (DELETE /api/videos/[id] a PUT /api/videos/[id]) musí na serveru provést kontrolu:
+
+"Je přihlášený uživatel ADMIN? NEBO je přihlášený uživatel (session.user.id) shodný s authorId u videa, které chce smazat/upravit?"
+
+Pokud platí jedna z těchto podmínek, operace je povolena.
+
+Frontend (Nová stránka manage):
+
+Tato stránka bude načítat data (opět jako RSC) s ohledem na roli:
+
+Pokud je role ADMIN: prisma.video.findMany() (Načti všechna videa všech autorů). 
+
+Pokud je role USER (budoucí Kurátor): prisma.video.findMany({ where: { authorId: session.user.id } }) (Načti POUZE moje videa). 
+
+Důsledek tohoto návrhu: Když v budoucí fázi "povýšíme" roli USER na Kurátora, nemusíme na této stránce měnit vůbec nic. Kurátor automaticky uvidí jen svá videa a tlačítka Edit/Delete mu budou fungovat jen pro jeho videa (díky kontrole na API). Administrátor uvidí vše a bude moci spravovat vše. 
+
+Doporučení
+Jednoznačně doporučuji Variantu B (Strategická Stránka "Správa Obsahu").
+
+Je to sice o trochu více práce nyní (musíme vytvořit novou stránku a tabulku), ale ušetří nám to násobky práce v budoucnu. Perfektně to připraví půdu pro "Sbírky" a roli "Kurátora"  přesně tak, jak jste popsal.
+
+
+Souhlasíte s tímto přístupem a chcete, abychom na základě Varianty B připravili finální, podrobné zadání README_07_01ZADANI?
+
+JÁ_PROMPT:
+Ano pojdme připravit zadání pro variantu [Varianta B: Strategická Stránka "Správa Obsahu" (Doporučeno)] ... tento návrh by měl umožnit vytvářet v budoucnu další role se specifickými právy jako nyní je ADMIN a USER tak v budoucnu např. KURATOR (bude vytvářet své sbírky s plnými právy pro svou sbírku jako administrátor) nebo např. PRUVODCE (bude provádět po sbírkách resp. bude moci vytvářet nové entity resp. cesty po sbírkách a doporučovat cestu sbírkou) - PRUVODCE ostatně bude moci vytvářet i KURATOR pro své sbírky a vytvářet tak průvodcovské cesty sbírkou. Ale to je až další budoucnost této aplikace. Nyní se pojdme zaměřit na solidní založení možnosti pracovat s různými právy pro tuto aplikaci Nyní pro ADMINa (může vše CRUD) a USERa (nemůže nyní nic). Poté bude možné přiřadit USERovi R (jako read) a bude moci prohlížet videa na příslušných místech aplikace. Je toto takto realizovatelné? Můžeme toto nyní solidně založit?
+
+
+
+AI_RESPONZE:
+Ano, naprosto. Nejen že je to realizovatelné, ale je to strategicky správný a nezbytný krok.
+
+Vaše úvaha je naprosto přesná. Pokud bychom nyní implementovali "rychlá" tlačítka na stávající dashboard (Varianta A), v budoucnu bychom museli vše přepisovat, jakmile bychom přidali roli KURATOR nebo "Sbírky".
+
+Zvolená Varianta B (Strategická Stránka "Správa Obsahu") nám naopak umožňuje založit "solidní základy" pro všechny vaše budoucí vize :
+
+
+
+
+Architektonicky oddělíme vizuální přehled (/admin/dashboard) od pracovního nástroje (/admin/manage). 
+
+
+Připravíme datovou strukturu (tabulku) pro budoucí rozšíření (sloupce "Status", "Sbírky" atd.). 
+
+
+Založíme logiku oprávnění (RBAC), která bude od začátku rozlišovat mezi "může vše" (ADMIN) a "může jen své" (budoucí KURATOR). 
+
+Můžeme to solidně založit tím, že veškerou logiku oprávnění implementujeme na straně serveru (API). Tím zajistíme, že i když frontend něco zobrazí, server bude poslední instancí, která ověří, zda má uživatel právo akci provést.
+
+Zde je tedy kompletní návrh zadání pro Fázi 7, který tuto robustní architekturu zakládá.
+
+📄 Zadání projektu: Webová aplikace Mediathek (Fáze 7 - Správa Obsahu a Základy RBAC)
+Datum: 15. listopadu 2025 Verze: 7.0 Navazuje na: Fáze 6 (Realizace strukturovaného obsahu, README_05_02REALIZACE)
+
+1. Název projektu
+Mediathek
+
+2. 🎯 Cíl Fáze
+Cílem této fáze je implementovat chybějící operace Update (U) a Delete (D) z cyklu CRUD a založit robustní architektonické základy pro budoucí správu rolí a oprávnění (Role-Based Access Control - RBAC).
+
+Po této fázi bude mít administrátor plnou kontrolu nad obsahem (CRUD). Zároveň bude systém architektonicky připraven na budoucí zavedení rolí (jako KURATOR), které budou moci spravovat pouze vlastní obsah.
+
+3. Rozsah pro Fázi 7
+
+Nová stránka "Správa Obsahu": Vytvoření nové, zabezpečené stránky (/admin/manage), která zobrazí veškerý obsah formou tabulky pro snadnou správu. 
+
+
+
+Nová stránka "Editace Obsahu": Vytvoření nové dynamické stránky (/admin/edit/[id]) s předvyplněným formulářem pro editaci. 
+
+
+Nové API Endpointy: Vytvoření nových serverových handlerů pro PUT (Update) a DELETE (Delete) na dynamické trase /api/videos/[id]. 
+
+
+Implementace Oprávnění (Založení RBAC): Implementace server-side logiky, která rozlišuje oprávnění ADMIN (může vše) od oprávnění "Vlastník obsahu" (může spravovat jen své). 
+
+Mimo rozsah: Zveřejnění obsahu pro veřejnost (to bude Fáze 8), implementace "Sbírek" (Collections).
+
+4. 🏛️ Návrh Řešení a Architektura
+Toto řešení je navrženo s ohledem na maximální budoucí rozšiřitelnost.
+
+4.1. Architektura Oprávnění (Založení RBAC)
+Toto je nejdůležitější část. Veškeré kontroly musí probíhat na straně serveru (API), nikoli pouze na klientu.
+
+Stávající role:
+
+ADMIN: Může číst, vytvářet, upravovat a mazat jakýkoliv obsah v systému.
+
+
+USER: V této fázi ještě nemá žádná oprávnění ke správě obsahu. 
+
+Server-Side Logika (API):
+
+Při každém požadavku PUT nebo DELETE na /api/videos/[id] se provede kontrola:
+
+Krok 1: Je uživatel přihlášen?
+
+Krok 2: Načteme video: const video = await prisma.video.findUnique({ where: { id: params.id } }).
+
+Krok 3 (Ověření Oprávnění):
+
+TypeScript
+
+const session = await getServerSession(authOptions);
+if (!session) { return 401; } // Neoprávněný přístup
+
+const video = await prisma.video.findUnique({ where: { id: params.id } });
+if (!video) { return 404; } // Nenalezeno
+
+// ZDE JE JÁDRO RBAC:
+const isOwner = video.authorId === session.user.id;
+const isAdmin = session.user.role === 'ADMIN';
+
+if (!isOwner && !isAdmin) {
+  // Uživatel není ani vlastník, ani admin
+  return 403; // Zakázáno
+}
+
+// Pokud kód pokračuje, uživatel MÁ oprávnění
+Tato logika nám nyní umožní spravovat obsah jako ADMIN, ale až v budoucnu dáme roli USER (nebo KURATOR) právo vytvářet obsah, tato stránka jim automaticky umožní spravovat jejich vlastní obsah bez jediné změny. 
+
+4.2. Frontend: Stránka Správy Obsahu (app/admin/manage/page.tsx)
+Bude to React Server Component (RSC) pro rychlé načtení dat.
+
+Načítání Dat: Stránka načte data na serveru na základě role:
+
+Pokud ADMIN: await prisma.video.findMany(...) (načte vše).
+
+Pokud USER: await prisma.video.findMany({ where: { authorId: session.user.id } }) (načte jen vlastní - nyní 0).
+
+UI: Zobrazí <table> se sloupci:
+
+Název videa
+
+Datum přidání (createdAt)
+
+Datum posl. úpravy (updatedAt)
+
+Akce (tento sloupec bude obsahovat dva prvky):
+
+<Link href={/admin/edit/${video.id}}>[Editovat]</Link>
+
+Novou klientskou komponentu <DeleteButton videoId={video.id} />
+
+4.3. Frontend: Stránka Editace Obsahu (app/admin/edit/[id]/page.tsx)
+Musí to být Klientská Komponenta ("use client"), protože bude obsahovat formulář a načítat data na straně klienta.
+
+Načítání Dat: Pomocí useEffect (nebo useSWR) komponenta načte data pro dané [id] zavoláním GET /api/videos/[id] (tento endpoint musíme také vytvořit).
+
+
+Předvyplnění: Data (včetně structuredContent) se vloží do stavových proměnných (useState) a předvyplní formulář. 
+
+
+Formulář: Bude vizuální kopií formuláře add/page.tsx, včetně textarea pro strukturovaný obsah (z Fáze 6). 
+
+Uložení: Tlačítko "Aktualizovat záznam" zavolá PUT /api/videos/[id] s novými daty.
+
+4.4. Backend: Nové API Endpointy (app/api/videos/[id]/route.ts)
+Musíme vytvořit novou dynamickou trasu [id].
+
+GET(request, { params }):
+
+Vrátí data pro jedno konkrétní video. Potřebujeme to pro předvyplnění formuláře editace.
+
+PUT(request, { params }):
+
+Provede Ověření Oprávnění (viz 4.1).
+
+Zpracuje body požadavku.
+
+
+Transakce: Stejně jako ve Fázi 6, musí použít prisma.$transaction. Aktualizace videa, které má kapitoly, znamená:
+
+Aktualizovat záznam Video.
+
+Smazat všechny staré záznamy Chapter spojené s tímto videem.
+
+Znovu naparsovat structuredContent a vytvořit nové záznamy Chapter.
+
+DELETE(request, { params }):
+
+Provede Ověření Oprávnění (viz 4.1).
+
+Zavolá await prisma.video.delete({ where: { id: params.id } }).
+
+Díky nastavení onDelete: Cascade z Fáze 6  databáze automaticky smaže i všechny přiřazené kapitoly (Chapter).
+
+5. 🚦 Funkční Požadavky (FR)
+FR1 (Navigace): Přihlášený ADMIN vidí v navigaci nový odkaz "Správa Obsahu", který vede na /admin/manage.
+
+
+FR2 (Zobrazení Správy): Stránka /admin/manage zobrazí tabulku všech videí v systému, bez ohledu na autora. 
+
+FR3 (Funkce Smazání): Každý řádek v tabulce má tlačítko "Smazat". Po kliknutí a potvrzení (např. window.confirm) je video i jeho kapitoly trvale odstraněno z databáze. 
+
+
+FR4 (Odkaz na Editaci): Každý řádek v tabulce má odkaz "Editovat", který vede na /admin/edit/[id]. 
+
+
+FR5 (Předvyplnění Formuláře): Stránka /admin/edit/[id] se načte a formulář je korektně předvyplněn všemi daty, včetně názvu, shrnutí a strukturovaného obsahu v textarea. 
+
+
+FR6 (Funkce Aktualizace): Uložení formuláře na stránce editace odešle data (PUT) a aktualizuje záznamy v databázi (v tabulkách Video i Chapter). 
+
+FR7 (UX): Po úspěšném smazání nebo aktualizaci je uživatel přesměrován zpět na /admin/manage a vidí zprávu o úspěchu (např. "Záznam byl aktualizován").
+
+6. 🔒 Nefunkční Požadavky (NFR)
+NFR1 (Bezpečnost RBAC): Kontrola oprávnění (viz 4.1) musí být implementována na všech nových API handlerech (GET, PUT, DELETE). Přímý pokus o přístup k API (např. přes Postman) bez oprávnění musí selhat s chybou 401, 403 nebo 404.
+
+
+NFR2 (Datová Konzistence): Operace PUT (Update) musí být atomická (použít prisma.$transaction), aby se zabránilo stavu, kdy je video aktualizováno, ale jeho kapitoly ne.
+
+
+NFR3 (Robustnost Mazání): Díky onDelete: Cascade  je databázová integrita zajištěna na úrovni DB.
+
+7. 💻 Technologický Stack a Nástroje
+Využívá se stávající stack: Next.js (App Router), Prisma, NextAuth.js, Tailwind CSS.
+
+Nevyžadují se žádné nové klíčové knihovny.
+
+8. ✅ Akceptační Kriteria (Definice "Hotovo")
+Tato fáze je dokončena, když:
+
+Admin se přihlásí, přejde na /admin/manage a vidí tabulku videí.
+
+Admin klikne na "Smazat", potvrdí, a video zmizí z tabulky (a ověřitelně z DB).
+
+Admin klikne na "Editovat". Stránka /admin/edit/[id] se načte s předvyplněnými daty.
+
+Admin změní název videa A přidá jednu novou kapitolu do textarea a uloží.
+
+Admin je přesměrován na /admin/manage, kde vidí nový název.
+
+Admin přejde (přes /admin/dashboard) na detail videa a vidí, že nová kapitola byla korektně přidána a je interaktivní.
+
+9. 🚀 Budoucí Rozvoj (Mimo Rozsah Této Fáze)
+
+Fáze 8: Vytvoření veřejné galerie (na /) a veřejného detailu videa (/video/[id]) - tím získá role USER svá Read oprávnění. 
+
+
+Fáze 9: Povýšení role USER na KURATOR – umožnění uživatelům přidávat obsah (což již tato Fáze 7 plně podporuje). 
+
+
+Fáze 10: Implementace "Sbírek" (Collections) – přidání nového sloupce do tabulky na /admin/manage.
+
+id_chat: 
+https://gemini.google.com/u/1/app/22e86a2363849901
+
+

@@ -23,21 +23,23 @@ export default function ChapterList({ chapters, playerRef }: ChapterListProps) {
 
   return (
     <div className="space-y-2">
-      {chapters.map((chapter) => (
-        <button
-          key={chapter.id}
-          onClick={() => handleChapterClick(chapter.startTime)}
-          className="block w-full text-left p-3 rounded-md transition-colors text-gray-200 hover:bg-gray-700"
-          style={{
-            // Hierarchické odsazení na základě 'level' z DB
-            marginLeft: `${chapter.level * 20}px`,
-            width: `calc(100% - ${chapter.level * 20}px)`,
-          }}
-        >
-          {/* Zobrazíme text (který již obsahuje číslování) */}
-          {chapter.text}
-        </button>
-      ))}
+      {chapters.map((chapter) => {
+        return (
+          <button
+            key={chapter.id}
+            onClick={() => handleChapterClick(chapter.startTime)}
+            className="block w-full text-left p-3 rounded-md transition-colors text-gray-200 hover:bg-gray-700"
+            style={{
+              // Hierarchické odsazení na základě 'level' z DB
+              marginLeft: `${chapter.level * 20}px`,
+              width: `calc(100% - ${chapter.level * 20}px)`,
+            }}
+          >
+            {/* Jednoduše zobrazíme 'text' z databáze - Zdroj Pravdy */}
+            {chapter.text}
+          </button>
+        );
+      })}
     </div>
   );
 }
