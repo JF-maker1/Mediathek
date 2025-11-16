@@ -2,13 +2,12 @@ import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { parseStructuredContent } from '@/lib/parser'; // Důležitý import z Fáze 6
+import { parseStructuredContent } from '@/lib/parser';
 
 const prisma = new PrismaClient();
 
 /**
  * Pomocná funkce pro RBAC (Role-Based Access Control)
- * Ověří, zda má uživatel právo provést akci.
  */
 async function checkPermissions(
   videoId: string,
@@ -25,10 +24,13 @@ async function checkPermissions(
     };
   }
 
-  // Oprava z "Korekce plánu": Přidáno `include` pro FR5
+  // FR5: Přidáno `collections: true` pro načtení vazeb
   const video = await prisma.video.findUnique({
     where: { id: videoId },
-    include: { chapters: { orderBy: { order: 'asc' } } },
+    include: { 
+      chapters: { orderBy: { order: 'asc' } },
+      collections: true // <--- DŮLEŽITÉ: Načítání sbírek
+    },
   });
 
   if (!video) {
@@ -65,20 +67,16 @@ async function checkPermissions(
  */
 export async function GET(
   request: Request,
-  // FINÁLNÍ OPRAVA: Samotný 'context' je objekt, 'params' uvnitř je Promise
   context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
-    // Nejprve musíme 'await'-ovat 'context.params'
     const params = await context.params;
     const { id } = params; 
 
     const { allowed, video, error } = await checkPermissions(id, session);
     if (!allowed) return error;
 
-    // Vracíme video (včetně kapitol), které bude použito k předvyplnění formuláře
     return NextResponse.json(video);
   } catch (error) {
     console.error('API_VIDEOS_GET_ERROR', error);
@@ -90,51 +88,51 @@ export async function GET(
 }
 
 /**
- * PUT: Aktualizuje video (Editace)
+ * PUT: Aktualizuje video (Editace včetně sbírek)
  * NFR1: Chráněno RBAC
  * NFR2: Používá transakci
+ * FR5: Podporuje přiřazení k sbírkám
  */
 export async function PUT(
   request: Request,
-  // FINÁLNÍ OPRAVA: Samotný 'context' je objekt, 'params' uvnitř je Promise
   context: { params: Promise<{ id:string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
-    // Nejprve musíme 'await'-ovat 'context.params'
     const params = await context.params;
     const { id } = params;
 
-    // 1. Ověření oprávnění
     const { allowed, error } = await checkPermissions(id, session);
     if (!allowed) return error;
 
-    // 2. Zpracování těla požadavku
     const body = await request.json();
-    const { title, summary, structuredContent } = body;
+    // FR5: Načítáme i collectionIds
+    const { title, summary, structuredContent, collectionIds } = body;
 
-    // 3. Parsování obsahu
     const parsedChapters = parseStructuredContent(structuredContent || '');
 
-    // 4. Atomická transakce (NFR2)
+    // Atomická transakce (NFR2)
     const updatedVideo = await prisma.$transaction(async (tx) => {
-      // Krok 4a: Aktualizace základních dat videa
+      // Aktualizace základních dat videa + sbírek
       const video = await tx.video.update({
         where: { id: id },
         data: {
           title,
           summary,
-          updatedAt: new Date(), // Explicitně nastavíme čas aktualizace
+          updatedAt: new Date(),
+          // FR5: Logika pro aktualizaci M:N vztahu
+          collections: collectionIds ? {
+            set: collectionIds.map((cid: string) => ({ id: cid }))
+          } : undefined,
         },
       });
 
-      // Krok 4b: Smazání starých kapitol
+      // Smazání starých kapitol
       await tx.chapter.deleteMany({
         where: { videoId: id },
       });
 
-      // Krok 4c: Vytvoření nových kapitol
+      // Vytvoření nových kapitol
       if (parsedChapters.length > 0) {
         const chapterData = parsedChapters.map((chapter, index) => ({
           ...chapter,
@@ -172,26 +170,21 @@ export async function PUT(
  */
 export async function DELETE(
   request: Request,
-  // FINÁLNÍ OPRAVA: Samotný 'context' je objekt, 'params' uvnitř je Promise
   context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
-    // Nejprve musíme 'await'-ovat 'context.params'
     const params = await context.params;
     const { id } = params;
 
-    // 1. Ověření oprávnění
     const { allowed, error } = await checkPermissions(id, session);
     if (!allowed) return error;
 
-    // 2. Smazání videa
     await prisma.video.delete({
       where: { id: id },
     });
 
-    return new NextResponse(null, { status: 204 }); // 204 No Content
+    return new NextResponse(null, { status: 204 });
   } catch (error) {
     console.error('API_VIDEOS_DELETE_ERROR', error);
     return new NextResponse(JSON.stringify({ message: 'Internal Server Error' }), {

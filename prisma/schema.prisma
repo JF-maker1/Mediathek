@@ -1,56 +1,78 @@
-    generator client {
-      provider = "prisma-client-js"
-    }
+generator client {
+  provider = "prisma-client-js"
+}
 
-    datasource db {
-      provider = "postgresql"
-      url      = env("DATABASE_URL")
-    }
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
 
-    // Definice rolí pro uživatele
-    enum Role {
-      USER
-      ADMIN
-    }
+// Definice rolí pro uživatele
+enum Role {
+  USER
+  ADMIN
+}
 
-    // Datový model pro uživatele
-    model User {
-      id        String   @id @default(cuid())
-      email     String   @unique
-      password  String
-      role      Role     @default(USER)
-      createdAt DateTime @default(now())
-      updatedAt DateTime @updatedAt
-    
-      // Vztah: Uživatel může přidat více videí
-      videos    Video[]
-    }
+// Datový model pro uživatele
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    model Video {
-      id        String   @id @default(cuid())
-      youtubeId String   @unique // ID videa z URL (např. "dQw4w9WgXcQ")
-      title     String   // Manuálně zadaný název
-      summary   String   @db.Text // Manuálně zadané shrnutí (delší text)
+  // Vztah: Uživatel může přidat více videí
+  videos      Video[]
+  // NOVÉ: Sbírky vytvořené uživatelem
+  collections Collection[]
+}
 
-      createdAt DateTime @default(now())
-      updatedAt DateTime @updatedAt
+model Video {
+  id        String   @id @default(cuid())
+  youtubeId String   @unique // ID videa z URL (např. "dQw4w9WgXcQ")
+  title     String   // Manuálně zadaný název
+  summary   String   @db.Text // Manuálně zadané shrnutí (delší text)
 
-      // Propojení na autora
-      authorId  String
-      author    User     @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-      chapters  Chapter[]
-    }
+  // Propojení na autora
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
 
-    model Chapter {
-      id        String   @id @default(cuid())
-      text      String   // Zobrazený text (např. "1.1. Úvod...") [cite: 195]
-      startTime Int      // Čas "od" v sekundách [cite: 195]
-      endTime   Int?     // Čas "do" v sekundách (nepovinné) [cite: 196]
-      level     Int      // Úroveň zanoření (0 = kořen, 1 = podkapitola) [cite: 196]
-      order     Int      // Pořadí kapitoly v rámci videa [cite: 196]
+  chapters    Chapter[]
+  // NOVÉ: Relace M:N (Video může být ve více sbírkách)
+  collections Collection[]
+}
 
-      // Relace k videu. Při smazání videa se smažou i kapitoly. [cite: 197]
-      video   Video  @relation(fields: [videoId], references: [id], onDelete: Cascade)
-      videoId String
-    }
+model Chapter {
+  id        String   @id @default(cuid())
+  text      String   // Zobrazený text (např. "1.1. Úvod...")
+  startTime Int      // Čas "od" v sekundách
+  endTime   Int?     // Čas "do" v sekundách (nepovinné)
+  level     Int      // Úroveň zanoření (0 = kořen, 1 = podkapitola)
+  order     Int      // Pořadí kapitoly v rámci videa
+
+  // Relace k videu. Při smazání videa se smažou i kapitoly.
+  video   Video  @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  videoId String
+}
+
+// NOVÝ MODEL - Sbírky videí
+model Collection {
+  id          String   @id @default(cuid())
+  name        String
+  description String?  @db.Text
+  isPublic    Boolean  @default(false) // Příznak viditelnosti pro Fázi 8
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Vlastnictví (RBAC)
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
+
+  // Vztah M:N s videi
+  videos      Video[]
+}
