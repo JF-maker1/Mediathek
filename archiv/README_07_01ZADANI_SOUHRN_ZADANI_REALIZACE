@@ -1,0 +1,690 @@
+JÁ_PROMPT:
+V příloze jsou výsledky z předešlých fází 0 až 6 vývoje webové aplikace zaměřené na správu a strukturalizaci obsahu videí. Přiložené dokumenty mají mezi sebou takovou strukturu, že jeden dokument z jednoho kroku vývoje [soubor README_XX_01ZADANI] je diskuze na zadáním daného kroku vývoje této webové aplikace resp. vývoj má za sebou 7 kroků vývoje [soubory 00 až 06]. Prosím o projití těchto dokumentů a vytvoření souhrnné zprávy o dosavadním vývoji této aplikace. V těchto jednotlivých zprávách jsou i poznámky o možném dalším vývoji této aplikace což jsou pomyslné větve tohoto kmene vývoje, které dosud nebyly realizovány a jsou zatím jenom zvažovány k realizaci. Prosím aby zpráva o doasavadním vývoji této aplikace naznačila tento strom vývoje jehož kmenem je to co bylo již realizováno a větve jsou možné výhonky jeho dalšího směřování resp. ony dosud nerezilované části zmíněné v diskuzích o dalším vývoji aplikace v těchto dokumentech. Také jsou zde samozřejmě kompletní zadání toho co realizováno v daném kroku bylo. přílohy:[README_00_01ZADANI][README_01_01ZADANI][README_02_01ZADANI][README_03_01ZADANI][README_04_01ZADANI][README_05_01ZADANI][README_06_01ZADANI]
+
+AI_RESPONZE:
+
+Jistě, zde je souhrnná zpráva o dosavadním vývoji vaší aplikace "Mediathek" na základě sedmi poskytnutých dokumentů (fáze 0 až 6).
+
+Zpráva je strukturována přesně podle vaší metafory "stromu vývoje". Popisuje "kmen" jako hlavní linii zadaného a realizovaného vývoje a "větve" jako nápady a plány zmíněné v diskuzích, které dosud nebyly implementovány, ale představují budoucí směřování projektu.
+
+---
+
+### 🌳 Souhrnná Zpráva o Vývoji Aplikace Mediathek (Fáze 0-6)
+
+[cite_start]Aplikace Mediathek je vyvíjena s vizí vytvořit platformu pro kurátorství video obsahu[cite: 409, 681]. [cite_start]Cílem je, aby "galeristé" (nejprve administrátor, později i uživatelé) [cite: 684, 964] [cite_start]mohli vytvářet sbírky videí a obohacovat je o strukturovaný obsah (podobný obsahu knihy s časovými značkami)[cite: 689, 913, 957]. [cite_start]Tím aplikace poskytne návštěvníkům kontext a snadnou orientaci, kterou běžné platformy jako YouTube nenabízejí[cite: 561, 619]. [cite_start]Konečnou vizí je "televizní společnost tvořená kurátorstvím jejich uživatelů"[cite: 54, 463, 625].
+
+---
+
+### Kmen: Realizovaná Cesta Vývoje (Zadání Fází 0-6)
+
+Hlavní kmen představuje dosud zadané a realizované kroky, které budovaly funkčnost postupně, se zaměřením na roli Administrátora jako prvního kurátora obsahu.
+
+#### 🌱 Fáze 0: Založení a "Kick-off"
+* [cite_start]**Cíl:** Počáteční "výkop" projektu[cite: 520].
+* [cite_start]**Zadáno:** Vytvoření základní jednostránkové statické aplikace [cite: 531] [cite_start]s názvem "Mediathek: Tvá sbírka Tvých videí"[cite: 532]. [cite_start]Hlavním úkolem bylo ověření celého technologického řetězce: lokální vývoj (na Raspberry Pi) [cite: 543] [cite_start]a automatické nasazení na platformu Vercel[cite: 544, 545].
+
+#### 🌲 Fáze 1 (Zadání pro Fázi 2): Kořeny – Autentizace a Databáze
+* [cite_start]**Cíl:** Vytvořit základ pro personalizovanou aplikaci[cite: 44].
+* [cite_start]**Zadáno:** Implementace kompletního systému pro správu uživatelů (registrace/přihlášení) [cite: 43, 47][cite_start], včetně výběru a nastavení databáze (např. Vercel Postgres) [cite: 46] [cite_start]a vytvoření databázového schématu pro uživatele (`User`)[cite: 46]. [cite_start]Byly definovány základní role (ADMIN a USER) [cite: 79] [cite_start]a zabezpečení stránek pro přihlášené uživatele[cite: 47].
+
+#### 🌲 Fáze 2 (Zadání pro Fázi 3): Admin "Create"
+* [cite_start]**Cíl:** Dát roli ADMIN první skutečnou funkci a začít plnit databázi obsahem[cite: 418, 422].
+* [cite_start]**Zadáno:** Vytvoření nového databázového modelu `Video` propojeného s uživatelem (autorem)[cite: 479, 480]. [cite_start]Dále vytvoření zabezpečené administrátorské stránky (formuláře) [cite: 475][cite_start], kde může admin (první kurátor) [cite: 463] [cite_start]manuálně vložit URL videa, vlastní název a vlastní stručné shrnutí[cite: 449, 465, 489].
+
+#### 🌲 Fáze 3 (Zadání pro Fázi 4): Admin "Read"
+* [cite_start]**Cíl:** Umožnit administrátorovi vidět a kontrolovat obsah, který vložil[cite: 917, 922].
+* [cite_start]**Zadáno:** Vytvoření nové, zabezpečené stránky "Admin Dashboard" (např. `/admin/dashboard`)[cite: 950]. [cite_start]Tato stránka byla navržena jako React Server Component (RSC) pro bezpečné načtení dat[cite: 979, 981]. [cite_start]Zobrazuje seznam (formou mřížky nebo tabulky) [cite: 951, 984] [cite_start]všech videí přidaných administrátorem, včetně jejich názvu a shrnutí[cite: 952].
+
+#### 🌲 Fáze 4 (Zadání pro Fázi 5): Admin "Consume"
+* [cite_start]**Cíl:** Uzavřít základní administrátorský cyklus (Create -> Read -> Consume)[cite: 613, 637].
+* [cite_start]**Zadáno:** Vytvoření dynamické stránky detailu videa (např. `/admin/video/[id]`)[cite: 608, 640]. [cite_start]Položky na Admin Dashboardu (z Fáze 3) se staly klikatelnými odkazy na tuto novou stránku[cite: 609, 641]. [cite_start]Zde byl integrován YouTube přehrávač (pomocí `react-youtube`) [cite: 643] [cite_start]a zobrazen plný název a shrnutí videa[cite: 610]. [cite_start]Tato stránka byla navržena jako "kontejner" pro budoucí strukturovaný obsah[cite: 615, 639].
+
+#### 🌳 Fáze 5 (Zadání pro Fázi 6): Jádro Hodnoty – Strukturovaný Obsah
+* [cite_start]**Cíl:** Implementovat klíčovou a unikátní funkci aplikace – "obsah knihy" pro videa[cite: 688, 806, 807].
+* [cite_start]**Zadáno:** Po rozsáhlé diskuzi [cite: 730-738] [cite_start]byla schválena "Varianta C" [cite: 791] [cite_start]s uživatelským vylepšením[cite: 795, 800]:
+    1.  [cite_start]**Vstup:** Přidání jednoduchého textového pole (`<textarea>`) do admin formuláře `/admin/add`[cite: 809, 857].
+    2.  [cite_start]**Formát (MTF-H):** Byl definován robustní formát, kde hierarchii určuje číslování (např. `1.1.1.`) [cite: 815, 816, 866] [cite_start]a řádek končí časovou značkou (např. `(0:00 - 0:19)`)[cite: 817, 867].
+    3.  [cite_start]**Backend:** Vytvoření nového databázového modelu `Chapter` [cite: 808, 873] [cite_start]a parseru, který tento text zpracuje, extrahuje `level` (z číslování), `startTime` a `text` a uloží je do databáze[cite: 810, 879, 883].
+    4.  [cite_start]**Frontend:** Zobrazení tohoto obsahu na stránce detailu videa (z Fáze 4) s vizuálním odsazením podle úrovně (`level`)[cite: 811, 859, 890].
+    5.  [cite_start]**Interaktivita:** Propojení seznamu kapitol s přehrávačem – kliknutí na kapitolu posune video na daný čas (`seekTo`)[cite: 812, 860, 891].
+
+#### 🌲 Fáze 6 (Zadání pro Fázi 7): Plná Správa (Admin "CRUD")
+* [cite_start]**Cíl:** Implementovat chybějící operace Update (U) a Delete (D) a založit robustní základy pro budoucí role[cite: 355].
+* [cite_start]**Zadáno:** Po diskuzi [cite: 299-308] [cite_start]byla zvolena "Varianta B" pro její škálovatelnost[cite: 337, 341]:
+    1.  [cite_start]**Architektura:** Vytvoření nové strategické stránky `/admin/manage` (místo úpravy dashboardu) [cite: 358][cite_start], která zobrazuje videa v přehledné tabulce (`<table>`)[cite: 323].
+    2.  [cite_start]**Funkce:** Vytvoření nové dynamické stránky `/admin/edit/[id]` s předvyplněným formulářem[cite: 359, 378].
+    3.  [cite_start]**API:** Vytvoření nových API endpointů (`PUT`, `DELETE`, `GET [id]`) na trase `/api/videos/[id]`[cite: 360, 383].
+    4.  [cite_start]**Oprávnění (RBAC):** Implementace klíčové server-side logiky, která ověřuje, zda je uživatel admin (`isAdmin`) NEBO vlastník obsahu (`isOwner`)[cite: 361, 372]. [cite_start]Tím je systém připraven na budoucí roli "KURATOR"[cite: 373].
+
+---
+
+### Větve: Plánovaný Budoucí Rozvoj
+
+Tyto "větve" představují nápady a plány zmíněné v diskuzích o zadání, které dosud nebyly prioritizovány pro implementaci, ale tvoří mapu budoucího směřování projektu.
+
+#### 🌿 Větev 1: Zpřístupnění Veřejnosti (Největší větev)
+* [cite_start]**Popis:** Toto je nejčastěji zmiňovaný a nejlogičtější další krok, který byl plánován téměř v každé fázi [cite: 424, 586, 908, 931][cite_start], ale v Fázi 6 byl vědomě přeskočen [cite: 291] ve prospěch dobudování admin rozhraní.
+* [cite_start]**Plán:** Vytvořit veřejnou, nespravovanou "výkladní skříň" (např. na domovské stránce `/`) [cite: 265] [cite_start]a veřejnou verzi stránky detailu videa (např. `/video/[id]`)[cite: 267], aby mohl obsah konzumovat kdokoli.
+
+#### 🌿 Větev 2: Otevření Uživatelům (Uživatelé jako Kurátoři)
+* [cite_start]**Popis:** Toto je druhý pilíř hlavní vize – "postupně se kurátorství rozšíří i na uživatele"[cite: 55, 464, 626].
+* [cite_start]**Plán:** Umožnit přihlášeným uživatelům (roli `USER`) vytvářet si vlastní, osobní knihovny videí[cite: 440, 602, 945]. To by zahrnovalo buď ukládání videí z hlavní galerie, nebo (jako větší krok) umožnění jim přidávat a strukturovat vlastní videa, stejně jako to nyní dělá admin.
+* [cite_start]**Stav:** Technologicky je tento krok z velké části připraven díky RBAC logice (`isOwner`) implementované v Fázi 6[cite: 361, 372].
+
+#### 🌿 Větev 3: Kompilovaný Obsah a Vyhledávání
+* [cite_start]**Popis:** Dlouhodobá vize "ultimátní" přidané hodnoty[cite: 252, 621].
+* [cite_start]**Plán:** Vytváření "článků" nebo "knih", které kompilují strukturovaný obsah z více videí do jednoho souhrnného celku[cite: 460, 461, 622]. [cite_start]S tím souvisí i myšlenka pokročilého vyhledávání, které by nehledalo jen názvy videí, ale prohledávalo texty v modelu `Chapter` napříč celou databází[cite: 284].
+
+#### 🌿 Větev 4: Pokročilé Role a Koncepty
+* **Popis:** Specifické nápady, které se objevily během plánování Fáze 6.
+* **Plán:**
+    * [cite_start]**Sbírky (Collections):** Myšlenka, že videa by mohla být organizována do tématických "sbírek" (jako playlisty), které by spravoval kurátor[cite: 304].
+    * [cite_start]**Nové Role:** Specifické role nad rámec ADMIN/USER, jako **KURATOR** (správce sbírek) [cite: 342] [cite_start]nebo **PRUVODCE** (role, která může vytvářet "cesty" nebo "prohlídky" sbírkami)[cite: 343].
+    * [cite_start]**Sledování Pokroku:** Možnost pro uživatele sledovat, co již ve videích viděli[cite: 458, 620].
+    * [cite_start]**Automatizace:** Brzy zmíněná myšlenka na automatické generování přepisů nebo shrnutí (např. pomocí AI) [cite: 29][cite_start], ačkoli současný vývoj se soustředil na manuální kurátorství[cite: 466].
+    
+    
+    
+    
+    
+    
+    
+    
+
+JÁ_PROMPT:
+Podobnou zprávu o dosavadním technologickém vývoji aplikace prosím vytvořit nyní i z dokumentů popisující konkrétní realizaci této webové aplikace. Tato zpráva by měla obsahovat zprávu o technologické konstrukci této aplikace resp. o dosavadním technologickém vývoji této aplikace včetně zde zmíněných tipů pro její další technologický vývoj, což odráží i technologické možnosti této aplikace o jejím dalším možném vývoji. Přiložené dokumenty mají mezi sebou takovou strukturu, že jeden dokument z jednoho kroku vývoje [soubor README_XX_02REALIZACE] je diskuze nad samotnou realizací této webové aplikace vycházejícího z příslušného zadání v tomto kroku vývoje resp. vývoj má za sebou 7 kroků vývoje resp. vývoje zadání a vývoje samotné realizace resp architektury této aplikace [soubory 00 až 06]. Příloha: [README_00_02REALIZACE_Kick-off][README_01_02REALIZACE][README_02_02REALIZACE][README_03_02REALIZACE][README_04_02REALIZACE][README_05_02REALIZACE][README_06_02REALIZACE]
+
+AI_RESPONZE:
+
+Jistě, zde je souhrnná zpráva o dosavadním technologickém vývoji aplikace Mediathek, sestavená výhradně z přiložených dokumentů o realizaci (`README_XX_02REALIZACE`).
+
+Tato zpráva mapuje, jak byla aplikace technologicky konstruována, jaké klíčové problémy byly řešeny a jaká technologická vylepšení byla navržena pro budoucí vývoj.
+
+---
+
+### 🛠️ Souhrnná Zpráva o Technologickém Vývoji Aplikace Mediathek (Fáze 0-6)
+
+Technologický vývoj aplikace Mediathek představuje postupný proces od základního nastavení moderního webového stacku až po implementaci robustní, na data napojené a bezpečné redakční platformy. Klíčovým prvkem celého vývoje bylo řešení a ladění integrace mezi jednotlivými technologiemi (Next.js, Prisma, Vercel, NextAuth.js), což vytvořilo solidní základ pro budoucí funkce.
+
+### Kmen: Realizovaná Technologická Konstrukce
+
+Zde je popsán postupný vývoj hlavní technologické "kostry" aplikace, jak byl implementován v jednotlivých fázích.
+
+#### 🌱 Fáze 0: Založení Projektu a Konfigurace Prostředí
+* [cite_start]**Technologický Stack:** Projekt byl inicializován pomocí `npx create-next-app`[cite: 1273]. [cite_start]Byl zvolen základní stack: **Next.js 14+** (s App Router), **TypeScript** a **Tailwind CSS**[cite: 1273, 1274, 1275].
+* [cite_start]**Vývojové Prostředí:** Vývoj probíhá na **Raspberry Pi 5** (Debian)[cite: 1262].
+* [cite_start]**Deployment:** Cílová platforma byla od začátku nastavena na **Vercel**[cite: 1293].
+* **Klíčový Problém (Git):** První technologickou výzvou bylo nastavení verzování. [cite_start]Autentizace přes `HTTPS` a heslo selhala (funkce je zastaralá)[cite: 1327].
+* [cite_start]**Řešení (Git):** Byl implementován přechod na autentizaci pomocí **SSH klíčů (Ed25519)**[cite: 1329]. [cite_start]To vyžadovalo změnu `git remote set-url origin` z HTTPS na SSH formát [cite: 1331] [cite_start]a vyřešení prvotního `git push --set-upstream origin main`[cite: 1334].
+
+---
+
+#### 🌲 Fáze 1: Implementace Backendu (Autentizace a Databáze)
+* **Technologický Stack (Rozšíření):** Do projektu byly integrovány klíčové backendové technologie:
+    * [cite_start]**Databáze:** **Vercel Postgres**[cite: 1526].
+    * [cite_start]**ORM:** **Prisma** pro správu schématu a dotazování[cite: 1523].
+    * [cite_start]**Autentizace:** **NextAuth.js** s využitím `CredentialsProvider` (přihlášení e-mailem a heslem)[cite: 1537].
+    * [cite_start]**Zabezpečení:** **bcrypt** pro hashování hesel[cite: 1523].
+* [cite_start]**Schéma:** Bylo inicializováno `prisma/schema.prisma` a definován model `User` (s `email`, `password`, `role`)[cite: 1532].
+* **Klíčové Problémy a Řešení (Integrace):** Tato fáze byla technologicky nejnáročnější kvůli problémům s integrací Prisma a Vercel.
+    * [cite_start]**Chyba Prisma CLI:** `prisma migrate dev` selhávalo, protože nástroje Prisma automaticky nečtou `.env.local`[cite: 1601].
+    * [cite_start]**Řešení:** Byla přidána knihovna `dotenv-cli` [cite: 1606] [cite_start]a upraveny `package.json` skripty (např. `"prisma:migrate": "dotenv -e .env.local -- prisma migrate dev"`), aby explicitně načítaly proměnné[cite: 1607]. [cite_start]Také bylo nutné rozlišit mezi **Pooling** (pro aplikaci) a **Non-Pooling** (pro migrace) DB URL[cite: 1604, 1605].
+    * [cite_start]**Chyba Vercel Buildu (Typy):** Build selhal kvůli typovým chybám v NextAuth (implicitní 'any' typy)[cite: 1608].
+    * [cite_start]**Řešení:** Byl vytvořen soubor `types/next-auth.d.ts` pro rozšíření modulů (module augmentation), kde byly definovány vlastní vlastnosti (`id` a `role`) pro `Session` a `JWT` token[cite: 1611].
+    * [cite_start]**Chyba Vercel Buildu (Middleware):** Build selhal kvůli nekompatibilní syntaxi `export { default }` v `middleware.ts`[cite: 1613, 1614].
+    * [cite_start]**Řešení:** Kód byl přepsán na explicitní `import { withAuth }` a `export default withAuth(...)`[cite: 1615].
+    * [cite_start]**Chyba API:** Byly sjednoceny chybové hlášky z API, aby vždy vracely JSON formát (`NextResponse.json`) namísto čistého textu[cite: 1619].
+
+---
+
+#### 🌲 Fáze 2: První Funkce (Admin "Create")
+* [cite_start]**Schéma:** `schema.prisma` bylo rozšířeno o model `Video` s relací na `User`[cite: 795].
+* [cite_start]**API:** Vytvořen první chráněný API endpoint (`app/api/videos/route.ts`) s logikou pro ověření role `ADMIN` ze serverové session[cite: 757, 791].
+* [cite_start]**Frontend:** Vytvořena první klientská komponenta (`"use client"`) s formulářem (`app/admin/add/page.tsx`)[cite: 759, 792].
+* [cite_start]**Middleware:** Soubor `middleware.ts` byl aktualizován, aby chránil všechny trasy pod `/admin`[cite: 755, 793].
+* [cite_start]**Klíčový Problém (Vercel Build Pipeline):** Build na Vercelu selhal s chybou `Property 'video' does not exist...`[cite: 801]. Příčinou bylo, že Vercel sice spustil `prisma migrate deploy`, ale *nevygeneroval* nový Prisma Client (`prisma generate`) před samotným `next build`.
+* [cite_start]**Řešení:** Build skript v `package.json` byl finálně upraven na správné pořadí: `"build": "prisma generate && prisma migrate deploy && next build"`[cite: 803].
+
+---
+
+#### 🌲 Fáze 3: Načítání Dat (Admin "Read")
+* **Technologická Architektura:** Tato fáze definovala klíčový architektonický vzor aplikace. [cite_start]Stránka `app/admin/dashboard/page.tsx` byla implementována jako **React Server Component (RSC)**[cite: 1753].
+* [cite_start]**Načítání Dat:** Veškeré načítání dat z databáze (`await prisma.video.findMany(...)`) probíhá bezpečně **přímo na serveru** uvnitř RSC komponenty, ještě před odesláním stránky klientovi[cite: 1753].
+
+---
+
+#### 🌲 Fáze 4: Integrace Klienta (Admin "Consume")
+* [cite_start]**Technologický Stack (Rozšíření):** Byla nainstalována knihovna `react-youtube`[cite: 1650].
+* **Architektura:**
+    * [cite_start]Vytvořena první **dynamická trasa** (`app/admin/video/[id]/page.tsx`), implementovaná jako RSC pro načítání dat[cite: 1656, 1662].
+    * [cite_start]Vytvořena specializovaná klientská komponenta `components/VideoPlayer.tsx` (`"use client"`)[cite: 1651, 1698].
+* [cite_start]**Frontend:** Stávající dashboard (`/admin/dashboard`) byl upraven tak, aby jeho položky byly obaleny v Next.js komponentě `<Link>` a odkazovaly na novou dynamickou stránku[cite: 1670, 1672].
+* [cite_start]**Klíčový Problém (Next.js):** Během vývoje se objevila chyba `Error: ... params is a Promise...`[cite: 1704].
+* [cite_start]**Řešení:** Problém byl vyřešen použitím `await` při přístupu k parametrům: `const { id } = await params;`[cite: 1706].
+
+---
+
+#### 🌲 Fáze 5: Jádrová Architektura (Strukturovaný Obsah)
+* [cite_start]**Schéma:** `schema.prisma` bylo rozšířeno o model `Chapter` (s poli `text`, `startTime`, `level`, `order` a relací na `Video`)[cite: 222, 223]. [cite_start]Klíčové bylo přidání `onDelete: Cascade` pro zajištění datové integrity[cite: 225].
+* [cite_start]**Backend (Parser):** Vytvořena serverová utilita `lib/parser.ts`[cite: 227]. [cite_start]Implementovala logiku pro robustní **formát MTF-H** – parsování hierarchického číslování (např. `1.1.`) a časových značek na konci řádku (např. `(MM:SS)`) pomocí Regex[cite: 232, 235, 239].
+* [cite_start]**Backend (API):** Endpoint `app/api/videos/route.ts` (POST) byl refaktorován, aby používal `prisma.$transaction`[cite: 255]. [cite_start]Tím je zajištěna **atomická operace** – buď se uloží video I všechny jeho kapitoly, nebo se v případě chyby neuloží nic[cite: 255].
+* [cite_start]**Architektura (RSC/Client Pattern):** Byl zaveden klíčový vzor pro propojení serverových dat a klientské interaktivity[cite: 279]:
+    1.  [cite_start]`page.tsx` (RSC) načte všechna data (video vč. kapitol)[cite: 302].
+    2.  [cite_start]Data předá nové klientské komponentě `VideoDetailClientWrapper.tsx` (`"use client"`)[cite: 291].
+    3.  [cite_start]Tato komponenta drží stav (`useRef`) pro přehrávač[cite: 294].
+    4.  [cite_start]Wrapper předá `ref` komponentě `VideoPlayer.tsx` (přes `onReady`) a komponentě `ChapterList.tsx`[cite: 296, 297].
+    5.  [cite_start]`ChapterList.tsx` (rovněž `"use client"`) mapuje kapitoly a při kliknutí volá `playerRef.current.seekTo(...)`[cite: 287, 288].
+
+---
+
+#### 🌲 Fáze 6: Plná Správa (CRUD & RBAC)
+* [cite_start]**Architektura (Refaktor):** Byla vytvořena nová strategická stránka `app/admin/manage/page.tsx` (RSC) [cite: 1365][cite_start], která zobrazuje data v `<table>`[cite: 1371]. Tím se funkčně oddělila "správa" od vizuálního "přehledu" (`/admin/dashboard`).
+* **Architektura (Bezpečnost):** Byl implementován **Role-Based Access Control (RBAC)** na úrovni serveru.
+* [cite_start]**Backend (API):** Byla vytvořena nová dynamická trasa `app/api/videos/[id]/route.ts` s handlery `GET` (pro editaci), `PUT` (pro update) a `DELETE` (pro mazání)[cite: 1349].
+* [cite_start]**Backend (RBAC Logika):** Jádro zabezpečení bylo implementováno ve sdílené funkci `checkPermissions` v API: `const isOwner = video.authorId === session.user.id; const isAdmin = session.user.role === 'ADMIN'; if (!isOwner && !isAdmin) return 403;`[cite: 1481].
+* [cite_start]**Backend (API - PUT):** Handler `PUT` rovněž využívá `prisma.$transaction` k atomické aktualizaci – aktualizuje záznam `Video`, smaže (`deleteMany`) všechny staré `Chapter` a vytvoří (`createMany`) nové[cite: 1362, 1363, 1364].
+* [cite_start]**Architektura (Data Integrity Pivot):** Během fáze došlo k zásadnímu architektonickému posunu ("Text-first")[cite: 1474]. Bylo zjištěno, že ukládání *pouze* parsovaných dat (např. `startTime: 62`) je křehké.
+* [cite_start]**Řešení ("Text-first"):** Databáze byla upravena tak, že sloupec `text` v modelu `Chapter` nyní ukládá **celý původní řádek** (např. `"1.1. Úvod (0:00 - 0:15)"`)[cite: 1479]. [cite_start]Sloupce `startTime` a `level` slouží pouze jako indexy pro funkčnost (skoky v přehrávači), ale "zdrojem pravdy" zůstává text[cite: 1479].
+* [cite_start]**Datová Migrace:** Byl vytvořen a spuštěn jednorázový skript (`scripts/fix_data.ts`) k opravě dat z Fáze 5 do tohoto nového formátu[cite: 1480].
+* [cite_start]**Klíčový Problém (Next.js 16/Turbopack):** Bylo potvrzeno, že `params` v API route handlerech jsou `Promise`[cite: 1483].
+* [cite_start]**Řešení:** Všechny handlery byly upraveny na `await context.params`[cite: 1484].
+* [cite_start]**Klíčový Problém (Vercel Build - Env):** Opět se ukázalo, že `prisma generate` a `migrate deploy` nemají přístup k `.env.local`[cite: 1485].
+* [cite_start]**Řešení:** Skript `build` v `package.json` byl finálně upraven tak, aby *explicitně* volal `dotenv-cli` pro tyto příkazy: `"build": "dotenv -e .env.local -- prisma generate && ..."`[cite: 1486].
+
+---
+
+### Větve: Budoucí Technologické Možnosti (Založené Vzory)
+
+Realizovaný "kmen" vytvořil několik silných "větví" – zavedených architektonických vzorů, které definují budoucí vývoj:
+
+1.  **Větev: Role-Based Access Control (RBAC)**
+    * [cite_start]**Založeno v:** Fáze 6 [cite: 1481]
+    * [cite_start]**Popis:** Serverová logika `isOwner || isAdmin` je hotová[cite: 1481]. [cite_start]Aplikace je technologicky plně připravena na zavedení role "KURATOR"[cite: 1482]. Stačí této roli povolit přístup k API a systém automaticky zajistí, že uvidí a bude spravovat pouze *svůj* obsah.
+
+2.  **Větev: Architektura "Text-first"**
+    * [cite_start]**Založeno v:** Fáze 6 [cite: 1474]
+    * [cite_start]**Popis:** Rozhodnutí ukládat surový textový vstup uživatele jako "zdroj pravdy" [cite: 1479] je klíčové. Umožňuje robustní editaci a budoucí re-parsování dat, pokud by se změnil formát nebo logika, aniž by došlo ke ztrátě původních dat.
+
+3.  **Větev: Interaktivní Stránky (RSC/Client Pattern)**
+    * [cite_start]**Založeno v:** Fáze 5 [cite: 279]
+    * [cite_start]**Popis:** Vzor `RSC (načtení dat) -> Client Wrapper (držení stavu/ref) -> Klientské Komponenty (interaktivita)` [cite: 291, 296, 297, 303] je zavedeným postupem pro budování jakýchkoli složitých, interaktivních stránek, které potřebují data ze serveru.
+
+4.  **Větev: CI/CD a Lokální Vývoj (DX)**
+    * [cite_start]**Založeno v:** Fáze 1 a 2 [cite: 803, 1607]
+    * **Popis:** Jsou zavedeny stabilní postupy:
+        * [cite_start]**Produkce:** Build skript `prisma generate && ...migrate deploy && next build` (včetně `dotenv-cli`) je finálním řešením pro Vercel[cite: 803, 1486].
+        * [cite_start]**Lokálně:** Použití skriptů `prisma:migrate` a `prisma:studio` (které interně volají `dotenv-cli`) je standardem pro lokální vývoj[cite: 1607].
+
+
+
+
+
+
+JÁ_PROMPT:
+Je možné nyní vytvořit doporučení pro další vývoj této webové aplikace z hlediska dosavadního vývoje zadání této webové aplikace i jejího technologického vývoje? Prosím o vytvoření seznamu dalších možných kroků vývoje této aplikace tak aby se vyvíjela zádrně jak z hlediska svého zadání resp. jejího účelu tak z hlediska technologického. Aplikace by měla defacto vytvořit nadstavbu nad množinou vložených videí z hlediska popisu jejích obsahů resp. to co jednotlivý kurátor vidí. Aplikace bude tedy nabízet sbírky videí resp. obsahu, což je nyní běžná funkce např. youtube ale nadto umožní spravovat a vytvářet popisky těchto videí. Tyto popisky videí se pak budou moci přímo odkazovat časovými značkami na zdroj. Návštěvník těchto galerií pak bude moci procházet strukturovaný obsah i více videí najednou a rychle dohledat původní materiál právě v kontextu i dalších materiálů v konkrétních sbírkách. Toto je asi vize která stále vytváří kontext této rodící se aplikace. Nyní prosím o vytvoření sledu možných vlastností této aplikace i z hlediska technologického vývoje které budou směřovat k této vizi. Tyto vlastnosti prosím seřadit dle priority. Jednu z nich poté vyberu a ta bude dalším zadáním ve vývoji této aplikace. díky ;-)
+
+
+AI_RESPONZE:
+Naprosto rozumím. Vaše vize je stále jasnější a přesně chápete, kde leží jádro hodnoty této aplikace – **v kontextuální, kurátorské nadstavbě**. [cite_start]Nejde jen o seznam videí (to umí YouTube), ale o vytváření *sbírek* a *strukturovaných popisů*, které návštěvníkovi umožní procházet tématy napříč videi [cite: 1077-1081].
+
+Prošel jsem kompletní historii vývoje, zadání (Fáze 0-6) i technické realizace (Fáze 0-6).
+
+Stojíme na velmi pevných základech:
+* [cite_start]**Máme hotový Admin CRUD:** Administrátor může vytvářet, číst, upravovat i mazat videa (Fáze 2, 3, 6)[cite: 1422, 1232].
+* [cite_start]**Máme Jádro Hodnoty:** Implementovali jsme "Text-first" architekturu pro robustní, hierarchický, časově značený obsah (`Chapter` model) (Fáze 5, 6)[cite: 1492].
+* [cite_start]**Máme Základy Bezpečnosti:** Naše API již obsahuje základy RBAC (Role-Based Access Control) s logikou `isOwner || isAdmin`, která je připravena na budoucí roli "Kurátora" (Fáze 6)  [cite: 1245-1246, 1904].
+
+Nyní, jak jste správně identifikoval, je čas na další vrstvu kontextu. Vaše úvahy o "Sbírkách" (Collections) jsou naprosto přesným dalším krokem.
+
+Zde je seznam navrhovaných dalších kroků, seřazený dle priority, který směřuje k vaší vizi.
+
+---
+
+### 🏛️ Seznam Následujících Funkcí (Seřazeno dle Priority)
+
+#### 1. Implementace "Sbírek" (Kolekcí)
+[cite_start]Toto je nejdůležitější další krok, který přímo navazuje na vaši myšlenku "operativy správce obsahu"[cite: 1084]. Než obsah zveřejníme, musí ho kurátor (nyní Admin) umět zorganizovat.
+
+* **Popis:** Vytvoříme novou databázovou entitu `Collection` (Sbírka). Každá sbírka bude mít název, popis a bude vlastněna kurátorem (nyní `authorId` propojené na Admina). Video bude moci být v *mnoha* sbírkách a sbírka bude obsahovat *mnoho* videí (vztah Many-to-Many).
+* **Uživatelský Dopad:**
+    1.  **Správa sbírek:** Vytvoříme novou, jednoduchou stránku (např. `/admin/collections`), kde bude Admin moci vytvářet, upravovat a mazat názvy sbírek (např. "Zajímavé - k analýze", "Recepty", "Studie o mikrobiomu").
+    2.  **Přiřazování:** Jak jste navrhl, na stránce "Editace Videa" (`/admin/edit/[id]`) přidáme novou sekci "Zařadit do sbírek", kde bude seznam všech dostupných sbírek formou zaškrtávacích polí (checkboxů).
+* **Technologický Dopad:**
+    * **Databáze (Prisma):** Přidání modelu `Collection` (s `name`, `description`, `authorId`, `isPublic`). Vytvoření **vztahu Many-to-Many** mezi `Video` a `Collection`.
+    * **API:** Vytvoření nových endpointů pro správu sbírek (CRUD pro `/api/collections`).
+    * **API (Update):** Stávající `PUT /api/videos/[id]` (z Fáze 6) bude muset být rozšířen, aby uměl přijmout pole `collectionIds` a pomocí `connect` a `disconnect` (v rámci transakce) aktualizoval M2M vztahy.
+* **Priorita / Zdůvodnění:** **Nejvyšší.** Toto je chybějící pilíř kurátorské práce. Bez sbírek je obsah jen nespravovaný seznam. Tímto krokem dáváme kurátorovi "poličky" do jeho "knihovny".
+
+---
+
+#### 2. Veřejná Galerie a Detail (Zpřístupnění Návštěvníkům)
+Jakmile je obsah roztříděn do sbírek (krok 1), je čas otevřít knihovnu veřejnosti ("VISITOR").
+
+* **Popis:** Vytvoříme veřejně přístupné stránky (bez nutnosti přihlášení), které budou zrcadlit kurátorovaný obsah.
+    * **Hlavní stránka (`/`):** Zobrazí seznam *veřejných* sbírek.
+    * **Detail sbírky (`/collections/[id]`):** Zobrazí seznam videí *v dané sbírce*.
+    * **Detail videa (`/videos/[id]`):** Veřejná verze stránky, kterou již máme v adminu. Zobrazí přehrávač a interaktivní seznam kapitol.
+* **Technologický Dopad:**
+    * **Nové trasy:** Vytvoření nových veřejných tras v `app/`.
+    * **Opakované použití komponent:** Znovu použijeme 90 % hotových komponent (`VideoPlayer.tsx`, `ChapterList.tsx`, `VideoDetailClientWrapper.tsx`).
+    * **Zabezpečení (Public):** Databázové dotazy na těchto stránkách budou mít přidanou podmínku (např. `where: { isPublic: true }`), aby se zobrazil jen obsah, který kurátor označil jako veřejný (viz Váš návrh `isPublic` v modelu `Collection`).
+* **Priorita / Zdůvodnění:** **Vysoká.** Toto je krok, který dává celé aplikaci smysl pro koncového uživatele (návštěvníka). Bez něj je aplikace jen soukromým nástrojem admina.
+
+---
+
+#### 3. Povýšení Role USER na "Kurátora" (Multi-Tenancy)
+Toto je naplnění vaší vize "televizní společnosti tvořené kurátorstvím".
+
+* **Popis:** Povolíme stávající roli `USER`, aby se stala `KURATORem`. Přihlášený uživatel získá přístup k *vlastním* verzím stránek `/admin/add`, `/admin/manage`, `/admin/collections` a bude moci vytvářet *vlastní* videa a *vlastní* sbírky.
+* **Technologický Dopad:**
+    * [cite_start]**API (Hotovo):** Naše stávající RBAC logika (`isOwner || isAdmin`) [cite: 1245-1246] je na to **plně připravena**.
+    * **Frontend:** Úkolem bude zpřístupnit administrační odkazy i roli `USER` (přejmenujeme je např. na "Moje sbírky").
+    * **Data Fetching:** Stránky jako `/admin/manage` již mají logiku, která `USER`ovi ukáže jen jeho videa. Stejnou logiku použijeme pro sbírky (`where: { authorId: session.user.id }`).
+* **Priorita / Zdůvodnění:** **Střední.** Toto je obrovský, strategický krok. Měl by přijít až poté, co je model "Admin -> Veřejnost" plně funkční a otestovaný (po kroku 1 a 2).
+
+---
+
+#### 4. Kompilovaný Obsah a Vyhledávání (Finální Vize)
+[cite_start]Toto je "svatý grál" vaší vize – "procházet strukturovaný obsah i více videí najednou"[cite: 1081].
+
+* **Popis:** Vytvoření vyhledávacího rozhraní, které neprohledává jen názvy videí, ale prohledává *text* v modelu `Chapter`. Uživatel zadá "inzulinová rezistence" a dostane seznam kapitol z různých videí v různých sbírkách, které toto téma zmiňují.
+* **Technologický Dopad:**
+    * Vyžaduje implementaci **Full-Text Search** (FTS) nad sloupcem `text` v tabulce `Chapter`.
+    * To může vyžadovat pokročilejší funkce Vercel Postgres nebo zavedení specializovaného vyhledávacího enginu (např. Algolia, MeiliSearch).
+* **Priorita / Zdůvodnění:** **Nízká (Budoucí).** Toto je technologicky nejsložitější krok, který dává smysl až poté, co je aplikace plná obsahu (díky krokům 1-3).
+
+---
+
+### Shrnutí a Doporučení
+
+Vaše úvahy jsou naprosto správné. Nejdříve musíme posílit "operativu kurátora" (Admina) a dát mu nástroj pro vytváření *kontextu*. Tím nástrojem jsou **Sbírky (Collections)**.
+
+Doporučuji tedy nyní implementovat **bod č. 1: Implementace "Sbírek" (Kolekcí)**.
+
+Mohu připravit podrobné zadání pro realizační tým pro tento bod? (To se stane základem pro `README_07_01ZADANI`).
+
+
+
+
+
+
+
+
+
+JÁ_PROMPT:
+Ano měli bychom nejprve vyřešit možnost organizovat své sbírky administrátora do kolekcí. Tímto způsobem vyzraje funkcionalita aplikace tak abychom mohli povyšovat role USERa na VISITORa a KURATORa. VISITOR bude moci procházet veřejné části sbírek s KURATOR bude moci vytvářet vlastní sbírky. Sbírka bude pak implementována jako tabulka patřící svému vlastníkovi čímž bude moci být ADMIN nebo KURATOR. Přidělování práv resp. rozšiřování práv USERa na VISITORa a KURATORa bude provádět nejprve ADMIN poté to bude např. rozšířeno na KURATORa že bude moci poskytovat práva VISITORa jednotlivým USERům. Mám představu že USER by měl být každý kdo bude mít zájem resp. získá přihlášení na e-mail tím se dostane do hlávních prezentačních prostor Mediatheky a zde si požádá o VISITORa,což zřejmě bude automaticky poskytováno a bude moci prohlížet sbírky. KURATor bude pak další level který obdrží až poté co obdrží príáva VISITora. Je tato představa o práve dobrá? Jsme k tomuto technologicky připraveni - nyní bychom měli založit tedy sbírky které budou mít své vlastníky kterými bude moci být jen ADMIN nebo KURATOR a tyto sbírky a i jednotlivá videa by měly mít příznaky zda je uvidí VISITOR či ne resp. zda budou již zveřejněny pro návštěvníky. Resp. jeden a-mail by měl mít postupně práva USER,VISITOR a poté KURATOR. pouze jeden e-mail by měl mít všechny práva resp.  USER,VISITOR,KURATOR a ADMIN. Je toto takto možné? Prosím o připomínky jak toto řešení udělat opravdu robustní neboli technologicky zahuštěné a podle best praxis ... díky ;-)
+
+
+
+AI_RESPONZE:
+Ano, vaše představa o rolích a jejich progresi je v principu naprosto skvělá a je to přesně ten správný směr, kterým se "technologicky zahuštěné" (robustní) aplikace vydávají.
+
+Máte pravdu, že musíme oddělit různé úrovně přístupu. Pojďme vaši myšlenku jen mírně terminologicky zpřesnit podle "best practices", aby byla implementace co nejčistší.
+
+### 1\. Jsme technologicky připraveni?
+
+**Ano, jsme na to perfektně připraveni.**
+
+Klíčový krok jsme udělali v **Fázi 6 (CRUD & RBAC)**. Tím, že jsme na API vrstvě zavedli logiku, která kontroluje `(isOwner || isAdmin)`, jsme vytvořili přesně ten mechanismus, který potřebujeme pro roli `KURATOR`. Naše API už teď umí rozlišit, jestli jste "vlastník" obsahu, nebo "správce" všeho.
+
+### 2\. Návrh robustního modelu rolí (Best Practice)
+
+[cite\_start]Vaše myšlenka na progresi `USER` -\> `VISITOR` -\> `KURATOR` [cite: 1099] je správná. Pojďme ji implementovat pomocí standardizovaného modelu rolí, který je čistší a jednodušší na správu:
+
+Místo mnoha rolí, které se sčítají, má uživatel vždy jen **jednu roli**, která definuje jeho *nejvyšší* oprávnění.
+
+  * **ANONYMOUS (Anonymní Návštěvník):**
+
+      * **Kdo to je:** Kdokoliv, kdo není přihlášen.
+      * [cite\_start]**Co dělá:** Může prohlížet *pouze* obsah označený jako veřejný (`isPublic: true`) [cite: 1097-1098]. Toto je váš koncept `VISITOR`a, ale bez nutnosti se přihlašovat.
+
+  * **Role: `USER` (Základní Uživatel)**
+
+      * [cite\_start]**Kdo to je:** Výchozí role pro každého, kdo se zaregistruje (přihlásí přes e-mail)[cite: 1094].
+      * **Co dělá:** Totéž co Anonymní (prohlíží veřejný obsah), ale navíc získává přístup ke svému osobnímu "dashboardu". Zde si v budoucnu bude moci (např. v další fázi) "ukládat" oblíbená videa nebo sbírky do své soukromé knihovny.
+
+  * **Role: `KURATOR` (Tvůrce Obsahu)**
+
+      * **Kdo to je:** Uživatel (`USER`), kterému `ADMIN` **manuálně povýšil** roli v databázi.
+      * **Co dělá:** Vše co `USER`, ale navíc získává přístup k "tvůrčím" sekcím (dnes `/admin`, v budoucnu např. `/my-content`), kde může vytvářet, upravovat a mazat **své vlastní** videa a sbírky (zde se uplatní naše `isOwner` logika).
+
+  * **Role: `ADMIN` (Správce Systému)**
+
+      * **Kdo to je:** Váš účet.
+      * **Co dělá:** Vše co `KURATOR`, ale navíc může spravovat **veškerý** obsah od *všech* kurátorů (logika `isAdmin`) a měnit role ostatním uživatelům.
+
+**Proč je tento model robustní?**
+
+  * **Jednoduchost:** Každý uživatel má v databázi jen jedno pole: `role`.
+  * **Hierarchie:** Oprávnění jsou implicitně hierarchická. `ADMIN` může vše co `KURATOR`, `KURATOR` může vše co `USER`.
+  * **Žádný "VISITOR":** Nepotřebujeme roli `VISITOR`. Možnost "vidět veřejný obsah" není role, je to výchozí stav pro každého (včetně `USER`a).
+
+### 3\. Implementace "Sbírek" (Kolekcí)
+
+[cite\_start]Abychom toto mohli realizovat, musíme (jak jste správně navrhl) [cite: 1090] nyní implementovat **Sbírky**.
+
+  * [cite\_start]**Vlastnictví:** Každá `Sbírka` (Collection) bude mít v databázi `authorId`[cite: 1092], které ji spojí s jejím vlastníkem (rolí `KURATOR` nebo `ADMIN`).
+  * **Vztah:** Potřebujeme vztah **Many-to-Many** (M:N). Jedno video může být v mnoha sbírkách a jedna sbírka může mít mnoho videí.
+      * V `prisma/schema.prisma` to bude vypadat takto:
+        ```prisma
+        model Video {
+          id     String     @id @default(cuid())
+          // ...
+          collections Collection[] // Video může být ve více sbírkách
+        }
+
+        model Collection {
+          id          String   @id @default(cuid())
+          name        String
+          description String?
+          isPublic    Boolean  @default(false) // Příznak pro "veřejnost"
+          author      User     @relation(fields: [authorId], references: [id])
+          authorId    String   // Vlastník (ADMIN nebo KURATOR)
+          videos      Video[]  // Sbírka obsahuje více videí
+        }
+        ```
+
+### 4\. Příznak "isPublic" (Zveřejnění)
+
+[cite\_start]Váš postřeh [cite: 1097-1098] je zásadní. Místo role `VISITOR` budeme mít příznak `isPublic: Boolean` přímo na modelu `Collection`.
+
+  * `KURATOR` (nebo `ADMIN`) bude mít při editaci sbírky zaškrtávací políčko "Veřejná sbírka".
+  * Anonymní uživatelé a `USER`i uvidí na hlavní stránce pouze sbírky, které mají `isPublic: true`.
+  * `KURATOR` uvidí ve své správě *všechny* své sbírky (veřejné i soukromé, např. tu vaši "k analýze").
+
+### Závěr a Další Krok
+
+Váš plán je skvělý. Technologicky jsme na něj připraveni díky Fázi 6. Navrhuji následující:
+
+1.  **Zjednodušíme role** na `USER`, `KURATOR`, `ADMIN` (kde `ANONYMOUS` je stav, ne role).
+2.  **Implementujeme "Sbírky"** jako M:N vztah s vlastníkem (`authorId`) a příznakem `isPublic`.
+
+Tento přístup je robustní, škálovatelný a přesně odpovídá "best practices" pro správu oprávnění.
+
+-----
+
+Mohu tedy nyní připravit finální, podrobné **zadání pro Fázi 7 (README\_07\_01ZADANI)**, které bude obsahovat **Implementaci "Sbírek" (Kolekcí)** s touto robustní architekturou?
+
+
+
+
+
+
+
+
+
+JÁ_PROMPT:
+Pojdme toto zadání ještě dospecifikovat na základě user cases resp. když přijde VISITOR (resp. anonymous) co uvidí - uvídí úvodní stránku Mediatheky - uvidí jednotlivé veřejné sbírky - bude moci navštívit veřejné obsahy veřejných videí v těchto veřejných sbírkách. Uvidí také možnost registrovat se čímž se stane USERem. Co bude moci jako USER ... to samé co VISITOR přičemž bude mít svoje přihlášení, bude registrovaný, bude moci v budoucnu dostávat např. notifikace o nových sbírkách apod. a bude moci požádat o to stát se KURATORem. Toto až bude schváleno ADMINem se stane KURATORem a bude moci to co VISITOR, USER plus možnost vytvářet sbírky a ukládat do nich videa a určovat které budou veřejné a které ne. Je tato představa správná o tomto zadání? můžeme někde najít ještě přesnější specifikaci tohoto zadání? 
+
+
+
+
+
+
+AI_RESPONZE:
+Ano, vaše představa je naprosto správná a je to vynikající, robustní model pro další vývoj.
+
+Přesně jste popsal princip progresivního modelu oprávnění (Progressive Role-Based Access Control), což je osvědčený ("best practice") způsob, jak budovat škálovatelné aplikace.
+
+Pojďme si potvrdit vaše případy užití (use cases), protože jsou perfektním základem pro další zadání:
+
+Případ 1: ANONYMOUS / NÁVŠTĚVNÍK (váš "VISITOR")
+
+Kdo: Uživatel, který přijde na web a není přihlášen.
+
+Co vidí: Úvodní stránku, seznam veřejných sbírek a může si prohlížet veřejná videa a jejich veřejný strukturovaný obsah. Vidí tlačítko "Registrovat / Přihlásit".
+
+Stav: Toto je základní "prohlížecí" mód aplikace.
+
+Případ 2: Role USER (Registrovaný uživatel)
+
+Kdo: Uživatel, který se zaregistroval a přihlásil.
+
+Co vidí: To samé co Anonymní návštěvník.
+
+Co navíc může: Má svou "identitu". Tím získává základ pro budoucí funkce (jak jste zmínil, např. notifikace, ukládání oblíbených videí) a hlavně má možnost požádat o povýšení na roli KURATOR.
+
+Případ 3: Role KURATOR (Tvůrce obsahu)
+
+Kdo: Uživatel (USER), kterému ADMIN manuálně schválil žádost a změnil mu roli v databázi.
+
+Co může: Vše co USER, ale navíc získává přístup k "tvůrčí" sekci (dnes /admin, v budoucnu např. /my-content), kde může:
+
+Vytvářet, upravovat a mazat své vlastní sbírky.
+
+Přidávat, upravovat a mazat svá vlastní videa (včetně strukturovaného obsahu).
+
+U svých sbírek nastavovat příznak isPublic (zda je uvidí NÁVŠTĚVNÍK).
+
+Technologie: Zde se perfektně uplatní naše hotová logika isOwner z Fáze 6.
+
+Případ 4: Role ADMIN (Správce systému)
+
+Kdo: Pouze vy.
+
+Co může: Vše co KURATOR, ale navíc může spravovat všechen obsah (i od jiných kurátorů) a hlavně může měnit role ostatním uživatelům (povyšovat USER na KURATOR).
+
+Technologie: Zde se uplatní naše hotová logika isAdmin.
+
+Kde najít přesnější specifikaci?
+Vaše druhá otázka ("můžeme někde najít ještě přesnější specifikaci?") je naprosto klíčová.
+
+Odpověď je, že ji právě teď vytváříme.
+
+Tyto dokumenty, které procházíme (např. README_00_01ZADANI, README_01_01ZADANI až po README_06_01ZADANI), nejsou statická specifikace, kterou jen plníme. Jsou to zápisy z našich diskuzí o tom, jaký bude další logický krok. Každý README dokument je artefaktem jedné této fáze návrhu.
+
+Ta "přesnější specifikace", kterou hledáte, bude výstupem této naší konverzace. Bude to finální dokument README_07_01ZADANI, který vytvoříme, až si finálně potvrdíme, že "Implementace Sbírek" je přesně to, co chceme teď udělat.
+
+Váš popis případů užití (use cases) mi dokonale potvrdil, že náš cíl pro Fázi 7 – "Implementace Sbírek (Kolekcí)" – je ten absolutně správný a logický další krok. Přesně jak jste řekl, nejprve musíme dát Adminovi (a budoucím Kurátorům) možnost obsah organizovat, než ho ukážeme veřejnosti.
+
+Tato fáze 7 tedy bude technologicky zahrnovat:
+
+Rozšíření prisma/schema.prisma o model Collection.
+
+Vytvoření vztahu Many-to-Many (M:N) mezi Video a Collection.
+
+Přidání authorId (vlastnictví) na Collection.
+
+Přidání příznaku isPublic (boolean) na Collection.
+
+Vytvoření nového API (/api/collections) a rozhraní (např. /admin/collections) pro správu sbírek.
+
+Úpravu formuláře admin/edit/[id] tak, aby umožňoval přiřadit video do jedné nebo více sbírek.
+
+Tímto "zahustíme" technologické jádro a budeme 100% připraveni na Fázi 8 (zveřejnění) a Fázi 9 (povýšení rolí).
+
+Můžeme tedy tuto diskuzi uzavřít s tím, že tato specifikace je finální, a mám připravit oficiální zadání README_07_01ZADANI pro "Implementaci Sbírek (Kolekcí)"?
+
+
+
+
+
+
+
+
+
+JÁ_PROMPT:
+Ano pojdme vytvořit opět robustní zadání tohoto kroku vývoje [Můžeme tedy tuto diskuzi uzavřít s tím, že tato specifikace je finální, a mám připravit oficiální zadání README_07_01ZADANI pro "Implementaci Sbírek (Kolekcí)"?] tak abchom v přístím kroku mohli nastavit specifikaci přidělování práv a první VISITOR a i stávající USER mohl prohlížet veřejnou část sbírek a případně se mohl stát i kurátorem. Nyní pro toto připravíme kolekce a vlastnosti zda jsou veřejné pro sbírky a videa. Je toto takto ok?
+
+
+AI_RESPONZE:
+Ano, je to naprosto ok. Perfektně jste to shrnul.
+
+Tato fáze (`README_07_01ZADANI`) se soustředí výhradně na **vybudování infrastruktury pro sbírky** a jejich vlastnosti (vlastnictví a veřejnost).
+
+Teprve v další fázi (Fáze 8) pak tuto připravenou infrastrukturu "otevřeme" a zpřístupníme `VISITOR`ům a `USER`ům. Postupujeme přesně podle robustní strategie.
+
+Zde je kompletní, finální zadání pro Fázi 7.
+
+-----
+
+### 📄 Zadání projektu: Webová aplikace Mediathek (Fáze 7 - Implementace Sbírek)
+
+**Datum:** 16. listopadu 2025
+**Verze:** 7.0
+[cite\_start]**Navazuje na:** Fáze 6 (Realizace CRUD & RBAC [cite: 1, 134])
+
+### 1\. Název projektu
+
+Mediathek
+
+### 2\. 🎯 Cíl Fáze
+
+Cílem této fáze je implementovat **jádrový koncept "Sbírek" (Kolekcí)**. Tím se posuneme od správy jednotlivých videí k jejich **organizaci do kontextuálních celků**. [cite\_start]Kurátor (nyní ADMIN) musí dostat nástroj, jak videa třídit do "poliček" (např. "K analýze", "Veřejné recepty") [cite: 1477-1478], než tento obsah v příští fázi zpřístupníme veřejnosti.
+
+Tato fáze se zaměřuje na vytvoření datové struktury (M:N vztah), rozhraní pro správu sbírek a mechanismus pro přiřazování videí do sbírek.
+
+### 3\. Rozsah pro Fázi 7
+
+  * [cite\_start]**Databáze (Prisma):** Rozšíření schématu o model `Collection` a vytvoření **vztahu Many-to-Many** (M:N) mezi modely `Video` a `Collection` [cite: 1484-1485].
+  * [cite\_start]**Architektura (RBAC):** Nový model `Collection` bude mít vlastníka (`authorId`) a bude plně integrován do stávající logiky oprávnění `isOwner || isAdmin` [cite: 1391-1393].
+  * [cite\_start]**Viditelnost:** Model `Collection` bude obsahovat příznak `isPublic` (Boolean), který určí budoucí viditelnost pro veřejnost[cite: 1478, 1485].
+  * **API (Nové):** Vytvoření nových API endpointů pro plnou správu (CRUD) sbírek (např. `/api/collections`).
+  * **API (Úprava):** Rozšíření stávajícího `PUT` endpointu pro editaci videa (`/api/videos/[id]`) tak, aby uměl aktualizovat přiřazení videa do sbírek.
+  * **Frontend (Nové):** Vytvoření nové stránky ve správě (např. `/admin/collections`) pro vytváření, editaci a mazání sbírek.
+  * [cite\_start]**Frontend (Úprava):** Úprava stávající stránky "Editace Videa" (`/admin/edit/[id]`) [cite: 1315] o novou sekci, která umožní zaškrtnutím přiřadit video do jedné nebo více sbírek.
+
+**Mimo rozsah této fáze:** Zveřejnění sbírek pro veřejnost (to bude Fáze 8), povyšování rolí `USER` na `KURATOR` (to bude Fáze 9).
+
+-----
+
+### 4\. 🏛️ Návrh Řešení a Architektura
+
+Toto řešení je navrženo pro maximální škálovatelnost.
+
+#### 4.1. Databázový Model (Prisma)
+
+Soubor `prisma/schema.prisma` bude upraven tak, aby obsahoval nový model a M:N vztah.
+
+```prisma
+// V existujícím modelu User
+model User {
+  // ... stávající pole
+  videos       Video[]      // Videa vytvořená uživatelem
+  collections  Collection[] // Sbírky vytvořené uživatelem
+}
+
+// V existujícím modelu Video
+model Video {
+  // ... stávající pole (id, youtubeId, title, authorId, atd.)
+  chapters    Chapter[]
+  
+  // --- NOVÁ RELACE (M:N) ---
+  collections Collection[] 
+}
+
+// --- NOVÝ MODEL COLLECTION ---
+model Collection {
+  id          String   @id @default(cuid())
+  name        String   // Název sbírky (např. "Studie o mikrobiomu")
+  description String?  @db.Text // Volitelný popis sbírky
+  
+  // Vlastnictví (Pro RBAC)
+  author      User     @relation(fields: [authorId], references: [id])
+  [cite_start]authorId    String   // Kdo sbírku vytvořil (ADMIN nebo KURATOR) [cite: 1485]
+
+  // Veřejnost (Pro Fázi 8)
+  [cite_start]isPublic    Boolean  @default(false) // Uvidí ji veřejnost? [cite: 1478, 1485]
+
+  // Vztah (M:N)
+  videos      Video[]  // Videa obsažená v této sbírce
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+```
+
+*Po této změně bude nutné spustit migraci:* `npm run prisma:migrate -- --name "add_collection_model"`
+
+#### 4.2. API vrstva (Backend)
+
+**A. Nové API pro správu sbírek (`app/api/collections/route.ts`)**
+
+  * **POST:** Vytvoří novou sbírku. Musí ověřit, že uživatel je přihlášen (alespoň `USER`, i když teď to bude jen `ADMIN`) a automaticky nastavit `authorId` na `session.user.id`.
+  * **GET:** Vrátí seznam sbírek. Bude respektovat RBAC:
+      * `ADMIN` uvidí *všechny* sbírky.
+      * `KURATOR` (v budoucnu) uvidí *jen své* sbírky.
+
+**B. Nové API pro správu sbírek (`app/api/collections/[id]/route.ts`)**
+
+  * **PUT:** Umožní upravit název, popis a příznak `isPublic` dané sbírky. Endpoint musí ověřit oprávnění (`isOwner || isAdmin`).
+  * **DELETE:** Smaže sbírku. Endpoint musí ověřit oprávnění (`isOwner || isAdmin`). (Poznámka: Smazání sbírky nesmaže videa v ní, pouze smaže propojení ve vztahové tabulce).
+
+**C. Úprava stávajícího API (`app/api/videos/[id]/route.ts`)**
+
+  * Handler `PUT` (který slouží k editaci videa) bude rozšířen.
+  * Kromě `title`, `summary` atd. přijme nové pole: `collectionIds: string[]`.
+  * [cite\_start]V rámci databázové transakce (`prisma.$transaction`) [cite: 1405] provede `await tx.video.update(...)`, kde použije operátor `set` pro M:N relaci:
+    ```javascript
+    await tx.video.update({
+        where: { id: videoId },
+        data: {
+            title: body.title,
+            // ... ostatní pole
+            collections: {
+                set: body.collectionIds.map((id: string) => ({ id: id }))
+            }
+        }
+    });
+    ```
+
+#### 4.3. Uživatelské Rozhraní (Frontend)
+
+**A. Nová stránka správce (`app/admin/collections/page.tsx`)**
+
+  * Bude obsahovat jednoduchý formulář pro vytvoření nové sbírky (pole `name`, `description`).
+  * Pod formulářem bude seznam (tabulka) všech sbírek, které uživatel vidí (dle logiky `GET /api/collections`).
+  * Tabulka umožní editaci (změna názvu, `isPublic` přepínač) a mazání.
+
+**B. Úprava stránky editace videa (`app/admin/edit/[id]/page.tsx`)**
+
+  * [cite\_start]Tato stránka (vytvořená ve Fázi 6) [cite: 1379] bude rozšířena.
+  * Při načítání dat videa (`GET /api/videos/[id]`) musí také načíst seznam *všech* dostupných sbírek (`GET /api/collections`).
+  * Ve formuláři bude nová sekce "Zařadit do sbírek".
+  * Zde se zobrazí seznam všech sbírek (např. jako `checkbox`y). Ty, ve kterých video již je, budou zaškrtnuté.
+  * Při uložení (volání `PUT /api/videos/[id]`) se pole ID zaškrtnutých sbírek odešle v `collectionIds`.
+
+-----
+
+### 5\. 🚦 Funkční Požadavky (FR)
+
+  * **FR1 (Vytvoření sbírky):** Admin musí být schopen vytvořit novou sbírku s názvem a popisem.
+  * **FR2 (Správa sbírky):** Admin musí být schopen upravit název, popis a stav (`isPublic`) sbírky.
+  * **FR3 (Mazání sbírky):** Admin musí být schopen smazat sbírku (videa v ní zůstanou zachována, jen nebudou přiřazena).
+  * **FR4 (Přiřazení videa):** Admin musí mít možnost na stránce editace videa zaškrtnout, ve kterých sbírk(ách) má video být.
+  * **FR5 (Uložení přiřazení):** Po uložení editace videa se musí M:N vztahy v databázi korektně aktualizovat.
+
+### 6\. 🔒 Nefunkční Požadavky (NFR)
+
+  * [cite\_start]**NFR1 (Bezpečnost RBAC):** Všechny nové API endpointy pro sbírky musí striktně vynucovat vlastnictví (`isOwner || isAdmin`) na serveru [cite: 1391-1393].
+  * **NFR2 (Datová Konzistence):** Úprava videa a jeho přiřazení ke sbírkám musí proběhnout v rámci jedné databázové transakce (jak je popsáno v 4.2.C).
+  * **NFR3 (Integrita dat):** Databázové schéma musí používat M:N vztah s relační tabulkou (Prisma to řeší automaticky), aby byla zajištěna integrita.
+
+### 7\. 💻 Technologický Stack a Nástroje
+
+  * [cite\_start]Využívá se stávající stack: Next.js (App Router) [cite: 1173][cite\_start], Prisma [cite: 1181][cite\_start], NextAuth.js [cite: 1181][cite\_start], Vercel Postgres[cite: 1180].
+  * Nejsou potřeba žádné nové klíčové knihovny.
+
+-----
+
+### 8\. ✅ Akceptační Kriteria (Definice "Hotovo")
+
+Tato fáze je dokončena, když:
+
+1.  Byla spuštěna databázová migrace pro model `Collection` (lokálně i na produkci).
+2.  Admin se přihlásí, přejde na novou stránku `/admin/collections` a úspěšně vytvoří sbírku "Testovací Sbírka".
+3.  Admin přejde na `/admin/edit/[id]` existujícího videa.
+4.  Ve formuláři vidí novou sekci a v ní "Testovací Sbírka" (jako checkbox).
+5.  Admin zaškrtne "Testovací Sbírka" a uloží video.
+6.  V databázi (ověřeno např. přes `npm run prisma:studio`) existuje propojení mezi videem a sbírkou ve vztahové tabulce `_CollectionToVideo`.
+7.  Admin může na stránce `/admin/collections` změnit název sbírky nebo její příznak `isPublic`.
+
+### 9\. 🚀 Budoucí Rozvoj (Mimo Rozsah Této Fáze)
+
+  * **Fáze 8:** Zveřejnění obsahu. Vytvoření veřejných stránek (`/` a `/collections/[id]`), které budou číst data a zobrazovat sbírky a videa na základě příznaku `isPublic: true`.
+  * **Fáze 9:** Povýšení rolí. Implementace logiky, kdy `ADMIN` může změnit roli `USER` na `KURATOR`, čímž mu odemkne přístup ke správě vlastního obsahu.
+
+id_chat: 
+https://gemini.google.com/u/1/app/26e898a8e59b64ef
+
+

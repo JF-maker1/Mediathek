@@ -28,6 +28,7 @@ export default function Navbar() {
             <>
               <Link href="/admin/dashboard" className="hover:underline">Přehled obsahu</Link>
               <Link href="/admin/manage" className="hover:underline">Správa obsahu</Link>
+              <Link href="/admin/collections" className="hover:underline">Sbírky</Link>
               <Link href="/admin/add" className="font-bold hover:underline">Přidat video</Link>
             </>
           )}
