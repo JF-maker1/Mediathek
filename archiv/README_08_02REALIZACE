@@ -1,579 +1,408 @@
 JÁ_PROMPT:  
-V příloze je zadání pro tvorbu webové aplikace pro správu videí a obsahu videí [README_07_01ZADANI_SOUHRN_ZADANI_REALIZACE]. Prosím ze zadání vytvořit konkrétní plán realizace (resp. jednotlivé příkazy, nastavení, instalace, ověření prostředí jak systémové, tak projektové a tak i podobně) včetně plánu testování která potvrdí úspěšné ukončení realizační fáze vycházející ze zadání této realizační fáze viz zadání pro tuto fázi realizace příloze . Realizační fáze je ukončena testováním jak na lokálním prostředí tak i na produkčním prostředí. V příloze je rovněž snímek projektového adresáře po ukončení předchozí fáze realizace [README_06_03project_snapshot] který by měl poskytnout představu o podmínkách jednak vnitřních v projektu tak i podmínkách vnějších pro tento projekt tak i jeho potřebném detailu. 
+V příloze je zadání pro tvorbu webové aplikace pro správu videí a obsahu videí [README_08_01ZADANI_SOUHRN_ZADANI_REALIZACE]. Prosím ze zadání vytvořit konkrétní plán realizace (resp. jednotlivé příkazy, nastavení, instalace, ověření prostředí jak systémové, tak projektové a tak i podobně) včetně plánu testování která potvrdí úspěšné ukončení realizační fáze vycházející ze zadání této realizační fáze viz zadání pro tuto fázi realizace v příloze . Realizační fáze je ukončena testováním jak na lokálním prostředí tak i na produkčním prostředí. V příloze je rovněž snímek projektového adresáře po ukončení předchozí fáze realizace [README_07_03project_snapshot] který by měl poskytnout představu o podmínkách jednak vnitřních v projektu tak i podmínkách vnějších pro tento projekt tak i jeho potřebném detailu. 
 
 AI_RESPONZE:
 
-🛠️ Aktualizovaný Plán Realizace: Fáze 7 - Implementace Sbírek (Kolekcí)Datum: 16. listopadu 2025Verze: 2.0 (Reflektuje změny a fixy z průběhu ladění)Výchozí stav: Fáze 6 (CRUD & RBAC hotovo)Cíl: Implementovat model Collection, vztah M:N s videi, API pro správu a UI pro kurátora.1. Příprava a Ověření ProstředíTento krok jste již provedl, ale pro úplnost rekapitulace:1.1. Stav VětveUjistěte se, že jste na větvi feature/faze-7-collections a máte čistý pracovní adresář.git status
-2. Krok 1: Databázová Vrstva (Prisma)Tento krok definuje datové struktury. Již jste ho úspěšně provedl (migrace proběhla).2.1. Schéma (prisma/schema.prisma)Schéma bylo rozšířeno o model Collection a relace.// ... (Role enum)
+Rozumím. Na základě poskytnutého zadání pro Fázi 8 a snímku projektu z Fáze 7 jsem připravil detailní plán realizace.
 
-model User {
-  id        String   @id @default(cuid())
-  // ... (email, password, role, createdAt, updatedAt)
+Tento plán je navržen tak, aby byl robustní, dodržoval "best practices" (zejména znovupoužitelnost kódu) a byl přímo proveditelný.
 
-  videos      Video[]      
-  collections Collection[] // NOVÉ: Sbírky vytvořené uživatelem
+Zde je kompletní plán realizace a testování pro Fázi 8.
+
+Plán Realizace Fáze 8: Veřejná VýlohaTento dokument popisuje konkrétní kroky implementace, příkazy a testovací scénáře potřebné k úspěšnému dokončení Fáze 8, jak byla definována v README_08_01ZADANI_SOUHRN_ZADANI_REALIZACE.Cíl Fáze: Vytvořit veřejnou domovskou stránku (/), která inteligentně filtruje obsah podle role uživatele (VISITOR, USER, ADMIN). Toho bude dosaženo refaktorizací stávajícího kódu do znovupoužitelné komponenty (VideoGrid.tsx), aby se zabránilo duplicitě kódu.1. Příprava ProstředíNejprve ověříme systémové prostředí (na základě snímku Fáze 7) a připravíme novou větev pro vývoj.Ověření prostředí (Systém):Node.js: v24.11.0 (dle snímku)NPM: 11.6.1 (dle snímku)Spuštění příkazu: node -v && npm -v pro potvrzení.Ověření prostředí (Projekt):Přejděte do kořenového adresáře projektu web_app_Mediathek/.Spusťte npm install, abyste zajistili synchronizaci všech závislostí.Spusťte npm run dev a ověřte, že se aplikace lokálně spustí bez chyb (pravděpodobně na http://localhost:3000).Vytvoření nové Git větve:Ze snímku víme, že jsme na feature/faze-7-collections. Nejprve se ujistíme, že jsme na hlavní větvi (předpokládejme main nebo master, pro tento příklad použiji main).<!-- end list --># Přejděte na hlavní větev (nahraďte 'main', pokud se jmenuje jinak)
+git checkout main
+
+# Synchronizujte s vzdáleným repositářem
+git pull
+
+# Vytvořte novou větev pro Fázi 8
+git checkout -b feature/faze-8-public-homepage
+2. Realizační Plán Krok-za-KrokemPostupujeme dle zadání: nejprve refaktorizujeme ("dílna"), poté implementujeme novou funkci ("výloha").Krok 2.1: Refaktorizace - Vytvoření components/VideoGrid.tsxVytvoříme "hloupou" klientskou komponentu, která se stará pouze o zobrazení mřížky videí.Aktualizace: Díky dodanému page.tsx můžeme tuto komponentu vytvořit rovnou s bohatším vzhledem (náhledový obrázek, autor).Akce: Vytvořte nový soubor components/VideoGrid.tsx.Zdrojový kód (components/VideoGrid.tsx):// V souladu se zadáním Fáze 8 vytváříme klientskou komponentu
+"use client";
+
+import Link from 'next/link';
+// AKTUALIZACE: Importujeme typy z Prisma
+import { Video, User } from '@prisma/client';
+
+// AKTUALIZACE: Definujeme typ, který očekáváme (Video + Author)
+// Toto je přesně to, co načítá stávající app/admin/dashboard/page.tsx
+type VideoWithAuthor = Video & {
+  author: { email: string | null } | null;
+};
+
+// Definujeme typ pro props
+interface VideoGridProps {
+  videos: VideoWithAuthor[];
+  // Přidáme volitelný prop pro změnu odkazu (pro budoucí veřejnou stránku)
+  baseHref?: string;
 }
 
-model Video {
-  id        String   @id @default(cuid())
-  // ... (youtubeId, title, summary, createdAt, updatedAt, authorId)
-
-  author    User     @relation(fields: [authorId], references: [id])
-  chapters  Chapter[]
-  collections Collection[] // NOVÉ: Relace M:N
-}
-
-// ... (Chapter model)
-
-// --- NOVÝ MODEL ---
-model Collection {
-  id          String   @id @default(cuid())
-  name        String
-  description String?  @db.Text
-  isPublic    Boolean  @default(false)
+// Komponenta pouze přijímá pole videí a vykresluje je
+export default function VideoGrid({ videos, baseHref = '/admin/video' }: VideoGridProps) {
   
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  authorId    String
-  author      User     @relation(fields: [authorId], references: [id])
-
-  videos      Video[]
-}
-3. Krok 2: Backend API (Next.js Route Handlers)Zde došlo během vývoje k nejvíce úpravám (debugování chyb 404 a problémů s cachováním). Níže jsou finální, funkční verze souborů.3.1. API pro seznam sbírek (app/api/collections/route.ts)import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-
-const prisma = new PrismaClient();
-
-// POST: Vytvoření nové sbírky
-export async function POST(request: Request) {
-  try {
-    const session = await getServerSession(authOptions);
-    if (!session || session.user?.role !== 'ADMIN') { 
-      return new NextResponse(JSON.stringify({ message: 'Unauthorized' }), { status: 403 });
-    }
-
-    const body = await request.json();
-    const { name, description } = body;
-
-    if (!name) {
-      return new NextResponse(JSON.stringify({ message: 'Name is required' }), { status: 400 });
-    }
-
-    const collection = await prisma.collection.create({
-      data: {
-        name,
-        description,
-        authorId: session.user.id,
-        isPublic: false,
-      },
-    });
-
-    return NextResponse.json(collection, { status: 201 });
-  } catch (error) {
-    console.error('API_COLLECTIONS_POST_ERROR', error);
-    return new NextResponse(JSON.stringify({ message: 'Internal Error' }), { status: 500 });
-  }
-}
-
-// GET: Seznam sbírek (Respektuje RBAC)
-export async function GET(request: Request) {
-  try {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return new NextResponse(JSON.stringify({ message: 'Unauthorized' }), { status: 401 });
-    }
-
-    const where = session.user.role === 'ADMIN' ? {} : { authorId: session.user.id };
-
-    const collections = await prisma.collection.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-      include: { _count: { select: { videos: true } } } 
-    });
-
-    return NextResponse.json(collections);
-  } catch (error) {
-    console.error('API_COLLECTIONS_GET_ERROR', error);
-    return new NextResponse(JSON.stringify({ message: 'Internal Error' }), { status: 500 });
-  }
-}
-3.2. API pro detail sbírky (app/api/collections/[id]/route.ts)Klíčové změny oproti původnímu plánu:Přidáno export const dynamic = 'force-dynamic' pro vypnutí cache.Přidána robustnější kontrola existence sbírky.Opraveno zpracování await context.params.import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-
-// DŮLEŽITÉ: Vypnutí cachování pro tento endpoint
-export const dynamic = 'force-dynamic';
-
-const prisma = new PrismaClient();
-
-// Pomocná funkce pro kontrolu práv
-async function checkPermissions(collectionId: string, session: any) {
-  if (!session) {
-    return { allowed: false, code: 401, message: 'No session' };
+  // Pokud nejsou žádná videa, zobrazíme zprávu
+  if (videos.length === 0) {
+    return (
+      <p className="text-center text-gray-400">
+        Nebyly nalezeny žádné video záznamy.
+      </p>
+    );
   }
 
-  try {
-    const collection = await prisma.collection.findUnique({ 
-        where: { id: collectionId } 
-    });
-  
-    if (!collection) {
-        return { allowed: false, code: 404, message: 'Collection not found' };
-    }
-
-    const isOwner = collection.authorId === session.user.id;
-    const isAdmin = session.user.role === 'ADMIN';
-
-    if (!isOwner && !isAdmin) {
-        return { allowed: false, code: 403, message: 'Forbidden' };
-    }
-
-    return { allowed: true, collection };
-  } catch (e) {
-      console.error("[checkPermissions] DB Error:", e);
-      return { allowed: false, code: 500, message: 'DB Error' };
-  }
-}
-
-// PUT: Update sbírky (Změna viditelnosti, názvu)
-export async function PUT(request: Request, context: { params: Promise<{ id: string }> }) {
-  try {
-    const session = await getServerSession(authOptions);
-    const params = await context.params;
-    const id = params.id;
-
-    const { allowed, code, message } = await checkPermissions(id, session);
-    
-    if (!allowed) {
-       return new NextResponse(JSON.stringify({ message }), { status: code });
-    }
-
-    const body = await request.json();
-    const { name, description, isPublic } = body;
-
-    const updated = await prisma.collection.update({
-      where: { id },
-      data: { name, description, isPublic },
-    });
-
-    return NextResponse.json(updated);
-  } catch (error) {
-    console.error('[PUT] Error:', error);
-    return new NextResponse(JSON.stringify({ message: 'Internal Error' }), { status: 500 });
-  }
-}
-
-// DELETE: Smazání sbírky
-export async function DELETE(request: Request, context: { params: Promise<{ id: string }> }) {
-  try {
-    const session = await getServerSession(authOptions);
-    const params = await context.params;
-    const id = params.id;
-
-    const { allowed, code, message } = await checkPermissions(id, session);
-    if (!allowed) {
-        return new NextResponse(JSON.stringify({ message }), { status: code });
-    }
-
-    await prisma.collection.delete({ where: { id } });
-    return new NextResponse(null, { status: 204 });
-  } catch (error) {
-    console.error('[DELETE] Error:', error);
-    return new NextResponse(JSON.stringify({ message: 'Internal Error' }), { status: 500 });
-  }
-}
-3.3. API pro editaci videa (app/api/videos/[id]/route.ts)Klíčová implementace: Zde se řeší přiřazování videí do sbírek (M:N vazba).import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { parseStructuredContent } from '@/lib/parser';
-
-const prisma = new PrismaClient();
-
-async function checkPermissions(videoId: string, session: any) {
-  if (!session) {
-    return { allowed: false, video: null, error: new NextResponse(JSON.stringify({ message: 'Unauthorized' }), { status: 401 }) };
-  }
-
-  // FR5: Přidáno `collections: true`
-  const video = await prisma.video.findUnique({
-    where: { id: videoId },
-    include: { 
-      chapters: { orderBy: { order: 'asc' } },
-      collections: true // <--- Načítáme sbírky
-    },
-  });
-
-  if (!video) {
-    return { allowed: false, video: null, error: new NextResponse(JSON.stringify({ message: 'Video not found' }), { status: 404 }) };
-  }
-
-  const isOwner = video.authorId === session.user.id;
-  const isAdmin = session.user.role === 'ADMIN';
-
-  if (!isOwner && !isAdmin) {
-    return { allowed: false, video: video, error: new NextResponse(JSON.stringify({ message: 'Forbidden' }), { status: 403 }) };
-  }
-
-  return { allowed: true, video: video };
-}
-
-// GET: Načtení videa pro editaci
-export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
-  try {
-    const session = await getServerSession(authOptions);
-    const params = await context.params;
-    const { id } = params; 
-
-    const { allowed, video, error } = await checkPermissions(id, session);
-    if (!allowed) return error;
-
-    return NextResponse.json(video);
-  } catch (error) {
-    console.error('API_VIDEOS_GET_ERROR', error);
-    return new NextResponse(JSON.stringify({ message: 'Internal Error' }), { status: 500 });
-  }
-}
-
-// PUT: Uložení změn (včetně sbírek)
-export async function PUT(request: Request, context: { params: Promise<{ id:string }> }) {
-  try {
-    const session = await getServerSession(authOptions);
-    const params = await context.params;
-    const { id } = params;
-
-    const { allowed, error } = await checkPermissions(id, session);
-    if (!allowed) return error;
-
-    const body = await request.json();
-    // Načítáme collectionIds z body
-    const { title, summary, structuredContent, collectionIds } = body;
-
-    const parsedChapters = parseStructuredContent(structuredContent || '');
-
-    const updatedVideo = await prisma.$transaction(async (tx) => {
-      const video = await tx.video.update({
-        where: { id: id },
-        data: {
-          title,
-          summary,
-          updatedAt: new Date(),
-          // Logika pro aktualizaci M:N vztahu
-          collections: collectionIds ? {
-            set: collectionIds.map((cid: string) => ({ id: cid }))
-          } : undefined,
-        },
-      });
-
-      // Aktualizace kapitol (beze změny)
-      await tx.chapter.deleteMany({ where: { videoId: id } });
-      if (parsedChapters.length > 0) {
-        const chapterData = parsedChapters.map((chapter, index) => ({
-          ...chapter,
-          order: index,
-          videoId: id,
-        }));
-        await tx.chapter.createMany({ data: chapterData });
-      }
-
-      return video;
-    });
-
-    return NextResponse.json(updatedVideo);
-  } catch (error: any) {
-    if (error.message?.startsWith('Neplatný formát')) {
-        return new NextResponse(JSON.stringify({ message: error.message }), { status: 400 });
-    }
-    console.error('API_VIDEOS_PUT_ERROR', error);
-    return new NextResponse(JSON.stringify({ message: 'Internal Error' }), { status: 500 });
-  }
-}
-
-// DELETE: Beze změny
-export async function DELETE(request: Request, context: { params: Promise<{ id: string }> }) {
-    // ... (stejný kód jako dříve)
-    // Pro stručnost vynecháno, protože se neměnilo
-    return new NextResponse(null, { status: 204 });
-}
-4. Krok 3: Frontend UI4.1. Stránka Správa Sbírek (app/admin/collections/page.tsx)Tato stránka umožňuje vytvářet sbírky a měnit jejich viditelnost."use client";
-import { useState, useEffect, FormEvent } from 'react';
-import { useSession } from 'next-auth/react';
-
-interface Collection {
-  id: string;
-  name: string;
-  description: string | null;
-  isPublic: boolean;
-  _count?: { videos: number };
-}
-
-export default function CollectionsPage() {
-  const { data: session } = useSession();
-  const [collections, setCollections] = useState<Collection[]>([]);
-  const [name, setName] = useState('');
-  const [desc, setDesc] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const fetchCollections = async () => {
-    const res = await fetch('/api/collections');
-    if (res.ok) setCollections(await res.json());
-  };
-
-  useEffect(() => { fetchCollections(); }, []);
-
-  const handleCreate = async (e: FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    await fetch('/api/collections', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, description: desc }),
-    });
-    setName(''); setDesc('');
-    fetchCollections(); 
-    setLoading(false);
-  };
-
-  const togglePublic = async (col: Collection) => {
-    // Optimisticky UI update (volitelné), zde spoléháme na re-fetch
-    await fetch(`/api/collections/${col.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ isPublic: !col.isPublic }),
-    });
-    fetchCollections();
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!confirm('Opravdu smazat sbírku?')) return;
-    await fetch(`/api/collections/${id}`, { method: 'DELETE' });
-    fetchCollections();
-  };
-
-  if (session?.user.role !== 'ADMIN') return <p>Access Denied</p>;
-
+  // Vykreslení mřížky - PŘEVZATO Z page.tsx
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Správa Sbírek</h1>
-      
-      <form onSubmit={handleCreate} className="bg-gray-800 p-4 rounded mb-8 space-y-4">
-        <h2 className="text-xl font-semibold">Nová Sbírka</h2>
-        <input className="w-full p-2 rounded bg-gray-700" placeholder="Název" value={name} onChange={e => setName(e.target.value)} required />
-        <input className="w-full p-2 rounded bg-gray-700" placeholder="Popis" value={desc} onChange={e => setDesc(e.target.value)} />
-        <button disabled={loading} className="bg-indigo-600 px-4 py-2 rounded hover:bg-indigo-700 text-white">
-            {loading ? 'Vytvářím...' : 'Vytvořit Sbírku'}
-        </button>
-      </form>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {videos.map((video) => (
+        <Link
+          href={`${baseHref}/${video.id}`}
+          key={video.id}
+          className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden flex flex-col transition-all duration-200 hover:shadow-lg hover:ring-2 hover:ring-indigo-500"
+        >
+          {/* Náhled videa z YouTube */}
+          <div className="aspect-video bg-gray-100 dark:bg-gray-700 relative">
+             <img
+                src={`https://img.youtube.com/vi/${video.youtubeId}/mqdefault.jpg`}
+                alt={`Náhled videa ${video.title}`}
+                className="w-full h-full object-cover"
+                loading="lazy"
+             />
+          </div>
 
-      <div className="space-y-4">
-        {collections.map(col => (
-            <div key={col.id} className="bg-gray-900 border border-gray-700 p-4 rounded flex justify-between items-center">
-                <div>
-                    <h3 className="font-bold text-lg">{col.name}</h3>
-                    <p className="text-sm text-gray-400">{col.description}</p>
-                    <span className="text-xs bg-gray-700 px-2 py-1 rounded mt-1 inline-block">
-                        Počet videí: {col._count?.videos || 0}
-                    </span>
-                </div>
-                <div className="flex items-center gap-4">
-                    <button 
-                        onClick={() => togglePublic(col)}
-                        className={`px-3 py-1 rounded text-sm ${col.isPublic ? 'bg-green-900 text-green-300' : 'bg-yellow-900 text-yellow-300'}`}
-                    >
-                        {col.isPublic ? 'VEŘEJNÁ' : 'SOUKROMÁ'}
-                    </button>
-                    <button onClick={() => handleDelete(col.id)} className="text-red-500 hover:underline">Smazat</button>
-                </div>
+          <div className="p-5 flex-1 flex flex-col">
+            <h2 className="text-xl font-semibold mb-2 line-clamp-2" title={video.title}>
+              {video.title}
+            </h2>
+
+            <div className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                <p>ID: <span className="font-mono">{video.youtubeId}</span></p>
+                <p>Autor: {video.author?.email || 'Neznámý'}</p>
             </div>
-        ))}
-      </div>
+
+            <p className="text-gray-600 dark:text-gray-300 line-clamp-3 mb-4 flex-1">
+              {video.summary}
+            </p>
+
+            <div className="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700 flex justify-between items-center text-sm">
+                <span className="text-gray-400">
+                    {new Date(video.createdAt).toLocaleDateString('cs-CZ')}
+                </span>
+                {/* Odkaz pro úpravy (zde jako příklad, pokud by baseHref byl /admin) */}
+                {baseHref.startsWith('/admin') && (
+                     <Link href={`/admin/edit/${video.id}`} className="text-indigo-500 hover:text-indigo-700 font-medium">
+                        Upravit
+                     </Link>
+                )}
+            </div>
+          </div>
+        </Link>
+      ))}
     </div>
   );
 }
-4.2. Navigace (components/Navbar.tsx)Do navigační lišty byl přidán odkaz na novou stránku.// ... (importy)
-// ... uvnitř {session.user?.role === 'ADMIN' && (
-<Link href="/admin/collections" className="hover:underline">Sbírky</Link>
-// ...
-4.3. Stránka Editace Videa (app/admin/edit/[id]/page.tsx)Umožňuje zařadit video do sbírek pomocí checkboxů.// ... (importy a interfacery)
+Krok 2.2: Refaktorizace - Úprava app/admin/dashboard/page.tsxNyní upravíme stávající "dílnu" (váš dodaný page.tsx), aby používala naši novou komponentu.Akce: Upravte soubor app/admin/dashboard/page.tsx.Zdrojový kód (app/admin/dashboard/page.tsx):import { PrismaClient } from '@prisma/client';
+import { getServerSession } from 'next-auth';
+import { redirect } from 'next/navigation';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import Link from 'next/link';
+// 1. Importujeme naši novou sdílenou komponentu
+import VideoGrid from '@/components/VideoGrid';
 
-export default function EditVideoPage() {
-  // ... (stavy)
-  const [allCollections, setAllCollections] = useState<Collection[]>([]);
-  const [selectedCollectionIds, setSelectedCollectionIds] = useState<string[]>([]);
+const prisma = new PrismaClient();
 
-  useEffect(() => {
-    if (!id) return;
-    const loadData = async () => {
-       // ... (Promise.all fetch videa a sbírek)
-       // ... (zpracování dat)
-       // Inicializace checkboxů:
-       if (videoData.collections) {
-          const initialIds = videoData.collections.map(col => col.id);
-          setSelectedCollectionIds(initialIds);
+export const dynamic = 'force-dynamic';
+
+export default async function AdminDashboardPage() {
+  // 1. Bezpečnostní kontrola na serveru (zůstává)
+  const session = await getServerSession(authOptions);
+
+  if (!session || session.user?.role !== 'ADMIN') {
+    redirect('/');
+  }
+
+  // 2. Načtení dat z databáze
+  // AKTUALIZACE: Ponecháváme načítání autora, jak je ve vašem souboru.
+  // To je důležité pro VideoGrid.
+  const videos = await prisma.video.findMany({
+    orderBy: {
+      createdAt: 'desc',
+    },
+    include: {
+      author: {
+        select: {
+            email: true
         }
-    };
-    loadData();
-  }, [id]);
+      }
+    }
+  });
 
-  // ... (toggleCollection funkce)
-
-  const handleSubmit = async (e: FormEvent) => {
-    // ...
-    await fetch(`/api/videos/${id}`, {
-        method: 'PUT',
-        // ...
-        body: JSON.stringify({
-          title, summary, structuredContent,
-          collectionIds: selectedCollectionIds, // Odeslání výběru
-        }),
-    });
-    // ...
-  };
-
+  // 3. Vykreslení UI
   return (
-      // ... (formulář)
-      {/* Sekce Sbírky */}
-      <div className="bg-gray-900 p-4 rounded-md border border-gray-700">
-          <h3 className="text-sm font-medium text-gray-300 mb-3">Zařadit do sbírek</h3>
-          {/* ... (mapování allCollections na checkboxy) ... */}
+    <main className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold">Přehled Obsahu (Admin Dashboard)</h1>
+        <Link
+          href="/admin/add"
+          className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition-colors"
+        >
+          + Přidat nové video
+        </Link>
       </div>
-      // ... (zbytek formuláře)
+
+      {/* AKTUALIZACE: Celý původní blok (<div className="grid...">...</div>) 
+        je nyní nahrazen touto jedinou komponentou.
+      */}
+      <VideoGrid videos={videos} baseHref="/admin/video" />
+      
+    </main>
   );
 }
-5. Plán Testování (Ověření Funkčnosti)Nyní, s opraveným kódem, by měly projít všechny testy.IDTestovací ScénářOčekávaný VýsledekStavTC-01Vytvoření Sbírky  Na /admin/collections vytvořit "Test 1".Objeví se v seznamu. DB: vznikne záznam.✅ OKTC-02Změna Viditelnosti  Kliknout na "SOUKROMÁ".Tlačítko zezelená ("VEŘEJNÁ"). DB: isPublic: true.⚠️ K ověřeníTC-03Přiřazení Videa  Na /admin/edit/[id] zaškrtnout "Test 1".Uložení OK. Checkbox zůstane zaškrtnutý.⚠️ K ověřeníTC-04Ověření Vazby  Zpět na /admin/collections.Počet videí u "Test 1" stoupne (0 -> 1).⚠️ K ověřeníTC-05Odstranění Vazby  Na /admin/edit/[id] odškrtnout "Test 1".Počet videí klesne zpět na 0.⚠️ K ověřeníTC-06Smazání Sbírky  Smazat "Test 1".Sbírka zmizí. Video samotné zůstane.⚠️ K ověření6. FinalizacePokud všechny testy projdou:git add .
-git commit -m "feat: implementace sbírek a M:N relace (Fáze 7)"
-git push origin feature/faze-7-collections
+Krok 2.3: Implementace - Vytvoření app/page.tsxNyní vytvoříme novou veřejnou "výlohu" s robustní server-side logikou oprávnění.Akce: Nahraďte stávající obsah souboru app/page.tsx (který aktuálně zobrazuje uvítací hlášku "Mediathek: Tvá sbírka Tvých videí").Zdrojový kód (app/page.tsx):import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { PrismaClient, Prisma } from '@prisma/client';
+// 1. Importujeme naši sdílenou komponentu
+import VideoGrid from '@/components/VideoGrid';
 
+const prisma = new PrismaClient();
 
+// Vynutíme dynamické renderování, aby se session vždy četla čerstvá
+export const dynamic = 'force-dynamic';
 
+export default async function HomePage() {
+  const session = await getServerSession(authOptions);
 
+  // 2. Sestavení dynamického 'where' dotazu dle specifikace Fáze 8
+  
+  // Výchozí pravidlo: VISITOR a USER vidí jen videa,
+  // která jsou v ALESPOŇ JEDNÉ veřejné sbírce.
+  let whereClause: Prisma.VideoWhereInput = {
+    collections: {
+      some: {
+        isPublic: true,
+      },
+    },
+  };
 
+  // Výjimka: ADMIN vidí VŠECHNO (drafty, soukromé, veřejné)
+  if (session && session.user.role === 'ADMIN') {
+    whereClause = {}; // Prázdný 'where' znamená "vše"
+  }
+  
+  // TODO: Logika pro KURATORA (Fáze 9)
+  // if (session && session.user.role === 'KURATOR') {
+  //   whereClause = {
+  //     OR: [
+  //       { collections: { some: { isPublic: true } } },
+  // { authorId: session.user.id }
+  //     ]
+  //   };
+  // }
 
+  // 3. Finální dotaz do DB
+  // AKTUALIZACE: Přidáme 'include' autora, aby VideoGrid
+  // mohl zobrazit stejné detaily jako admin dashboard.
+  const videos = await prisma.video.findMany({
+    where: whereClause,
+    orderBy: {
+      createdAt: 'desc',
+    },
+    include: {
+      author: {
+        select: {
+          email: true
+        }
+      }
+    }
+  });
 
-
-
+  // 4. Zobrazení pomocí sdílené komponenty
+  return (
+    <main className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+      <h1 className="text-3xl font-bold mb-8">Vítejte v Mediathek</h1>
+      
+      {/* AKTUALIZACE: Použijeme stejnou komponentu, ale změníme
+        baseHref, aby odkazy směřovaly na budoucí
+        veřejnou stránku detailu (např. /video/[id]).
+        Prozatím můžeme nechat /admin/video, 
+        návštěvník bude přesměrován na /login (Test 5).
+      */}
+      <VideoGrid videos={videos} baseHref="/admin/video" />
+    </main>
+  );
+}
+Krok 2.4: Ověření KonfiguraceDle zadání ověříme middleware.ts a Navbar.tsx. Na základě snímku Fáze 7 nejsou nutné žádné změny.Ověření middleware.ts:Akce: Otevřete middleware.ts.Ověření: Ujistěte se, že matcher nezahrnuje kořenovou cestu /.Očekávaný kód (dle snímku Fáze 7):export const config = {
+  matcher: [
+    '/dashboard/:path*', // Chráněno
+    '/admin/:path*',    // Chráněno
+  ],
+};
+// Závěr: Kořenová cesta '/' JE veřejná. Není nutná žádná změna.
+Ověření components/Navbar.tsx:Akce: Otevřete components/Navbar.tsx.Ověření: Ujistěte se, že odkaz "Domů" směřuje na /.Očekávaný kód (dle snímku Fáze 7):// ...
+<Link href="/">Domů</Link>
+// ...
+// Závěr: Odkaz je správný. Není nutná žádná změna.
+3. Plán Testování (Lokální Prostředí)Toto je nejdůležitější část pro potvrzení úspěchu Fáze 8. Postupujte přesně podle Akceptačních Kriterií.3.1. Příprava Testovacích DatPřed spuštěním testů musíte mít v databázi (doporučujeme použít npm run prisma:studio) specifický stav:Uživatelé:ADMIN (Váš účet)USER (Nový účet, např. user@test.com)Sbírky (Collections):Sbírka_Veřejná: Vytvořte sbírku a nastavte isPublic: true.Sbírka_Soukromá: Vytvořte sbírku a ponechte isPublic: false.Videa (Videos):Video_Draft: Video přidané do systému, ale nepřiřazené do žádné sbírky.Video_Soukromé: Video přiřazené pouze do Sbírka_Soukromá.Video_Veřejné: Video přiřazené (alespoň) do Sbírka_Veřejná.3.2. Exekuce Testů (Akceptační Kriteria)Test 1: Refaktorizace "Dílny" (ADMIN)Přihlaste se jako ADMIN.Přejděte na http://localhost:3000/admin/dashboard.Očekávaný výsledek: Musíte vidět všechna videa: Video_Draft, Video_Soukromé i Video_Veřejné. Stránka musí fungovat jako dříve.Test 2: Veřejná "Výloha" (VISITOR)Otevřete nové anonymní (incognito) okno prohlížeče.Přejděte na http://localhost:3000/.Očekávaný výsledek: Musíte vidět POUZE Video_Veřejné.Test 3: Veřejná "Výloha" (USER)V normálním okně se přihlaste jako USER.Přejděte na http://localhost:3000/.Očekávaný výsledek: Musíte vidět POUZE Video_Veřejné (stejně jako VISITOR).Test 4: Veřejná "Výloha" (ADMIN)V normálním okně se přihlaste jako ADMIN.Přejděte na http://localhost:3000/.Očekávaný výsledek: Musíte vidět všechna videa: Video_Draft, Video_Soukromé i Video_Veřejné (stejně jako na /admin/dashboard).Test 5: Ochrana Odkazů (VISITOR)Proveďte Test 2 (VISITOR na /).Klikněte na odkaz u Video_Veřejné.Očekávaný výsledek: Musíte být automaticky přesměrováni na přihlašovací stránku (/login), protože odkaz vede na /admin/video/[id], které je chráněno middlewarem.4. Ukončení Fáze (Deployment)Po úspěšném lokálním testování je fáze připravena k nasazení.Commit a Push:git add .
+git commit -m "feat(faze-8): Implement public homepage and refactor VideoGrid"
+git push origin feature/faze-8-public-homepage
+Pull Request:Vytvořte Pull Request z feature/faze-8-public-homepage do main (nebo vaší produkční větve).Nasazení na Produkci (Deployment):Po schválení a sloučení (merge) PR, spusťte produkční build a nasazení.Příkazy (dle snímku Fáze 7):# Ujistěte se, že máte .env.local na produkci
+npm run build
+npm run start
+Testování na Produkci:Akce: Opakujte kompletně celý Plán Testování (3.1 a 3.2) na vaší produkční doméně.Teprve po úspěšném ověření všech 5 testovacích scénářů na produkci je Fáze 8 považována za úspěšně uzavřenou.
 
 
 
 
 
 JÁ_PROMPT:  
-Testování na lokálním pc proběhlo ok - nasazení na produkci proběhlo také ok a finální test na produkci rovněž také proběhl ok. Díky. ;-) Mohu nyní poprosit o souhrnou zprávu z této fáze realizace vyplývající z tohoto chatu k tomuto release. Tuto zprávu uložím jako záznam o všech zde provedených činnostech na projektu v tomto release pro budoucí informaci o proběhlých činnostech v této fázi realizace aplikace - prosím i o podrobnosti z této fáze realizace a zejména pak ty významné podrobnosti do této souhrnné zprávy o této fázi realizace.
-
+Testování na lokálním pc proběhlo ok - nasazení na produkci proběhlo také ok a finální test na produkci rovněž také proběhl ok. Díky. ;-) Mohu nyní poprosit o souhrnou zprávu z této fáze realizace vyplývající z tohoto chatu k tomuto release. Tuto zprávu uložím jako záznam o všech zde provedených činnostech na projektu v tomto release pro budoucí informaci o proběhlých činnostech v této fázi realizace aplikace - prosím i o podrobnosti z této fáze realizace a zejména pak ty významné podrobnosti do této souhrnné zprávy o této fázi realizace. Ale zde to proběhlo poměrně hladce díky Tobě ;-) 
 
 AI_RESPONZE:
-Vytvářím souhrnnou zprávu z fáze 7, která dokumentuje úspěšnou implementaci sbírek, změny v databázi a řešení komplikací s API.
-Souhrnná Zpráva Fáze 7
-16. 11. 14:13
 
-📝 Souhrnná Zpráva: Fáze 7 - Implementace Sbírek (Kolekcí)Datum: 16. listopadu 2025Autor: Vývojový tým (AI & Developer)Stav: ✅ Dokončeno & Nasazeno na produkci1. Cíl FázeHlavním cílem této fáze bylo implementovat koncept Sbírek (Collections), který umožňuje organizovat videa do tématických celků. Tím se aplikace posunula od prostého seznamu videí k strukturované knihovně obsahu, kterou může kurátor spravovat. Součástí bylo i zavedení příznaku veřejné dostupnosti (isPublic) jako příprava pro návštěvnický přístup.2. Realizované Funkce (Scope)A. Databázová Vrstva (Backend)Nový Model Collection: Do schématu byl přidán model sbírky s vlastnostmi: name, description, isPublic a authorId.Relace M:N: Byla vytvořena vazba Many-to-Many mezi modely Video a Collection. Jedno video může být ve více sbírkách, jedna sbírka může obsahovat více videí.Relace Vlastnictví: Sbírka je vázána na autora (User), což umožňuje v budoucnu rozlišovat sbírky různých kurátorů.B. API Vrstva (Backend)Nové Endpointy:POST /api/collections – Vytvoření nové sbírky.GET /api/collections – Načtení seznamu sbírek (respektující roli uživatele).PUT /api/collections/[id] – Úprava sbírky (název, popis, viditelnost) s kontrolou oprávnění.DELETE /api/collections/[id] – Smazání sbírky (bez smazání videí uvnitř).Rozšíření PUT /api/videos/[id]: Endpoint pro editaci videa byl upraven, aby přijímal pole collectionIds a pomocí transakce aktualizoval vazby v databázi.Optimalizace: U klíčových dynamických endpointů bylo explicitně vypnuto cachování (export const dynamic = 'force-dynamic'), aby se předešlo chybám se starými daty.C. Uživatelské Rozhraní (Frontend)Nová Stránka /admin/collections: Rozhraní pro správu sbírek – vytváření, mazání a přepínání viditelnosti (Soukromá/Veřejná).Rozšířená Editace Videa: Do formuláře /admin/edit/[id] byla přidána sekce s checkboxy, umožňující snadné zařazení videa do existujících sbírek.Navigace: Do hlavního menu byl přidán odkaz "Sbírky" (pouze pro Admina).3. Průběh Realizace a Řešené ProblémyBěhem implementace jsme narazili na několik výzev, které byly úspěšně vyřešeny. Zde jsou klíčové momenty pro budoucí referenci:🐛 Problém 1: Chyba Syntax v Navbar.tsxPopis: Při úpravě navigace došlo k neúmyslnému smazání uzavírací závorky }, což způsobilo pád aplikace (Parsing ecmascript source code failed).Řešení: Soubor byl opraven vložením kompletního, validního kódu komponenty.🐛 Problém 2: "Markdown" v kódu APIPopis: Do souboru app/api/collections/[id]/route.ts byl omylem zkopírován text zadání (Markdown) namísto zdrojového kódu, což vedlo k chybě buildu.Řešení: Soubor byl nahrazen čistým TypeScript kódem.🐛 Problém 3: Chyba 404 při PUT požadavkuPopis: Po vytvoření sbírky vracel pokus o její úpravu (změna na veřejnou) chybu 404 Not Found, ačkoliv sbírka existovala.Analýza: Problém byl způsoben agresivním cachováním v Next.js App Routeru a možným zpožděním v načítání parametrů URL v Next.js 15+.Řešení:Přidáno export const dynamic = 'force-dynamic' do route handleru.Zavedeno důsledné používání await context.params (změna v Next.js 15+).Přidáno detailní logování pro diagnostiku.⚠️ Problém 4: Nestabilita Databáze (Neon)Popis: Během lokálního testování se objevily chyby Can't reach database server (timeout).Analýza: Jedná se o vlastnost Free Tier verze Neon Postgres ("usínání" databáze) v kombinaci s lokálním připojením.Dopad: Neznamená chybu v kódu. Na produkci (Vercel) je spojení stabilní.4. Výsledek Testování (Verification)Byla provedena kompletní sada testů (TC-01 až TC-06) jak na lokálním prostředí, tak na produkci.✅ TC-01 Vytvoření Sbírky: Úspěšné.✅ TC-02 Změna Viditelnosti: Úspěšné (přepínání Soukromá/Veřejná funguje).✅ TC-03/05 Přiřazení Videa: Úspěšné (vazba M:N se ukládá a maže korektně).✅ TC-04 Ověření Vazby: Počítadla videí ve sbírkách reagují správně.✅ TC-06 Smazání Sbírky: Úspěšné (video zůstává zachováno).5. ZávěrFáze 7 byla úspěšně dokončena. Aplikace nyní disponuje robustním systémem pro organizaci obsahu. Datová struktura je připravena pro další fázi – zpřístupnění obsahu veřejnosti (isPublic: true) a budoucí rozšíření rolí.Příští kroky (Fáze 8):Vytvoření veřejných stránek (/ a /collections/[id]).Filtrování obsahu pro nepřihlášené uživatele (zobrazení pouze veřejných sbírek).
+Skvělá práce! Mám velkou radost, že nasazení i finální testování na produkci proběhlo úspěšně. To je perfektní uzavření této fáze.
+
+Připravil jsem pro vás požadovanou souhrnnou zprávu. Zahrnul jsem do ní nejen finální kroky, ale i klíčová architektonická rozhodnutí a drobné korekce, které jsme v průběhu této fáze společně provedli. Slouží jako detailní záznam pro budoucí reference.
+
+Souhrnná Zpráva: Realizace Fáze 8 - Veřejná Výloha
+
+Datum: 17. listopadu 2025
+Fáze: 8.0
+Navazuje na: Fáze 7 (Implementace Sbírek)
+Status: Úspěšně dokončeno a nasazeno na produkci.
+
+1. Cíl Fáze
+
+Primárním cílem Fáze 8 bylo transformovat aplikaci z čistě privátního nástroje na veřejně přístupnou platformu. Toho bylo dosaženo implementací nové domovské stránky (app/page.tsx), která slouží jako veřejná "výkladní skříň" obsahu.
+
+Klíčovým požadavkem bylo zajistit robustní filtrování obsahu na základě role uživatele (VISITOR, USER, ADMIN) a dodržet "best practices" principy, zejména znovupoužitelnost kódu a oddělení odpovědností (Separation of Concerns).
+
+2. Přehled Realizace
+
+Implementace proběhla ve třech hlavních krocích, které následovaly po standardní přípravě prostředí (vytvoření větve feature/faze-8-public-homepage):
+
+Krok 2.1: Refaktorizace (Vytvoření components/VideoGrid.tsx)
+
+Vytvořili jsme novou, znovupoužitelnou "hloupou" klientskou komponentu, která je zodpovědná výhradně za vizuální zobrazení mřížky videí.
+
+Díky dodatečnému poskytnutí souboru app/admin/dashboard/page.tsx byla tato komponenta rovnou vybavena bohatší logikou pro zobrazení (náhledový obrázek z YouTube, jméno autora, formátování data).
+
+Krok 2.2: Aktualizace "Dílny" (Úprava app/admin/dashboard/page.tsx)
+
+Stávající administrátorský přehled obsahu ("dílna") byl refaktorizován.
+
+Ponechali jsme logiku načítání dat (načtení všech videí včetně autorů) a celou komplexní JSX strukturu pro mřížku jsme nahradili jedinou komponentou: <VideoGrid videos={videos} baseHref="/admin/video" />.
+
+Krok 2.3: Implementace "Výlohy" (Úprava app/page.tsx)
+
+Stávající "placeholder" domovská stránka byla kompletně nahrazena.
+
+Byla implementována server-side logika pro dynamické sestavení dotazu do databáze (whereClause) na základě uživatelské sezení (Role-Based Access Control).
+
+Pro zobrazení byla použita stejná sdílená komponenta <VideoGrid />, čímž byla zajištěna vizuální konzistence a zamezeno duplicitě kódu.
+
+Krok 2.4: Ověření konfigurace
+
+Společně jsme ověřili soubory middleware.ts a components/Navbar.tsx.
+
+Potvrdili jsme, že matcher v middleware správně chrání pouze /admin a /dashboard, čímž ponechává / veřejně přístupnou.
+
+Potvrdili jsme, že Navbar.tsx již správně odkazuje na / jako "Domů".
+
+Nebyly nutné žádné změny v těchto souborech.
+
+3. Klíčové Architektonické Změny (Významné podrobnosti)
+
+Tato fáze přinesla tři zásadní vylepšení architektury aplikace:
+
+a) Princip "Dílna" vs. "Výloha"
+
+Definovali jsme jasné oddělení odpovědností (Separation of Concerns) mezi administrátorským a veřejným rozhraním:
+
+"Dílna" (/admin/dashboard): Zůstává interním nástrojem pro ADMINa. Slouží k rychlému přehledu všech dat (včetně draftů a soukromého obsahu) a správě.
+
+"Výloha" (/): Slouží jako veřejná prezentace pro VISITORy a USERy. Zobrazuje pouze kurátorovaný, filtrovaný obsah a je optimalizována pro konzumaci.
+
+b) Znovupoužitelnost Kódu (components/VideoGrid.tsx)
+
+Místo duplikování logiky zobrazení jsme veškerý kód pro vykreslení mřížky videí extrahovali do jediné klientské komponenty. Tím jsme zajistili, že jakákoliv budoucí vizuální změna (např. přidání štítků) se projeví konzistentně v "dílně" i "výloze" úpravou jediného souboru.
+
+c) Robustní Server-Side Role-Based Access Control (RBAC)
+
+Logika oprávnění je implementována bezpečně na serveru v rámci React Server Component (app/page.tsx). Na základě přítomnosti a role v session se dynamicky sestavuje dotaz (whereClause) pro Prisma.
+
+VISITOR / USER: Databáze vrací pouze videa, která jsou v alespoň jedné veřejné sbírce ({ collections: { some: { isPublic: true } } }).
+
+ADMIN: Databáze vrací všechna videa ({}).
+
+Tento přístup zaručuje, že citlivá data (drafty, soukromá videa) nikdy neopustí server a nedostanou se ke klientovi, který k nim nemá oprávnění.
+
+4. Průběh a Korekce
+
+Realizace proběhla hladce díky aktivní spolupráci:
+
+Upřesnění refaktorizace: Dodatečné poskytnutí souborů app/admin/dashboard/page.tsx a app/page.tsx umožnilo provést refaktorizaci (Krok 2.1 a 2.2) přesněji a zachovat bohatší strukturu dat (include: { author: ... }).
+
+Korekce implementace: Během prvního testu (npm run dev) byla identifikována a okamžitě opravena drobná chyba (překlep * mimo komentář) v souboru app/page.tsx.
+
+5. Výsledek Testování (Produkční Ověření)
+
+Dle vašeho potvrzení proběhlo úspěšně lokální i produkční nasazení. Finální testování na produkčním prostředí potvrdilo 100% úspěšnost všech akceptačních kritérií:
+
+Test 1 (ADMIN - Dílna): /admin/dashboard funguje a zobrazuje všechna videa pomocí <VideoGrid>. OK
+
+Test 2 (VISITOR - Výloha): / zobrazuje anonymnímu uživateli POUZE veřejná videa. OK
+
+Test 3 (USER - Výloha): / zobrazuje přihlášenému USERovi POUZE veřejná videa. OK
+
+Test 4 (ADMIN - Výloha): / zobrazuje přihlášenému ADMINovi VŠECHNA videa (včetně draftů a soukromých). OK
+
+Test 5 (Ochrana odkazů): Kliknutí na video na / jako VISITOR správně přesměruje na /login. OK
+
+6. Závěr
+
+Fáze 8 byla úspěšně dokončena. Aplikace nyní disponuje bezpečnou, veřejně přístupnou a na role reagující domovskou stránkou. Díky refaktorizaci je kódová základna čistší a připravená na budoucí rozšíření (např. implementaci role KURATOR ve Fázi 9).
 
 
-Zpráva je připravena a uložena. Obsahuje vše podstatné, včetně technických detailů o řešených problémech, což bude velmi užitečné pro budoucí údržbu projektu. Můžeme se pustit do další fáze, až budete připraven!
+
+
 
 
 
 JÁ_PROMPT:
-Díky moc. ;-) Nyní bych poprosil ještě zcela závěrem zrevidovat důležitý projektový snímkovač projektového adresáře vzhledem k nyní proběhlé relalizační fázi na projektu. V příloze je aktuální skript na snímkování projektového adresáře a nastavení vnitřních a vnějších podmínek projektu, prosím o jeho revizi vzhledem k proběhlé realizační fázi, tak aby nový snímkovač pokrýval co neefektivněji a optimálně celý projekt pro využití v další fázi projektu resp. předat jen ty nezbytné věci které definují unikátní vlastnosti aplikace a nastavení jejích vnitřních a vnějších podmínek. Prosím o výstup formou změnové zprávy k danému skriptu které poté manuálně zapracuji, tak abychom nemuseli vyjíždět celý skript kompletně, což by mohlo být náročné na výstup v responzi. Ještě jednou moc díky ;-)
+Díky moc. ;-) Nyní bych poprosil ještě zcela závěrem zrevidovat důležitý projektový snímkovač projektového adresáře vzhledem k nyní proběhlé relalizační fázi na projektu. V příloze je aktuální skript na snímkování projektového adresáře a nastavení jeho vnitřních a vnějších podmínek projektu, prosím o jeho revizi vzhledem k proběhlé realizační fázi, tak aby nový snímkovač pokrýval co neefektivněji a optimálně celý projekt pro využití v další fázi projektu resp. předat jen ty nezbytné věci které definují unikátní vlastnosti aplikace a nastavení jejích vnitřních a vnějších podmínek - nyní jsme např. naráželi na problém chybějících podrobností ohledně obsahu některých souborů (např. soubor [app/admin/dashboard/page.tsx]) - proto také o zvážení zvýšení podrobnosti výstupu ze snímkování projektu . Prosím o výstup formou změnové zprávy k danému skriptu které poté manuálně zapracuji, tak abychom nemuseli vyjíždět celý skript kompletně, což by mohlo být náročné na výstup v responzi. Ještě jednou moc díky ;-)
 [project_snapshot.py]
 
 AI_RESPONZE:
 
-Rád to pro vás zreviduji. Máte pravdu, že s dokončením Fáze 7 (CRUD) a architektonickou změnou na "Text-first" se těžiště projektu posunulo. Pro nadcházející Fázi 8 (Veřejná část) je klíčové, aby snapshot obsahoval novou logiku správy dat a API.
+Naprosto souhlasím. To je excelentní nápad a přesně správný krok na závěr fáze.
 
-Zde je změnová zpráva pro aktualizaci souboru project_snapshot.py.
+Vaše zkušenost z této fáze, kdy nám chyběl obsah klíčových souborů (app/admin/dashboard/page.tsx a app/page.tsx), je nejlepším důvodem pro revizi snímkovače. Přesně jsme identifikovali jeho slabé místo.
 
-Proveďte prosím následující 2 úpravy ve vašem souboru:
+Připravil jsem pro vás "změnovou zprávu" (diff) pro váš skript project_snapshot.py. Tyto změny povyšují skript na "Verzi 11.0" a co je nejdůležitější – přidávají do sledovaných souborů přesně ty tři soubory, které byly jádrem Fáze 8.
 
-1. Úprava hlavičky verze
-Na začátku souboru změňte verzi, abychom věděli, že odpovídá stavu po Fázi 7.
+Tím zajistíme, že při startu Fáze 9 budeme mít k dispozici obsah "dílny", "výlohy" i sdílené komponenty.
 
-Najděte:
+Změnová zpráva pro project_snapshot.py
+Zde jsou úpravy, které stačí zapracovat do vašeho stávajícího skriptu:
+Změnová zpráva pro project_snapshot.py
+17. 11. 10:06
 
-Python
+Shrnutí provedených změn:
+Změna verze (Řádek 6): Komentář byl aktualizován na Verze 11.0 - Aktualizace po Fázi 8: Veřejná Výloha, aby odpovídal aktuálnímu stavu.
 
-# --- KONFIGURACE (Verze 8.0 - Aktualizace po Fázi 6) ---
-Nahraďte:
+Přidán app/page.tsx: Doplnili jsme novou veřejnou "výlohu", která obsahuje klíčovou logiku RBAC.
 
-Python
+Přidán app/admin/dashboard/page.tsx: Doplnili jsme refaktorizovanou administrátorskou "dílnu". (Toto byl soubor, který nám chyběl na začátku Fáze 8).
 
-# --- KONFIGURACE (Verze 9.0 - Aktualizace po Fázi 7: CRUD & RBAC) ---
-2. Aktualizace seznamu FILES_TO_INCLUDE_CONTENT
-Toto je hlavní změna. Musíme přidat nové soubory pro editaci, správu a mazání, a také nové API endpointy, které obsahují RBAC logiku. Zároveň jsem seznam logicky přeskupil, aby lépe reflektoval strukturu aplikace.
+Přidán components/VideoGrid.tsx: Doplnili jsme novou, centrální sdílenou komponentu, která byla jádrem refaktorizace.
 
-Najděte celou proměnnou FILES_TO_INCLUDE_CONTENT = [...] a nahraďte ji tímto blokem:
+Aktualizace print (Řádek 201): Zpráva o úspěchu byla aktualizována na v11.0.
 
-Python
+Po zapracování těchto změn bude váš příští snímek projektu perfektně připraven pro Fázi 9.
 
-# Soubory, jejichž OBSAH má být zahrnut do výpisu
-# Aktualizováno pro Fázi 7 (CRUD, RBAC, Text-first architecture)
-FILES_TO_INCLUDE_CONTENT = [
-    # Základní konfigurace
-    'package.json',
-    'next.config.ts',
-    'middleware.ts',
-    
-    # Databáze a Typy (Klíčové pro pochopení modelu dat)
-    'prisma/schema.prisma',
-    'types/next-auth.d.ts',
-    
-    # Globální UI
-    'app/layout.tsx',
-    'app/globals.css',
-    'components/Navbar.tsx',
-    'components/Providers.tsx',
-
-    # Autentizace
-    'app/api/auth/[...nextauth]/route.ts',
-    # Pozn: Login/Register stránky vynecháváme pro úsporu, logika je v API
-
-    # --- ADMINISTRACE A SPRÁVA DAT (Jádro Fáze 7) ---
-    
-    # 1. Přehledy
-    'app/admin/dashboard/page.tsx',  # Původní vizuální přehled
-    'app/admin/manage/page.tsx',     # NOVÉ: Tabulková správa (CRUD vstup)
-    
-    # 2. Formuláře a Akce
-    'app/admin/add/page.tsx',        # Create
-    'app/admin/edit/[id]/page.tsx',  # NOVÉ: Update (Text-first logika)
-    'components/DeleteButton.tsx',   # NOVÉ: Delete komponenta
-    
-    # 3. API Endpointy (RBAC & Logika)
-    'app/api/videos/route.ts',       # POST (Create)
-    'app/api/videos/[id]/route.ts',  # NOVÉ: GET, PUT, DELETE (RBAC logika)
-
-    # --- PREZENTACE A PARSOVÁNÍ (Jádro Fáze 5 & 6) ---
-    
-    # 1. Logika zpracování textu
-    'lib/parser.ts',                 # KLÍČOVÉ: Parser pro "Text-first" architekturu
-    
-    # 2. Detail videa a Přehrávač
-    'app/admin/video/[id]/page.tsx',           # Server Component (Data fetching)
-    'components/VideoDetailClientWrapper.tsx', # Client Wrapper
-    'components/VideoPlayer.tsx',              # YouTube integrace
-    'components/ChapterList.tsx'               # Zobrazení kapitol
-]
-Proč tyto změny?
-Přidáno app/admin/manage/page.tsx: Toto bude vzor pro budoucí veřejnou galerii (jak načítat seznam videí).
-
-Přidáno app/admin/edit/[id]/page.tsx: Ukazuje, jak načítáme data do formuláře a jak pracujeme s "Text-first" architekturou (zachování časových značek).
-
-Přidáno app/api/videos/[id]/route.ts: Zde leží veškerá naše nová bezpečnostní logika (RBAC) a transakční ukládání. To je kritické pro jakýkoliv další vývoj.
-
-Odstraněno lib/formatters.ts: (Pokud tam bylo) - již není potřeba.
-
-Zachováno lib/parser.ts: Stále kritický soubor definující, jak se text mění na data.
-
-Po provedení těchto úprav stačí skript spustit (python3 project_snapshot.py) a získáte perfektní podklad pro Fázi 8: Zpřístupnění veřejnosti.
-
+Bylo mi potěšením s vámi na této fázi pracovat. Skvělá práce!
 
 
 ID_chatu: 
-https://gemini.google.com/u/1/app/3e03a1b02ba0605b
+https://gemini.google.com/u/1/app/0091081cb9b3c986
 
 
 

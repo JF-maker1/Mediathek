@@ -13,7 +13,7 @@ interface ChapterListProps {
 
 export default function ChapterList({ chapters, playerRef }: ChapterListProps) {
   if (!chapters || chapters.length === 0) {
-    return <p className="text-gray-400">Pro toto video není dostupný strukturovaný obsah.</p>;
+    return <p className="text-gray-900 dark:text-gray-100">Pro toto video není dostupný strukturovaný obsah.</p>;
   }
 
   const handleChapterClick = (startTime: number) => {
@@ -28,7 +28,9 @@ export default function ChapterList({ chapters, playerRef }: ChapterListProps) {
           <button
             key={chapter.id}
             onClick={() => handleChapterClick(chapter.startTime)}
-            className="block w-full text-left p-3 rounded-md transition-colors text-gray-200 hover:bg-gray-700"
+            className="block w-full text-left p-3 rounded-md transition-colors 
+                       text-gray-900 dark:text-gray-100 
+                       hover:bg-gray-100 dark:hover:bg-gray-700"
             style={{
               // Hierarchické odsazení na základě 'level' z DB
               marginLeft: `${chapter.level * 20}px`,
