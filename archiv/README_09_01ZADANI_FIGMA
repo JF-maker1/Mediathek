@@ -1,0 +1,64 @@
+JÁ_PROMPT:
+chtěl bych vylepšit design své webové aplikace v souladu se zaměřením na UX těchto webových stránek. Webová aplikace resp. její stránky jsou již vytvořeny jen bych chtěl provést jejich redesign pomocí nějakého vhodného AI nástroje. Je tímto vhodným nástrojem Figma. co mám předat figmě jako podklady pro její návrh řešení. Na jedné straně jistě nějaký popis současného řešení (mám předat printscreen příslušné stránky nebo kod této stránky) a svůj návrh na řešení ... je tato představa správná ... bylo by možné nějaké její ještě lepší provedení? 
+
+AI_RESPONZE:
+
+Je to skvělý dotaz. Vaše představa je v základu správná, ale je potřeba upřesnit, jakou roli v tom hraje Figma a jakou roli hraje AI.
+
+Figma sama o sobě není AI nástroj. Figma je špičkový (a průmyslový standard) pro vektorový design a prototypování webových a mobilních aplikací. Je to plátno, na kterém designéři (nebo vy) tvoří.
+
+To, co hledáte, jsou AI pluginy a nástroje, které se integrují s Figmou nebo pracují na podobném principu. Tyto AI nástroje vám pak pomohou proces redesignu urychlit.
+
+🎯 Jaká je role Figmy a AI?
+Figma: Je vaše "dílna" nebo "rýsovací prkno". Zde budete mít finální, editovatelný design (wireframy, mockupy, prototypy). Můžete v ní ručně posouvat prvky, měnit barvy a texty.
+
+AI (Umělá inteligence): Je váš "asistent" nebo "junior designér". Nedá vám hotový, dokonalý web na jedno kliknutí. Místo toho mu zadáte pokyny a on vám navrhne varianty, vygeneruje nápady nebo převede skicu na digitální podobu.
+
+Vaše představa, že AI vezme printscreen a "vylepší ho", je částečně pravdivá, ale realita je spíše taková, že AI vezme printscreen a převede ho na editovatelné komponenty ve Figmě. To vám ušetří hodiny práce s "překreslováním" současného stavu.
+
+📋 Co připravit pro AI (a Figmu)
+Chcete-li dosáhnout nejlepších výsledků, potřebujete AI "krmit" správnými podklady. Seřadil jsem je podle důležitosti:
+
+1. Definice problému a cíle (UX Brief)
+Toto je naprosto klíčové a mnohem důležitější než kód nebo screenshoty. AI neumí číst vaše myšlenky. Musíte jí jasně říct, co má vylepšit a proč.
+
+Váš "návrh na řešení" by měl obsahovat:
+
+Kdo je uživatel? (Např. "Technicky zdatní manažeři", "Senioři hledající informace"...)
+
+Jaký je problém současného designu? (Např. "Uživatelé nemohou najít kontaktní formulář", "Navigace je matoucí na mobilu", "Design působí zastarale a nedůvěryhodně".)
+
+Jaký je cíl redesignu? (Např. "Zvýšit počet odeslaných formulářů o 20 %", "Zjednodušit navigaci", "Modernizovat vzhled podle naší nové firemní identity.")
+
+Inspirace: (Odkazy na 2-3 weby, které se vám líbí a vysvětlení proč.)
+
+2. Screenshoty (Printscreeny)
+Ano, toto je skvělý podklad. Mnoho moderních AI nástrojů (jako Uizard nebo Visily.ai) umí vzít obrázek (screenshot) a přeměnit ho na plně editovatelný design ve Figmě. Je to nejrychlejší způsob, jak dostat váš současný stav do Figmy jako startovní bod.
+
+3. Váš návrh (Skica nebo Wireframe)
+I jednoduchá kresba tužkou na papíře je pro AI zlatý důl. Můžete si rukou načrtnout, jak si představujete nové rozložení, a AI nástroj to dokáže rozpoznat a převést na digitální wireframe.
+
+4. Kód (HTML/CSS)
+Toto je většinou nejméně užitečný podklad pro designové AI nástroje. Tyto nástroje se zaměřují na vizuální stránku (layout, barvy, komponenty), nikoli na logiku kódu. Existují sice pluginy, které umí importovat HTML do Figmy, ale často je rychlejší a čistší použít screenshot.
+
+🚀 Lepší postup (Doporučený workflow)
+Místo toho, abyste se snažili přimět AI, aby "opravila" váš starý design, zkuste tento efektivnější postup:
+
+Krok 1: Analyzujte (Problém) Sami si (nebo s týmem) sepište UX Brief (viz bod 1 výše). Jasně definujte, proč děláte redesign.
+
+Krok 2: Importujte současný stav (Vstup) Použijte nástroj jako Visily.ai nebo plugin Uizard ve Figmě. Nahrajte do něj screenshoty vašich stávajících stránek. Nástroj vám je během chvilky převede na editovatelný soubor ve Figmě.
+
+Krok 3: Brainstorming s AI (Ideace) Nyní, když máte ve Figmě základ, použijte textové AI asistenty (např. FigJam AI, Galileo AI nebo ChatGPT) k generování nápadů.
+
+Prompt (příklad): "Navrhni 5 různých layoutů pro hlavní stránku e-shopu, který prodává ručně vyráběnou keramiku. Cílem je zdůraznit kvalitu a příběh tvůrců."
+
+Prompt (příklad): "Jaké komponenty by měla obsahovat 'Pricing' stránka pro SaaS aplikaci, aby byla přehledná?"
+
+Krok 4: Generování a úpravy (Design) AI vám vygeneruje několik variant. Tyto varianty berte jako surovinu. Vaše práce (nebo práce designéra) je teď vzít tyto nápady a ve Figmě je "ručně" dopracovat – sladit s vaší značkou, doladit mezery, texty a vytvořit finální, konzistentní design.
+
+Tímto způsobem nespoléháte na AI jako na "černou skříňku", která vám zázračně vyřeší problémy, ale používáte ji jako extrémně rychlého asistenta, který vám šetří čas při rutinních úkolech (překreslování, generování variant).
+
+Rád vám pomohu najít konkrétní AI pluginy pro Figmu, které se specializují na převod screenshotů na design. Mám se na ně podívat?
+
+id_chat: 
+https://gemini.google.com/u/1/app/8d8b223d81773ff2

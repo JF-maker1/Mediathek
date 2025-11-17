@@ -30,6 +30,13 @@ export default async function AdminDashboardPage() {
         select: {
             email: true
         }
+      },
+      // PŘIDÁNO: Načtení názvů a ID přiřazených sbírek
+      collections: {
+        select: {
+          id: true,
+          name: true
+        }
       }
     }
   });

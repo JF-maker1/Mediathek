@@ -52,6 +52,13 @@ export default async function HomePage() {
         select: {
           email: true
         }
+      },
+      // PŘIDÁNO: Načtení názvů a ID přiřazených sbírek
+      collections: {
+        select: {
+          id: true,
+          name: true
+        }
       }
     }
   });
@@ -59,7 +66,7 @@ export default async function HomePage() {
   // 4. Zobrazení pomocí sdílené komponenty
   return (
     <main className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-      <h1 className="text-3xl font-bold mb-8">Vítejte v Mediathek - zde je Vaše knihovna mediálního obsahu - prohlížejte sbírky shlednutých videí vytvořených jinými pro sebe, ale i pro Vás - vytvářejte témata - uspořádávejte svou sbírku - vybírejte to nejlepší - dělejte si poznámky ke shlednutému - sdílejte svou sbírku s ostatními - dejte mediálnímu obsahu svůj jedinečný pohled</h1>
+      <h1 className="text-3xl font-bold mb-8">Vítejte v Mediathek - zde je Vaše knihovna mediálního obsahu - prohlížejte sbírky shlednutých videí vytvořených jinými nejen pro sebe, ale také i pro Vás - vytvářejte témata - uspořádávejte i svou sbírku - vybírejte to nejlepší - dělejte si poznámky ke shlednutému - sdílejte svou sbírku s ostatními - dejte mediálnímu obsahu svůj jedinečný pohled</h1>
       
       {/* AKTUALIZACE: Použijeme stejnou komponentu, ale změníme
         baseHref, aby odkazy směřovaly na budoucí

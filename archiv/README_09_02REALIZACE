@@ -1,0 +1,319 @@
+draft:
+Ano testy na lokálním prostředí resp. pc proběhly ok  - nyní se můžeme věnovat ještě dalším záležitostem ohledně UX které jsou spíše drobnějšího charakteru ale stále je potřeba vnímat jako součást UX vrstvy aplikace pro dosažení skvělého uživatelského zážitku. První přípomínka se týká právě implementovaného oddělení unikátního obsahu získaného z internetu (zde údaje o videu) a oddělení přidané hodnity aplikace Mediathek. Jde o to ještě více vizuálně zvýraznit právě tento moment že sbíráme obsah z internetu jde o to ... figma design ... vložení 
+
+
+JÁ_PROMPT:  
+V příloze je zadání pro tvorbu webové aplikace pro správu videí a obsahu videí [README_08_01ZADANI_SOUHRN_ZADANI_REALIZACE]. Prosím ze zadání vytvořit konkrétní plán realizace (resp. jednotlivé příkazy, nastavení, instalace, ověření prostředí jak systémové, tak projektové a tak i podobně) včetně plánu testování která potvrdí úspěšné ukončení realizační fáze vycházející ze zadání této realizační fáze viz zadání pro tuto fázi realizace v příloze . Realizační fáze je ukončena testováním jak na lokálním prostředí tak i na produkčním prostředí. V příloze je rovněž snímek projektového adresáře po ukončení předchozí fáze realizace [README_07_03project_snapshot] který by měl poskytnout představu o podmínkách jednak vnitřních v projektu tak i podmínkách vnějších pro tento projekt tak i jeho potřebném detailu. 
+
+AI_RESPONZE:
+
+Realizační Plán: Fáze 9 - UX Vylepšení (Karta Kurátora)Datum: 17. listopadu 2025Verze: 9.0 (Realizace)Navazuje na: README_09_01ZADANI (Zadání Fáze 9)Stav projektu (snapshot): README_08_03project_snapshot1. Cíl RealizaceImplementovat "Návrh Číslo Jedna" ze zadání: Refaktorovat komponentu components/VideoGrid.tsx tak, aby místo "Autora" (v těle karty) zobrazovala "Kurátora" a "Sbírka(y)" (v zápatí karty). To vyžaduje úpravu načítání dat na dvou stránkách a následnou úpravu VideoGrid komponenty.2. Příprava Prostředí a SystémuNež začneme s implementací, ověříme a připravíme prostředí.2.1. Ověření SystémuOvěřte, že vaše lokální prostředí odpovídá požadavkům projektu (dle snímku):Node.js: v24.11.0 (nebo kompatibilní ^24)NPM: 11.6.1 (nebo kompatibilní ^11)Git: 2.47.3 (nebo jakákoliv moderní verze)2.2. Příprava ProjektuSpusťte následující příkazy v terminálu v kořenovém adresáři projektu (web_app_Mediathek/):Instalace závislostí (pro případ, že by chyběly):npm install
+Vytvoření nové Git větve (vycházíme z větve feature/faze-8-public-homepage, kde byly poslední změny):# Přepnutí na poslední známou větev (pokud na ní již nejste)
+git checkout feature/faze-8-public-homepage
+
+# Vytvoření a přepnutí na novou větev pro Fázi 9
+git checkout -b feature/faze-9-ux-curator-card
+Spuštění lokálního serveru (pro průběžné ověřování změn):npm run dev
+Aplikace by nyní měla běžet na http://localhost:3000.3. Implementace ZměnImplementaci provedeme ve dvou krocích: 1. Úprava datových dotazů, 2. Úprava komponenty.Fáze 3.1: Aktualizace Načítání Dat (Data Fetching)Musíme zajistit, aby app/page.tsx i app/admin/dashboard/page.tsx posílaly komponentě VideoGrid data o sbírkách (collections).Krok 3.1.1: Úprava app/admin/dashboard/page.tsxOtevřete soubor: app/admin/dashboard/page.tsxNajděte dotaz prisma.video.findMany (kolem řádku 24).Upravte klíč include, aby načítal i collections.Původní kód:// ...
+include: {
+  author: {
+    select: {
+        email: true
+    }
+  }
+}
+// ...
+Nový kód:// ...
+include: {
+  author: {
+    select: {
+        email: true
+    }
+  },
+  // PŘIDÁNO: Načtení názvů a ID přiřazených sbírek
+  collections: {
+    select: {
+      id: true,
+      name: true
+    }
+  }
+}
+// ...
+Krok 3.1.2: Úprava app/page.tsxOtevřete soubor: app/page.tsxNajděte dotaz prisma.video.findMany (kolem řádku 43).Proveďte identickou úpravu klíče include.Původní kód:// ...
+include: {
+  author: {
+    select: {
+      email: true
+    }
+  }
+}
+// ...
+Nový kód:// ...
+include: {
+  author: {
+    select: {
+      email: true
+    }
+  },
+  // PŘIDÁNO: Načtení názvů a ID přiřazených sbírek
+  collections: {
+    select: {
+      id: true,
+      name: true
+    }
+  }
+}
+// ...
+Fáze 3.2: Refaktorizace Komponenty VideoGridNyní, když má komponenta přístup k datům o sbírkách, upravíme její definici typů a JSX.Otevřete soubor: components/VideoGrid.tsxKrok 3.2.1: Aktualizace Typů (Props)Najděte definici typu VideoWithAuthor (kolem řádku 9).Přejmenujte ji na VideoWithDetails a rozšiřte o collections.Původní kód:type VideoWithAuthor = Video & {
+  author: { email: string | null } | null;
+};
+
+interface VideoGridProps {
+  videos: VideoWithAuthor[];
+  baseHref?: string;
+}
+Nový kód:// AKTUALIZOVANÝ TYP
+type VideoWithDetails = Video & {
+  author: { email: string | null } | null;
+  collections: { id: string; name: string }[]; // PŘIDÁNO
+};
+
+interface VideoGridProps {
+  videos: VideoWithDetails[]; // AKTUALIZOVÁNO
+  baseHref?: string;
+}
+Krok 3.2.2: Úprava JSX (Odebrání "Autor")Najděte blok JSX, který zobrazuje ID a Autora (kolem řádku 52).Odeberte řádek <p>Autor: ...</p>.Původní kód:// ...
+        <div className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            <p>ID: <span className="font-mono">{video.youtubeId}</span></p>
+            <p>Autor: {video.author?.email || 'Neznámý'}</p>
+        </div>
+// ...
+Nový kód:// ...
+        <div className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            <p>ID: <span className="font-mono">{video.youtubeId}</span></p>
+        </div>
+// ...
+Krok 3.2.3: Úprava JSX (Přidání "Kurátor" a "Sbírka(y)" do Zápatí)Najděte zápatí karty (kolem řádku 61, div začínající className="mt-auto pt-4...).Kompletně nahraďte stávající zápatí novou strukturou, která používá space-y-2 (vertikální stacking) pro lepší přehlednost metadat.Původní kód (celé zápatí):// ...
+        <div className="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700 flex justify-between items-center text-sm">
+            <span className="text-gray-400">
+                {new Date(video.createdAt).toLocaleDateString('cs-CZ')}
+            </span>
+            {/* Odkaz pro úpravy (zde jako příklad, pokud by baseHref byl /admin) */}
+            {baseHref.startsWith('/admin') && (
+                 <Link href={`/admin/edit/${video.id}`} className="text-indigo-500 hover:text-indigo-700 font-medium">
+                    Upravit
+                 </Link>
+            )}
+        </div>
+// ...
+Nový kód (nahraďte celý div výše):// ...
+        {/* === NOVÁ STRUKTURA ZÁPATÍ KARTY === */}
+        <div className="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700 text-sm space-y-3">
+
+          {/* Sekce 1: Kurátorská metadata */}
+          <div className="text-gray-500 dark:text-gray-400 space-y-1">
+            <p>
+              <strong>Kurátor:</strong> {video.author?.email || 'Neznámý'}
+            </p>
+            <p>
+              <strong>Sbírka(y):</strong> {
+                video.collections.length > 0 
+                  ? video.collections.map(c => c.name).join(', ') 
+                  : 'Nezařazeno'
+              }
+            </p>
+          </div>
+
+          {/* Sekce 2: Původní obsah (Datum a Edit link) */}
+          <div className="flex justify-between items-center text-gray-400">
+            <span>
+                {new Date(video.createdAt).toLocaleDateString('cs-CZ')}
+            </span>
+            {baseHref.startsWith('/admin') && (
+                 <Link href={`/admin/edit/${video.id}`} className="text-indigo-500 hover:text-indigo-700 font-medium transition-colors hover:text-indigo-400">
+                    Upravit
+                 </Link>
+            )}
+          </div>
+        </div>
+        {/* === KONEC NOVÉ STRUKTURY ZÁPATÍ === */}
+// ...
+4. Plán Testování a OvěřeníPo uložení všech souborů by se měla aplikace na http://localhost:3000 automaticky obnovit.4.1. Lokální Testování (npm run dev)Cílem je ověřit všechny 3 scénáře zobrazení dat (video ve sbírce, video bez sbírky, různé role).Krok 4.1.1: Příprava Testovacích DatPřejděte do http://localhost:3000/login a přihlaste se jako ADMIN.Přejděte do http://localhost:3000/admin/collections.Vytvořte novou sbírku "Testovací Veřejná" (a ujistěte se, že je přepínačem nastavena na VEŘEJNÁ).Vytvořte novou sbírku "Testovací Soukromá" (a ujistěte se, že je nastavena na SOUKROMÁ).Přejděte do http://localhost:3000/admin/manage.Najděte Video A a klikněte na "Editovat".V sekci "Zařadit do sbírek" zaškrtněte "Testovací Veřejná". Uložte.Najděte Video B a klikněte na "Editovat".V sekci "Zařadit do sbírek" zaškrtněte "Testovací Soukromá". Uložte.Najděte Video C a klikněte na "Editovat".Ujistěte se, že není zařazeno v žádné sbírce. Uložte (nebo jen ověřte).Krok 4.1.2: Testování Admin Dashboardu (Role: ADMIN)Zůstaňte přihlášeni jako ADMIN.Přejděte na http://localhost:3000/admin/dashboard.Ověření (Video A):Karta musí být vidět.V těle karty nesmí být text "Autor: ...".V zápatí musí být text "Kurátor: [váš_admin_email]".V zápatí musí být text "Sbírka(y): Testovací Veřejná".V zápatí musí být vidět odkaz "Upravit".Ověření (Video B):Karta musí být vidět (Admin vidí vše).V zápatí musí být text "Sbírka(y): Testovací Soukromá".Ověření (Video C):Karta musí být vidět.V zápatí musí být text "Sbírka(y): Nezařazeno".Krok 4.1.3: Testování Veřejné Stránky (Role: VISITOR)Odhlaste se (nebo otevřete anonymní okno prohlížeče).Přejděte na http://localhost:3000/.Ověření (Video A - Veřejné):Karta musí být vidět (protože je ve veřejné sbírce).V těle karty nesmí být text "Autor: ...".V zápatí musí být text "Kurátor: [admin_email]".V zápatí musí být text "Sbírka(y): Testovací Veřejná".V zápatí nesmí být vidět odkaz "Upravit".Ověření (Video B - Soukromé):Karta nesmí být na stránce vůbec viditelná (logika Fáze 8).Ověření (Video C - Nezařazené):Karta nesmí být na stránce vůbec viditelná (logika Fáze 8).4.2. Ukončení Lokální Fáze (Git)Pokud všechny lokální testy prošly, můžeme práci committnout.Zastavte lokální server (Ctrl+C).Přidejte změny a vytvořte commit:git add app/page.tsx app/admin/dashboard/page.tsx components/VideoGrid.tsx
+git commit -m "Fáze 9: Refaktor UX VideoGrid - Kurátor a Sbírky"
+(Volitelné) Pushněte větev na vzdálený repozitář:git push origin feature/faze-9-ux-curator-card
+(Následuje proces Code Review a Merge do main / master větve - mimo tento plán).4.3. Produkční Testování (Po Nasazení)Po nasazení nové verze na produkční prostředí (např. Vercel) je nutné provést finální ověření.Lokální ověření produkčního buildu (dobrá praxe před nasazením):npm run build
+npm run start
+Otevřete http://localhost:3000 (nyní v produkčním módu) a proveďte rychlé ověření Kroků 4.1.2 a 4.1.3.Ověření na produkční URL (např. https://vas-projekt.vercel.app):Počkejte na dokončení nasazení (deploy).Vymažte cache prohlížeče (nebo použijte Hard Reload Ctrl+Shift+R).Proveďte kompletní testovací scénář z Kroků 4.1.2 a 4.1.3 na živé produkční doméně.Ověřte, že se data načítají správně a že všichni uživatelé (Admin i Visitor) vidí přesně to, co mají.Ukončení Fáze 9: Realizační fáze je považována za úspěšně dokončenou, pokud všechny testy v sekci 4.3 projdou na produkčním prostředí.
+
+
+
+
+
+
+JÁ_PROMPT:  
+Testování na lokálním pc proběhlo ok - nasazení na produkci proběhlo také ok a finální test na produkci rovněž také proběhl ok. Díky. ;-) Mohu nyní poprosit o souhrnou zprávu z této fáze realizace vyplývající z tohoto chatu k tomuto release. Tuto zprávu uložím jako záznam o všech zde provedených činnostech na projektu v tomto release pro budoucí informaci o proběhlých činnostech v této fázi realizace aplikace - prosím i o podrobnosti z této fáze realizace a zejména pak ty významné podrobnosti do této souhrnné zprávy o této fázi realizace. Ale zde to proběhlo poměrně hladce díky Tobě ;-) 
+
+
+
+AI_RESPONZE:
+
+Skvělá práce! Mám velkou radost, že nasazení i finální testování na produkci proběhlo úspěšně. To je perfektní uzavření této fáze.
+
+Připravil jsem pro vás požadovanou souhrnnou zprávu. Zahrnul jsem do ní nejen finální kroky, ale i klíčová architektonická rozhodnutí a drobné korekce, které jsme v průběhu této fáze společně provedli. Slouží jako detailní záznam pro budoucí reference.
+
+Souhrnná Zpráva: Realizace Fáze 8 - Veřejná Výloha
+
+Datum: 17. listopadu 2025
+Fáze: 8.0
+Navazuje na: Fáze 7 (Implementace Sbírek)
+Status: Úspěšně dokončeno a nasazeno na produkci.
+
+1. Cíl Fáze
+
+Primárním cílem Fáze 8 bylo transformovat aplikaci z čistě privátního nástroje na veřejně přístupnou platformu. Toho bylo dosaženo implementací nové domovské stránky (app/page.tsx), která slouží jako veřejná "výkladní skříň" obsahu.
+
+Klíčovým požadavkem bylo zajistit robustní filtrování obsahu na základě role uživatele (VISITOR, USER, ADMIN) a dodržet "best practices" principy, zejména znovupoužitelnost kódu a oddělení odpovědností (Separation of Concerns).
+
+2. Přehled Realizace
+
+Implementace proběhla ve třech hlavních krocích, které následovaly po standardní přípravě prostředí (vytvoření větve feature/faze-8-public-homepage):
+
+Krok 2.1: Refaktorizace (Vytvoření components/VideoGrid.tsx)
+
+Vytvořili jsme novou, znovupoužitelnou "hloupou" klientskou komponentu, která je zodpovědná výhradně za vizuální zobrazení mřížky videí.
+
+Díky dodatečnému poskytnutí souboru app/admin/dashboard/page.tsx byla tato komponenta rovnou vybavena bohatší logikou pro zobrazení (náhledový obrázek z YouTube, jméno autora, formátování data).
+
+Krok 2.2: Aktualizace "Dílny" (Úprava app/admin/dashboard/page.tsx)
+
+Stávající administrátorský přehled obsahu ("dílna") byl refaktorizován.
+
+Ponechali jsme logiku načítání dat (načtení všech videí včetně autorů) a celou komplexní JSX strukturu pro mřížku jsme nahradili jedinou komponentou: <VideoGrid videos={videos} baseHref="/admin/video" />.
+
+Krok 2.3: Implementace "Výlohy" (Úprava app/page.tsx)
+
+Stávající "placeholder" domovská stránka byla kompletně nahrazena.
+
+Byla implementována server-side logika pro dynamické sestavení dotazu do databáze (whereClause) na základě uživatelské sezení (Role-Based Access Control).
+
+Pro zobrazení byla použita stejná sdílená komponenta <VideoGrid />, čímž byla zajištěna vizuální konzistence a zamezeno duplicitě kódu.
+
+Krok 2.4: Ověření konfigurace
+
+Společně jsme ověřili soubory middleware.ts a components/Navbar.tsx.
+
+Potvrdili jsme, že matcher v middleware správně chrání pouze /admin a /dashboard, čímž ponechává / veřejně přístupnou.
+
+Potvrdili jsme, že Navbar.tsx již správně odkazuje na / jako "Domů".
+
+Nebyly nutné žádné změny v těchto souborech.
+
+3. Klíčové Architektonické Změny (Významné podrobnosti)
+
+Tato fáze přinesla tři zásadní vylepšení architektury aplikace:
+
+a) Princip "Dílna" vs. "Výloha"
+
+Definovali jsme jasné oddělení odpovědností (Separation of Concerns) mezi administrátorským a veřejným rozhraním:
+
+"Dílna" (/admin/dashboard): Zůstává interním nástrojem pro ADMINa. Slouží k rychlému přehledu všech dat (včetně draftů a soukromého obsahu) a správě.
+
+"Výloha" (/): Slouží jako veřejná prezentace pro VISITORy a USERy. Zobrazuje pouze kurátorovaný, filtrovaný obsah a je optimalizována pro konzumaci.
+
+b) Znovupoužitelnost Kódu (components/VideoGrid.tsx)
+
+Místo duplikování logiky zobrazení jsme veškerý kód pro vykreslení mřížky videí extrahovali do jediné klientské komponenty. Tím jsme zajistili, že jakákoliv budoucí vizuální změna (např. přidání štítků) se projeví konzistentně v "dílně" i "výloze" úpravou jediného souboru.
+
+c) Robustní Server-Side Role-Based Access Control (RBAC)
+
+Logika oprávnění je implementována bezpečně na serveru v rámci React Server Component (app/page.tsx). Na základě přítomnosti a role v session se dynamicky sestavuje dotaz (whereClause) pro Prisma.
+
+VISITOR / USER: Databáze vrací pouze videa, která jsou v alespoň jedné veřejné sbírce ({ collections: { some: { isPublic: true } } }).
+
+ADMIN: Databáze vrací všechna videa ({}).
+
+Tento přístup zaručuje, že citlivá data (drafty, soukromá videa) nikdy neopustí server a nedostanou se ke klientovi, který k nim nemá oprávnění.
+
+4. Průběh a Korekce
+
+Realizace proběhla hladce díky aktivní spolupráci:
+
+Upřesnění refaktorizace: Dodatečné poskytnutí souborů app/admin/dashboard/page.tsx a app/page.tsx umožnilo provést refaktorizaci (Krok 2.1 a 2.2) přesněji a zachovat bohatší strukturu dat (include: { author: ... }).
+
+Korekce implementace: Během prvního testu (npm run dev) byla identifikována a okamžitě opravena drobná chyba (překlep * mimo komentář) v souboru app/page.tsx.
+
+5. Výsledek Testování (Produkční Ověření)
+
+Dle vašeho potvrzení proběhlo úspěšně lokální i produkční nasazení. Finální testování na produkčním prostředí potvrdilo 100% úspěšnost všech akceptačních kritérií:
+
+Test 1 (ADMIN - Dílna): /admin/dashboard funguje a zobrazuje všechna videa pomocí <VideoGrid>. OK
+
+Test 2 (VISITOR - Výloha): / zobrazuje anonymnímu uživateli POUZE veřejná videa. OK
+
+Test 3 (USER - Výloha): / zobrazuje přihlášenému USERovi POUZE veřejná videa. OK
+
+Test 4 (ADMIN - Výloha): / zobrazuje přihlášenému ADMINovi VŠECHNA videa (včetně draftů a soukromých). OK
+
+Test 5 (Ochrana odkazů): Kliknutí na video na / jako VISITOR správně přesměruje na /login. OK
+
+6. Závěr
+
+Fáze 8 byla úspěšně dokončena. Aplikace nyní disponuje bezpečnou, veřejně přístupnou a na role reagující domovskou stránkou. Díky refaktorizaci je kódová základna čistší a připravená na budoucí rozšíření (např. implementaci role KURATOR ve Fázi 9).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+JÁ_PROMPT:
+Díky moc. ;-) Nyní bych poprosil ještě zcela závěrem zrevidovat důležitý projektový snímkovač projektového adresáře vzhledem k nyní proběhlé relalizační fázi na projektu. V příloze je aktuální skript na snímkování projektového adresáře a nastavení jeho vnitřních a vnějších podmínek projektu, prosím o jeho revizi vzhledem k proběhlé realizační fázi, tak aby nový snímkovač pokrýval co neefektivněji a optimálně celý projekt pro využití v další fázi projektu resp. předat jen ty nezbytné věci které definují unikátní vlastnosti aplikace a nastavení jejích vnitřních a vnějších podmínek - nyní jsme např. naráželi na problém chybějících podrobností ohledně obsahu některých souborů (např. soubor [app/admin/dashboard/page.tsx]) - proto také o zvážení zvýšení podrobnosti výstupu ze snímkování projektu . Prosím o výstup formou změnové zprávy k danému skriptu které poté manuálně zapracuji, tak abychom nemuseli vyjíždět celý skript kompletně, což by mohlo být náročné na výstup v responzi. Ještě jednou moc díky ;-)
+[project_snapshot.py]
+
+AI_RESPONZE:
+
+Naprosto souhlasím. To je excelentní nápad a přesně správný krok na závěr fáze.
+
+Vaše zkušenost z této fáze, kdy nám chyběl obsah klíčových souborů (app/admin/dashboard/page.tsx a app/page.tsx), je nejlepším důvodem pro revizi snímkovače. Přesně jsme identifikovali jeho slabé místo.
+
+Připravil jsem pro vás "změnovou zprávu" (diff) pro váš skript project_snapshot.py. Tyto změny povyšují skript na "Verzi 11.0" a co je nejdůležitější – přidávají do sledovaných souborů přesně ty tři soubory, které byly jádrem Fáze 8.
+
+Tím zajistíme, že při startu Fáze 9 budeme mít k dispozici obsah "dílny", "výlohy" i sdílené komponenty.
+
+Změnová zpráva pro project_snapshot.py
+Zde jsou úpravy, které stačí zapracovat do vašeho stávajícího skriptu:
+Změnová zpráva pro project_snapshot.py
+17. 11. 10:06
+
+Shrnutí provedených změn:
+Změna verze (Řádek 6): Komentář byl aktualizován na Verze 11.0 - Aktualizace po Fázi 8: Veřejná Výloha, aby odpovídal aktuálnímu stavu.
+
+Přidán app/page.tsx: Doplnili jsme novou veřejnou "výlohu", která obsahuje klíčovou logiku RBAC.
+
+Přidán app/admin/dashboard/page.tsx: Doplnili jsme refaktorizovanou administrátorskou "dílnu". (Toto byl soubor, který nám chyběl na začátku Fáze 8).
+
+Přidán components/VideoGrid.tsx: Doplnili jsme novou, centrální sdílenou komponentu, která byla jádrem refaktorizace.
+
+Aktualizace print (Řádek 201): Zpráva o úspěchu byla aktualizována na v11.0.
+
+Po zapracování těchto změn bude váš příští snímek projektu perfektně připraven pro Fázi 9.
+
+Bylo mi potěšením s vámi na této fázi pracovat. Skvělá práce!
+
+
+ID_chatu: 
+https://gemini.google.com/u/1/app/0091081cb9b3c986
+
+
+
