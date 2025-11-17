@@ -57,7 +57,7 @@ export default async function AdminDashboardPage() {
       {/* AKTUALIZACE: Celý původní blok (<div className="grid...">...</div>) 
         je nyní nahrazen touto jedinou komponentou.
       */}
-      <VideoGrid videos={videos} baseHref="/admin/video" />
+      <VideoGrid videos={videos} baseHref="/video" showEditButton={true} />
       
     </main>
   );

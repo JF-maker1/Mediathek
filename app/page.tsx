@@ -74,7 +74,7 @@ export default async function HomePage() {
         Prozatím můžeme nechat /admin/video, 
         návštěvník bude přesměrován na /login (Test 5).
       */}
-      <VideoGrid videos={videos} baseHref="/admin/video" />
+      <VideoGrid videos={videos} baseHref="/video" showEditButton={false} />
     </main>
   );
 }

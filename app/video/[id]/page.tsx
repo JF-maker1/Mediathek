@@ -19,12 +19,11 @@ export default async function VideoDetailPage({ params }: VideoDetailPageProps) 
   // Await params (Next.js 15+)
   const { id } = await params;
 
+  // 1. Načtení session a kontrola admin role
   const session = await getServerSession(authOptions);
-  if (!session || session.user?.role !== 'ADMIN') {
-    notFound();
-  }
+  const isAdmin = session?.user?.role === 'ADMIN';
 
-  // 2. Načtení dat (včetně kapitol)
+  // 2. Načtení videa včetně kolekcí (pro kontrolu veřejnosti)
   const video = await prisma.video.findUnique({
     where: { id: id },
     include: {
@@ -33,10 +32,24 @@ export default async function VideoDetailPage({ params }: VideoDetailPageProps) 
           order: 'asc', // Seřadíme kapitoly dle 'order'
         },
       },
+      // PŘIDÁNO: Načtení kolekcí pro kontrolu veřejnosti
+      collections: {
+        select: {
+          isPublic: true
+        }
+      }
     },
   });
 
   if (!video) {
+    notFound();
+  }
+
+  // 3. Kontrola, zda je video ve veřejné sbírce
+  const isPublic = video.collections.some(col => col.isPublic);
+
+  // 4. Finální bezpečnostní kontrola
+  if (!isPublic && !isAdmin) {
     notFound();
   }
 

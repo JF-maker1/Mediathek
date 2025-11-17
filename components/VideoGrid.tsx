@@ -14,10 +14,11 @@ type VideoWithDetails = Video & {
 interface VideoGridProps {
   videos: VideoWithDetails[];
   baseHref?: string;
+  showEditButton?: boolean;
 }
 
 // Komponenta pouze přijímá pole videí a vykresluje je
-export default function VideoGrid({ videos, baseHref = '/admin/video' }: VideoGridProps) {
+export default function VideoGrid({ videos, baseHref = '/admin/video', showEditButton }: VideoGridProps) {
   
   // Pokud nejsou žádná videa, zobrazíme zprávu
   if (videos.length === 0) {
@@ -91,7 +92,7 @@ export default function VideoGrid({ videos, baseHref = '/admin/video' }: VideoGr
                 <span>
                     {new Date(video.createdAt).toLocaleDateString('cs-CZ')}
                 </span>
-                {baseHref.startsWith('/admin') && (
+                {showEditButton === true && (
                      <Link href={`/admin/edit/${video.id}`} className="text-indigo-500 hover:text-indigo-700 font-medium transition-colors hover:text-indigo-400">
                         Upravit
                      </Link>
