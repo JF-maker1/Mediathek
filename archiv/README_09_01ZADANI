@@ -1,0 +1,587 @@
+Testování proběhlo ok ale v rámci tohoto releasu mám ještě několik nápadu k designu jednotlivých stránek (např. úprava barvy písma) které by jsme mohli vyřešit před vytvořením veřejné stránky. Jedná se o tyto nápady na design stránek: - úprava zobrazení pole s videem resp. jeho redesign nyní je zobrazeno toto pole mřížky s tímto obsahem [ obrázek videa z youtube
+
+Krank durch Milchprodukte Welche 6 sind die Übeltäter und welche wirken heilend ?
+
+ID: mC_JUnlqALw
+
+Autor: florianjiri@gmail.com
+
+Milchprodukte stehen immer wieder in der Kritik – doch nicht alle sind gleich! In diesem Video erfährst du, welche 6 Milchprodukte deiner Gesundheit ernsthaft schaden können, und welche 5 tatsächlich heilende Wirkungen auf Darm, Knochen und Entzündungen haben. Besonders für Menschen mit Hautproblemen, Gelenkschmerzen oder Verdauungsbeschwerden kann dieses Wissen den Unterschied machen!13. 11. 2025
+
+] - jde o redesign tak aby bylo jasně oddělené že se jedná o "kartu videa"
+
+
+JÁ_PROMPT:
+V příloze jsou dokumenty popisující dosavadní vývoj webové aplikace po stránce jednotlivých vývojových cyklů této webové aplikace z hlediska vývoje jejího zadání i realizace. Dokumenty popisují její vývoj od počátku resp. kick off až po poslední vývojový cyklus, kterému se dokumenty věnují nejpodrobněji - zejména pak dokument [README_07_02REALIZACE], který je záznamem o implementaci posledního vývojového cyklu, který se věnoval implementaci funkcionality sbírek, resp. možnosti uspořádávat elementární položky této webové aplikace resp. videa z youtube do sbírek. Tyto sbírky pak mají implementovány vlastnosti komu patří a zda jsou veřejné nebo soukromé. Tyto vlastnosti z hlediska vlastnictví a veřejnosti položky by měly být implementovány zatím pouze na úrovni sbírek. Aplikace je ve fázi kdy by jsme měli vytvářet funkcionalitu uveřejňování obsahu sbírek uživatelům aplikace resp. návštěvníkům této webové aplikace. V současné době k náhledu a prohlížení obsahu vložených videí a jejich přehrávání slouží stránka '"Přehled obsahu". Nyní bychom měli umožnit jakémukoliv návštěvníkovi webových stránek (resp. od nejnižšího práva VISITOR (resp. anonymous) - další právo je USER (již implementováno), pak KURATOR(není zatím implementováno), pak ADMIN (já) ) prohlížet tuto stránku '"Přehled obsahu" s tím že všichni kdo mají práva na VISITOR a vyšší jí mohou navštívit a uvidí všechny položky které nejsou ve sbírce která je soukromá resp. položky které jsou ve sbírce "soukromá" uvidí jen vlastník/resp. vlastníci(do budoucna je možné uvažovat o tom že vlastníky jedné sbírky bude více uživatelů a budou moci společně upravovat tuto sbírku) této soukromé sbírky. Toto by mělo být zadání tohoto vývojového cyklu, ke kterému bychom nyní vytvořili robustní zadání a implementaci navazující na již připravené podmínky k tomuto v aplikaci (je diskutováno právě v příložených dokumentech z vývoje aplikace) Pojdme nyní na základě předešlého vývoje aplikace vytvořit zadání k uplatňování práv pro prohlížení obsahu aplikace resp. možnosti vidět stránku "Přehled obsahu" a konkrétní její položky dle práv s kterými na stránku vstupuje uživatel. Prosím o případné návrhy které patříík best praxis ohledně uživatelských práv uplatňovaných na webových aplikacích. Díky. ;-)
+[README_07_01ZADANI_SOUHRN_ZADANI_REALIZACE]
+
+AI_RESPONZE:
+
+Ano, naprosto. Jsme v klíčovém bodě projektu. Máme hotovou "strojovnu" (Fáze 1-7) a nyní je čas otevřít první "výlohu".
+
+Vaše zadání je přesné. Musíme vzít stávající stránku "Přehled obsahu" (technicky app/admin/dashboard/page.tsx) a vytvořit její veřejnou verzi, která bude inteligentně filtrovat obsah na základě práv návštěvníka.
+
+Pojďme si rozebrat vaši specifikaci a "best practices" a sestavit z toho robustní zadání.
+
+💡 Klíčové "Best Practices" a Návrhy
+Váš návrh na filtrování je správný, ale skrývá v sobě jednu implementační složitost.
+
+Váš návrh: "uvidí všechny položky které nejsou ve sbírce která je soukromá".
+
+Problém: Co když video není v žádné sbírce? Nebo je zároveň ve veřejné i soukromé sbírce?
+
+Robustní "Best Practice" řešení:
+
+Musíme otočit logiku. Místo "blacklistingu" (skrývání soukromých) použijeme "whitelisting" (explicitní zobrazování veřejných).
+
+Pravidlo 1: Video je veřejné, pokud je zařazeno v alespoň jedné veřejné sbírce (která má isPublic: true).
+
+Pravidlo 2: Pokud video není v žádné sbírce nebo je pouze v soukromých sbírkách, je pro veřejnost neviditelné. Tím jsou automaticky "drafty" (nezařazená videa) skryté.
+
+Dále, z hlediska "best practice" a bezpečnosti nebudeme "otevírat" stávající stránku /admin/dashboard. Cokoliv pod /admin musí zůstat 100% chráněno. Místo toho vytvoříme novou, veřejnou domovskou stránku (app/page.tsx), která znovu použije vizuální komponenty z dashboardu, ale bude mít vlastní, chytrou logiku načítání dat.
+
+🚀 Náš Cíl: Dynamická Domovská Stránka (RSC)
+Vytvoříme jednu stránku (app/page.tsx), která na serveru zjistí, kdo se dívá, a podle toho sestaví dotaz do databáze.
+
+Server se podívá: "Mám session?"
+
+Scénář A: VISITOR (Anonym): Session není. Server pošle dotaz: "Vrať mi všechna videa, která patří do sbírky s isPublic: true."
+
+Scénář B: USER: Session je (role USER). Server pošle stejný dotaz jako pro Anonyma. (Pro roli USER se zatím nic nemění).
+
+Scénář C: ADMIN: Session je (role ADMIN). Server pošle dotaz: "Vrať mi všechna videa bez filtru."
+
+Scénář D (Budoucí): KURATOR: Session je (role KURATOR). Server pošle dotaz: "Vrať mi všechna isPublic: true videa NEBO videa, kde authorId je moje."
+
+Toto je extrémně robustní a bezpečný model. Logika oprávnění se nikdy nedostane na klienta.
+
+Zde je finální, robustní zadání pro Fázi 8, které toto vše reflektuje.
+
+📄 Zadání projektu: Webová aplikace Mediathek (Fáze 8 - Zveřejnění obsahu)
+Datum: 17. listopadu 2025 Verze: 8.0
+
+
+Navazuje na: Fáze 7 (Implementace Sbírek )
+
+
+
+1. Název projektu
+Mediathek
+
+2. 🎯 Cíl Fáze
+Primárním cílem této fáze je zpřístupnit obsah aplikace veřejnosti. Vytvoříme novou domovskou stránku (/), která bude sloužit jako veřejný "Přehled obsahu". Tato stránka bude implementována jako React Server Component (RSC) a bude inteligentně filtrovat zobrazená videa na základě role a oprávnění uživatele (od VISITORa po ADMINa), přičemž veškerá logika oprávnění zůstane bezpečně na serveru.
+
+3. Rozsah pro Fázi 8
+Architektura (Nové): Vytvoření nové hlavní stránky app/page.tsx jako (RSC).
+
+Architektura (Úprava): Úprava middleware.ts tak, aby byla domovská stránka (/) veřejně přístupná a nevyžadovala přihlášení.
+
+Backend (Data Fetching): Implementace server-side logiky v app/page.tsx, která načte session a na základě role sestaví dynamický Prisma dotaz pro filtrování videí.
+
+Frontend (Re-use): Znovu-použití stávajících vizuálních komponent (např. mřížka, karty videí) ze stránky app/admin/dashboard/page.tsx pro zobrazení obsahu na nové domovské stránce.
+
+Navigace: Úprava components/Navbar.tsx tak, aby logo nebo název "Mediathek" vždy směřoval na /.
+
+Mimo rozsah této fáze:
+
+Implementace povyšování rolí (USER -> KURATOR). To bude Fáze 9.
+
+Veřejná stránka detailu videa (/video/[id]). Ta bude následovat až po této fázi.
+
+Veřejná stránka detailu sbírky (/collections/[id]).
+
+4. 🏛️ Návrh Řešení a Architektura ("Best Practices")
+Toto řešení je navrženo s důrazem na bezpečnost (Server-Side filtering) a znovupoužitelnost.
+
+4.1. Architektonické Rozhodnutí (Veřejná vs. Admin)
+Nebudeme zpřístupňovat app/admin/dashboard. Z bezpečnostních důvodů musí celá sekce /admin zůstat chráněná. Místo toho vytvoříme novou, veřejnou domovskou stránku app/page.tsx, která bude sloužit jako hlavní "výloha" (váš "Přehled obsahu").
+
+4.2. Konfigurace Zabezpečení (Middleware)
+Soubor middleware.ts musí být upraven tak, aby chránil vše kromě domovské stránky.
+
+Stávající matcher pravděpodobně vypadá takto: matcher: ['/admin/:path*'].
+
+Musíme zajistit, aby matcher nezahrnoval /. Pokud náhodou chráníte /, musíme to změnit.
+
+Cílový stav: Kořenová stránka / musí být přístupná bez přihlášení.
+
+4.3. Logika Oprávnění (Dynamické Načítání Dat v app/page.tsx)
+Toto je jádro celé fáze. Veškerá logika proběhne na serveru uvnitř RSC.
+
+TypeScript
+
+// app/page.tsx
+
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { PrismaClient, Prisma } from '@prisma/client';
+// Import komponenty pro zobrazení mřížky (např. z /admin/dashboard)
+// import { VideoGrid } from '@/components/VideoGrid'; 
+
+const prisma = new PrismaClient();
+
+export default async function HomePage() {
+  const session = await getServerSession(authOptions);
+  
+  // 1. Sestavení dynamického 'where' dotazu
+  let whereClause: Prisma.VideoWhereInput = {
+    // ---- BEST PRACTICE LOGIKA ----
+    // Ve výchozím stavu (pro VISITORa) chceme videa,
+    // která jsou v ALESPOŇ JEDNÉ veřejné sbírce.
+    collections: {
+      some: {
+        isPublic: true
+      }
+    }
+  };
+
+  // 2. Rozšíření logiky pro přihlášené role
+  if (session) {
+    if (session.user.role === 'ADMIN') {
+      // ADMIN vidí VŠECHNO (včetně nezařazených a soukromých)
+      whereClause = {}; 
+    }
+    
+    // TODO: Připravit pro Fázi 9 (KURATOR)
+    // if (session.user.role === 'KURATOR') {
+    //   // KURATOR vidí VŠECHNY VEŘEJNÉ + VŠECHNY SVÉ SOUKROMÉ
+    //   whereClause = {
+    //     OR: [
+    //       { collections: { some: { isPublic: true } } },
+    //       { authorId: session.user.id }
+    //     ]
+    //   };
+    // }
+
+    // Pro roli 'USER' platí stejná logika jako pro 'VISITOR'a
+  }
+
+  // 3. Finální dotaz do DB
+  const videos = await prisma.video.findMany({
+    where: whereClause,
+    include: {
+      author: { select: { name: true } }, // Příklad
+    },
+    orderBy: { createdAt: 'desc' }
+  });
+
+  // 4. Zobrazení
+  return (
+    <div>
+      <h1 className="text-3xl font-bold mb-6">Přehled obsahu</h1>
+      {/* Zde znovu použijeme komponentu mřížky, např.: */}
+      {/* <VideoGrid videos={videos} /> */}
+      <p>(Zde bude mřížka videí... Počet načtených: {videos.length})</p>
+    </div>
+  );
+}
+5. 🚦 Funkční Požadavky (FR)
+FR1 (VISITOR): Návštěvník, který není přihlášen (Anonymní), musí na domovské stránce (/) vidět pouze videa, která jsou zařazena v alespoň jedné sbírce označené jako isPublic: true.
+
+FR2 (USER): Uživatel s rolí USER musí na domovské stránce vidět totéž co VISITOR.
+
+FR3 (ADMIN): Uživatel s rolí ADMIN musí na domovské stránce vidět všechna videa v databázi (veřejná, soukromá, i nezařazená).
+
+FR4 (Skrytí nezařazených): Video, které není v žádné sbírce, nesmí být viditelné pro VISITORa ani USERa (musí být viditelné pro ADMINa).
+
+FR5 (Skrytí soukromých): Video, které je pouze v soukromých sbírkách (isPublic: false), nesmí být viditelné pro VISITORa ani USERa.
+
+6. 🔒 Nefunkční Požadavky (NFR)
+NFR1 (Bezpečnost): Veškerá filtrace obsahu na základě oprávnění musí probíhat výhradně na serveru (v RSC / Prisma dotazu). Klientovi se nikdy nesmí poslat data, která by neměl vidět.
+
+NFR2 (Výkon): Stránka / musí být (jako RSC) rychlá a optimalizovaná pro SEO.
+
+NFR3 (Konzistence): Vizuální zobrazení "Přehledu obsahu" na / by mělo co nejvíce (pokud je to vhodné) znovu použít komponenty z app/admin/dashboard/page.tsx pro konzistentní vzhled.
+
+7. 💻 Technologický Stack a Nástroje
+Využívá se stávající stack: Next.js (App Router), Prisma, NextAuth.js.
+
+Nejsou potřeba žádné nové knihovny.
+
+8. ✅ Akceptační Kriteria (Definice "Hotovo")
+Tato fáze je dokončena, když:
+
+Test 1 (VISITOR): Je otevřeno anonymní okno prohlížeče, je navštívena adresa /. Zobrazí se pouze videa ze sbírek s isPublic: true.
+
+Test 2 (ADMIN): ADMIN se přihlásí, navštíví /. Zobrazí se všechna videa.
+
+Test 3 (Scénář: Draft): ADMIN vytvoří nové video, ale nepřiřadí ho do žádné sbírky.
+
+ADMIN ho na / vidí.
+
+VISITOR (v anonymním okně) ho na / nevidí.
+
+Test 4 (Scénář: Soukromé): ADMIN přiřadí toto video pouze do soukromé sbírky.
+
+ADMIN ho na / vidí.
+
+VISITOR ho na / nevidí.
+
+Test 5 (Scénář: Veřejné): ADMIN přiřadí toto video do veřejné sbírky.
+
+VISITOR ho na / vidí.
+
+9. 🚀 Budoucí Rozvoj (Mimo Rozsah Této Fáze)
+Fáze 9: Povýšení rolí. Implementace logiky, kdy ADMIN může změnit roli USER na KURATOR, čímž se aktivuje připravená (ale nyní zakomentovaná) logika v app/page.tsx.
+
+Fáze 10: Veřejný detail videa. Vytvoření app/video/[id]/page.tsx, která bude veřejně zobrazovat přehrávač a strukturovaný obsah (a bude mít vlastní kontrolu oprávnění).
+    
+    
+    
+    
+    
+    
+    
+
+JÁ_PROMPT:
+Děkuji za zadání - zadání jsem si pročetl a měl bych dotaz k tomuto bodu [Vytvoříme jednu stránku (app/page.tsx), která na serveru zjistí, kdo se dívá, a podle toho sestaví dotaz do databáze.
+
+Server se podívá: "Mám session?"
+Scénář A: VISITOR (Anonym): Session není. Server pošle dotaz: "Vrať mi všechna videa, která patří do sbírky s isPublic: true."
+Scénář B: USER: Session je (role USER). Server pošle stejný dotaz jako pro Anonyma. (Pro roli USER se zatím nic nemění).
+Scénář C: ADMIN: Session je (role ADMIN). Server pošle dotaz: "Vrať mi všechna videa bez filtru."
+Scénář D (Budoucí): KURATOR: Session je (role KURATOR). Server pošle dotaz: "Vrať mi všechna isPublic: true videa NEBO videa, kde authorId je moje."] - zda by ještě robustnější nebylo jedinné pravidlo a to stránky navšívil někdo s rolí rovnou a vyšší VISITOR (Anonym) potom zobrazím [Server pošle dotaz: "Vrať mi všechna videa, která patří do sbírky s isPublic: true."]. k čemu je potřeba nebo co znamená [Server se podívá: "Mám session?"] ... potřeboval bych toto asi trochu vysvětlit ;-)
+
+
+AI_RESPONZE:
+
+Je to skvělá a velmi důležitá otázka, která míří přímo na jádro robustní architektury.
+
+Máte naprostou pravdu, že pro většinu uživatelů (pro VISITORa i USERa) platí to jedno pravidlo, které navrhujete: "zobrazit jen isPublic: true videa."
+
+Ta kontrola "Mám session?" je tam z jednoho zásadního důvodu: Musíme odlišit výjimky – role, které mají vidět víc než jen veřejný obsah.
+
+Pojďme si to rozebrat.
+
+1. Proč je kontrola "Mám session?" klíčová?
+Protože "VISITOR (Anonym)" není technicky "role". Je to stav, kdy uživatel nemá session.
+
+Když server zkontroluje "Mám session?" a odpověď je NE (session je null), server ví: "Aha, toto je VISITOR. Nemám tušení, kdo to je. Dám mu jen veřejná (isPublic: true) videa."
+
+Když server zkontroluje "Mám session?" a odpověď je ANO (session existuje), server ví: "OK, někdo je přihlášený. Teď se musím podívat, jakou má roli (session.user.role), abych věděl, jestli nemá speciální práva."
+
+2. Vysvětlení Scénářů (Proč nestačí jedno pravidlo)
+Zde je přesně vidět, proč potřebujeme tu kontrolu session:
+
+Scénář A: VISITOR (Anonym)
+
+"Mám session?" -> NE.
+
+Server použije základní pravidlo: Zobrazí jen isPublic: true.
+
+Toto je váš navrhovaný případ.
+
+Scénář B: USER
+
+"Mám session?" -> ANO.
+
+Server se podívá na roli: session.user.role === 'USER'.
+
+Server si řekne: "Role USER nemá speciální práva."
+
+Server použije základní pravidlo: Zobrazí jen isPublic: true.
+
+I toto je váš navrhovaný případ.
+
+Scénář C: ADMIN (Ta důležitá VÝJIMKA)
+
+"Mám session?" -> ANO.
+
+Server se podívá na roli: session.user.role === 'ADMIN'.
+
+Server si řekne: "POZOR! Toto je Admin. Pro něj základní pravidlo neplatí!"
+
+Server použije speciální pravidlo: Zobrazí všechna videa (zruší filtr isPublic).
+
+Shrnutí
+Kdybychom použili jen vaše jedno pravidlo ("vždy zobrazit jen isPublic: true"), stala by se velká chyba:
+
+Váš ADMIN účet by na hlavní stránce viděl jen veřejná videa. Neviděl by svá vlastní "draft" videa, která ještě nezařadil nebo která má ve své soukromé sbírce "k analýze".
+
+Proto je ta kontrola "Mám session?" naprosto zásadní. Je to "rozcestník", který říká:
+
+Jsi anonym? -> Dostaneš veřejný obsah.
+
+Jsi přihlášený? -> Podívám se, kdo jsi.
+
+Jsi USER? -> Dostaneš veřejný obsah.
+
+Jsi ADMIN? -> Dostaneš všechno.
+
+Je to robustnější právě proto, že to bezpečně na serveru zvládá obsloužit jak standardní návštěvníky, tak privilegované správce pomocí jedné jediné stránky.
+
+
+
+
+
+JÁ_PROMPT:
+Rozumím toto slouží k náhledu pro drafty - dalo by se říci že poté bude možné zrušit stránku [app/admin/dashboard/page.tsx] resp. současný "Přehled obsahu" resp. kurátoři a admin uvidí svůj obsah i na veřejné stránce [app/page.tsx] ... nebo je vhodné nechat oboje stránky protože jejich uživatelský obsah se postupně rozejde resp. např. že veřejná stránka bude mít trochu jinou strukturu než ta nyní administrátorská stránka obsahu ... resp. jde mi o to aby nebyla v aplikaci duplikována shodná funkcionalita na více místech a aplikace zůstala co nejvíce kompaktní ...  
+
+
+AI_RESPONZE:
+To je naprosto excelentní postřeh a přesně ta správná úvaha, kterou by měl mít architekt systému.
+
+Máte pravdu v obou bodech:
+
+Ano, hrozí tam duplicita funkčnosti.
+
+Ano, je velmi pravděpodobné, že se jejich účel rozejde.
+
+Zde je "best practice" doporučení:
+
+Ponecháme obě stránky, protože mají odlišný účel a publikum.
+
+Ta klíčová myšlenka je "oddělení odpovědnosti" (Separation of Concerns).
+
+1. Veřejná stránka (app/page.tsx) = "Výloha" 🛍️
+Toto je vaše prezentační rozhraní.
+
+Účel: Přilákat a obsloužit VISITORy a USERy.
+
+Budoucí vývoj: Je téměř jisté, že tato stránka se změní. Možná za měsíc zjistíte, že nechcete zobrazovat jen "videa", ale chcete zobrazovat primárně kolekce (jako Netflix – řádky pro "Nové recepty", "Populární analýzy" atd.).
+
+Struktura: Musí být krásná, rychlá pro SEO a zaměřená na konzumaci obsahu.
+
+2. Admin stránka (app/admin/dashboard/page.tsx) = "Dílna" 🛠️
+Toto je vaše pracovní rozhraní.
+
+Účel: Rychlý přehled a správa pro ADMINa a KURATORy.
+
+Budoucí vývoj: Zde můžete v budoucnu přidávat věci, které nikdy nesmí vidět veřejnost:
+
+Statistiky návštěvnosti.
+
+Seznam posledních registrovaných USERů.
+
+Tlačítko "Schválit žádost o KURATORa".
+
+Přehled videí, která ještě nemají popisky (drafty).
+
+Struktura: Musí být hlavně funkční a efektivní pro správu.
+
+Jak vyřešit tu duplicitu? (Architektonické řešení)
+Vaše obava o "kompaktnost" je správná. Nechceme psát stejný kód dvakrát.
+
+Řešení je znovupoužitelná komponenta.
+
+Nevytvoříme dvě duplicitní stránky.
+
+Vytvoříme jednu komponentu, například: components/VideoGrid.tsx.
+
+Tato komponenta bude jen "hloupá" – vezme si pole videí (videos: Video[]) a zobrazí je jako mřížku.
+
+Pak obě naše stránky tuto komponentu použijí:
+
+app/page.tsx (Veřejná): Načte veřejná videa a předá je do <VideoGrid videos={publicVideos} />.
+
+app/admin/dashboard/page.tsx (Admin): Načte všechna videa (nebo drafty) a předá je do <VideoGrid videos={allVideos} />.
+
+Závěr:
+
+Doporučuji ponechat obě stránky. Veřejná stránka (/) bude "výloha", administrátorský přehled (/admin/dashboard) bude "dílna". Tím, že budeme sdílet komponenty (jako <VideoGrid>), udržíme kód kompaktní a bez duplicit, ale zároveň si dáme volnost do budoucna měnit jednu stránku bez rozbití té druhé.
+
+
+
+
+
+JÁ_PROMPT:
+Ano pojdme tedy nyní vytvořit toto zádání pro vytvoření této výkladní skříně aplikace s ohledem na znovupoužitelnost kodu a robustní kontrolu práv s ohledem na best practice ... díky ;-) 
+
+
+AI_RESPONZE:
+Rozumím. Na základě naší diskuze o "výkladní skříni", "dílně" a nutnosti znovupoužitelnosti kódu, připravil jsem finální, robustní zadání pro Fázi 8.
+
+Toto zadání klade důraz na "best practice" tím, že nás donutí nejprve refaktorizovat stávající kód (vytvořit sdílenou komponentu) a teprve poté budovat novou funkci. Tím zajistíme kompaktnost a zabráníme duplicitě.
+
+📄 Zadání projektu: Webová aplikace Mediathek (Fáze 8 - Veřejná Výloha)
+Datum: 17. listopadu 2025 Verze: 8.0
+
+
+Navazuje na: Fáze 7 (Implementace Sbírek) 
+
+
+1. Název projektu
+Mediathek
+
+2. 🎯 Cíl Fáze
+Cílem této fáze je vytvořit veřejnou "výkladní skříň" aplikace. Zpřístupníme obsah návštěvníkům (VISITOR) a základním uživatelům (USER) na nové domovské stránce (/). Klíčovým prvkem je robustní server-side filtrování obsahu podle rolí a refaktorizace stávajícího kódu pro maximální znovupoužitelnost a "kompaktnost" aplikace.
+
+3. Rozsah pro Fázi 8
+Refaktorizace (Nová komponenta): Vytvoření nové, znovupoužitelné ("hloupé") klientské komponenty components/VideoGrid.tsx, která bude zodpovědná pouze za vizuální zobrazení mřížky videí.
+
+Refaktorizace (Admin Dashboard): Úprava stávající stránky "Přehled obsahu" (app/admin/dashboard/page.tsx) tak, aby nově používala komponentu VideoGrid.tsx.
+
+Architektura (Nová stránka): Vytvoření nové domovské stránky app/page.tsx jako React Server Component (RSC), která bude sloužit jako veřejná "výloha".
+
+Architektura (Zabezpečení): Úprava middleware.ts, aby byla domovská stránka (/) veřejně přístupná.
+
+Backend (Data Fetching): Implementace server-side logiky oprávnění (RBAC) v app/page.tsx pro dynamické načítání videí dle role návštěvníka.
+
+4. 🏛️ Návrh Řešení a Architektura ("Best Practices")
+Postupujeme podle principu "Oddělení odpovědností" (Separation of Concerns).
+
+4.1. Architektonické Rozhodnutí: "Dílna" vs. "Výloha"
+Potvrzujeme strategii oddělení. Obě stránky si ponecháme:
+
+app/page.tsx (Výloha 🛍️): Bude sloužit jako veřejná prezentace pro VISITORy a USERy. Je optimalizována pro konzumaci a SEO. Zobrazuje filtrovaný (veřejný) obsah.
+
+app/admin/dashboard/page.tsx (Dílna 🛠️): Zůstává interním nástrojem pro ADMINa a budoucí KURATORy. Slouží pro rychlý přehled, správu a náhled "draftů". Zobrazuje nefiltrovaný obsah.
+
+4.2. Znovupoužitelnost (Klíčový krok pro kompaktnost)
+Abychom zabránili duplicitě kódu v "Dílně" i "Výloze", provedeme refaktorizaci jako první krok:
+
+Vytvoření components/VideoGrid.tsx:
+
+Bude se jednat o klientskou komponentu ("use client").
+
+Bude přijímat pole videí jako prop: (props: { videos: Video[] }).
+
+Bude obsahovat logiku pro zobrazení mřížky (karty, odkazy). Veškerá logika zobrazení z admin/dashboard se přesune sem.
+
+Bude "hloupá" – nebude sama načítat data, pouze je zobrazí.
+
+Refaktorizace app/admin/dashboard/page.tsx:
+
+Stávající logika prisma.video.findMany(...) zůstane.
+
+Celá return část (JSX) bude zjednodušena. Místo mapování videí zde, pouze předá data nové komponentě: <VideoGrid videos={allVideos} />.
+
+4.3. Implementace app/page.tsx (Veřejná Výloha)
+Teprve po refaktorizaci vytvoříme novou veřejnou stránku, která bude také používat sdílenou komponentu.
+
+A. Zabezpečení middleware.ts: Musíme zajistit, že matcher v middleware.ts chrání pouze admin sekci a neblokuje kořenovou stránku /.
+
+Příklad správného matcher: matcher: ['/admin/:path*']
+
+B. Logika Oprávnění (Server-Side Data Fetching): Jádro "best practice" – veškerá logika oprávnění se odehraje na serveru.
+
+TypeScript
+
+// app/page.tsx
+// (Nová veřejná domovská stránka)
+
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { PrismaClient, Prisma } from '@prisma/client';
+// KROK 4.2: Importujeme naši novou sdílenou komponentu
+import { VideoGrid } from '@/components/VideoGrid'; 
+
+const prisma = new PrismaClient();
+
+// Povolíme dynamické renderování, aby se vždy načetla čerstvá session
+export const dynamic = 'force-dynamic'; 
+
+export default async function HomePage() {
+  const session = await getServerSession(authOptions);
+  
+  // 1. Výchozí pravidlo (pro VISITORa a USERa)
+  // Zobrazí pouze videa, která jsou v ALESPOŇ JEDNÉ veřejné sbírce
+  let whereClause: Prisma.VideoWhereInput = {
+    collections: {
+      some: {
+        isPublic: true
+      }
+    }
+  };
+
+  // 2. Kontrola session a přepsání pravidla pro ADMINa
+  // (ADMIN vidí i drafty a soukromá videa)
+  if (session && session.user.role === 'ADMIN') {
+    // ADMIN vidí VŠECHNO
+    whereClause = {}; 
+  }
+
+  // 3. TODO: Připravit pro Fázi 9 (KURATOR)
+  // if (session && session.user.role === 'KURATOR') {
+  //   // KURATOR vidí VŠECHNY VEŘEJNÉ + VŠECHNY SVÉ SOUKROMÉ
+  //   whereClause = {
+  //     OR: [
+  //       { collections: { some: { isPublic: true } } },
+  //       { authorId: session.user.id }
+  //     ]
+  //   };
+  // }
+
+  // 4. Finální dotaz do DB
+  const videos = await prisma.video.findMany({
+    where: whereClause,
+    include: {
+      author: { select: { name: true } }, // Příklad, pokud budeme chtít jméno autora
+    },
+    orderBy: { createdAt: 'desc' }
+  });
+
+  // 5. Zobrazení pomocí znovupoužitelné komponenty
+  return (
+    <div className="container mx-auto p-4">
+      <h1 className="text-3xl font-bold mb-6">Vítejte v Mediathek</h1>
+      {/* KROK 4.2: Zde používáme sdílenou komponentu */}
+      <VideoGrid videos={videos} />
+    </div>
+  );
+}
+5. 🚦 Funkční Požadavky (FR)
+FR1 (Refaktorizace): Musí být vytvořena sdílená komponenta components/VideoGrid.tsx.
+
+FR2 (Admin Dashboard): Stránka app/admin/dashboard/page.tsx musí být upravena, aby používala VideoGrid.tsx a její funkčnost musí zůstat 100% zachována (musí stále zobrazovat všechna videa).
+
+FR3 (Veřejná dostupnost): Stránka / musí být přístupná anonymnímu VISITORovi.
+
+FR4 (VISITOR View): VISITOR (anonymní) na stránce / vidí pouze videa, která jsou přiřazena alespoň k jedné veřejné sbírce (isPublic: true).
+
+FR5 (USER View): USER (přihlášený) na stránce / vidí totéž co VISITOR.
+
+FR6 (ADMIN View): ADMIN (přihlášený) na stránce / vidí všechna videa (včetně draftů a soukromých videí).
+
+6. 🔒 Nefunkční Požadavky (NFR)
+NFR1 (Bezpečnost): Veškerá filtrace obsahu na základě oprávnění musí probíhat výhradně na serveru v app/page.tsx. Klient nikdy nesmí obdržet data, která nemá vidět.
+
+NFR2 (Kompaktnost): Kód pro zobrazení mřížky videí nesmí být duplikován. Musí být sdílen mezi / a /admin/dashboard.
+
+NFR3 (Výkon): Veřejná stránka / musí být serverově renderovaná (RSC) pro rychlé načtení a SEO.
+
+7. 💻 Technologický Stack a Nástroje
+Využívá se stávající stack. Nejsou potřeba žádné nové knihovny.
+
+8. ✅ Akceptační Kriteria (Definice "Hotovo")
+Tato fáze je dokončena, když:
+
+Test 1 (Refaktorizace): ADMIN navštíví /admin/dashboard. Stránka funguje a zobrazuje všechna videa jako dříve, ale inspekce kódu potvrdí, že používá <VideoGrid>.
+
+Test 2 (VISITOR): Anonymní uživatel navštíví /. Stránka se načte a zobrazí pouze veřejná videa.
+
+Test 3 (ADMIN): ADMIN navštíví /. Stránka se načte a zobrazí všechna videa (veřejná, soukromá i drafty).
+
+Test 4 (Scénář: Draft):
+
+ADMIN vytvoří video, ale nepřiřadí ho do žádné sbírky.
+
+ADMIN toto video na / vidí.
+
+VISITOR (v anonymním okně) toto video na / nevidí.
+
+Test 5 (Scénář: Soukromé):
+
+ADMIN přiřadí toto video pouze do soukromé sbírky (isPublic: false).
+
+ADMIN toto video na / vidí.
+
+VISITOR toto video na / nevidí.
+
+Test 6 (Scénář: Veřejné):
+
+ADMIN přiřadí toto video do veřejné sbírky (isPublic: true).
+
+VISITOR toto video na / vidí.
+
+9. 🚀 Budoucí Rozvoj (Mimo Rozsah Této Fáze)
+Fáze 9: Implementace povyšování rolí USER na KURATOR a aktivace připravené // TODO: logiky v app/page.tsx.
+
+Fáze 10: Vytvoření veřejné stránky detailu videa (app/video/[id]/page.tsx) s vlastní logikou oprávnění.
+
+
+
+id_chat: 
+https://gemini.google.com/u/1/app/e98a834b6f5840c3
+
+
