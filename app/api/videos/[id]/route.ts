@@ -6,9 +6,6 @@ import { parseStructuredContent } from '@/lib/parser';
 
 const prisma = new PrismaClient();
 
-/**
- * Pomocná funkce pro RBAC (Role-Based Access Control)
- */
 async function checkPermissions(
   videoId: string,
   session: any
@@ -24,12 +21,13 @@ async function checkPermissions(
     };
   }
 
-  // FR5: Přidáno `collections: true` pro načtení vazeb
+  // ÚPRAVA: Načítáme i transcript a collections
   const video = await prisma.video.findUnique({
     where: { id: videoId },
     include: { 
       chapters: { orderBy: { order: 'asc' } },
-      collections: true // <--- DŮLEŽITÉ: Načítání sbírek
+      collections: true,
+      transcript: true // NOVÉ: Načtení přepisu
     },
   });
 
@@ -58,13 +56,16 @@ async function checkPermissions(
     };
   }
 
-  return { allowed: true, video: video };
+  // Zploštění struktury pro frontend (aby transcript byl přímo string, ne objekt)
+  // Toto není nutné, pokud frontend počítá s objektem, ale pro jednoduchost:
+  const videoResponse = {
+    ...video,
+    transcript: video.transcript?.content || null // Vrátíme jen text nebo null
+  };
+
+  return { allowed: true, video: videoResponse };
 }
 
-/**
- * GET: Načte jedno video (pro editaci)
- * NFR1: Chráněno RBAC
- */
 export async function GET(
   request: Request,
   context: { params: Promise<{ id: string }> }
@@ -87,12 +88,6 @@ export async function GET(
   }
 }
 
-/**
- * PUT: Aktualizuje video (Editace včetně sbírek)
- * NFR1: Chráněno RBAC
- * NFR2: Používá transakci
- * FR5: Podporuje přiřazení k sbírkám
- */
 export async function PUT(
   request: Request,
   context: { params: Promise<{ id:string }> }
@@ -106,33 +101,50 @@ export async function PUT(
     if (!allowed) return error;
 
     const body = await request.json();
-    // FR5: Načítáme i collectionIds
-    const { title, summary, structuredContent, collectionIds } = body;
+    // NOVÉ: Načítáme i transcript
+    const { title, summary, structuredContent, collectionIds, transcript } = body;
 
     const parsedChapters = parseStructuredContent(structuredContent || '');
 
-    // Atomická transakce (NFR2)
     const updatedVideo = await prisma.$transaction(async (tx) => {
-      // Aktualizace základních dat videa + sbírek
+      // 1. Aktualizace videa
       const video = await tx.video.update({
         where: { id: id },
         data: {
           title,
           summary,
           updatedAt: new Date(),
-          // FR5: Logika pro aktualizaci M:N vztahu
           collections: collectionIds ? {
             set: collectionIds.map((cid: string) => ({ id: cid }))
           } : undefined,
         },
       });
 
-      // Smazání starých kapitol
+      // 2. Aktualizace / Vytvoření přepisu (Upsert) - NOVÉ
+      if (transcript !== undefined) {
+        if (transcript.trim() === '') {
+            // Pokud je prázdný, můžeme ho smazat, aby nezabíral místo? 
+            // Pro teď raději aktualizujeme na prázdný string nebo necháme být.
+            // Použijeme upsert, který zvládne obojí.
+        }
+        
+        await tx.transcript.upsert({
+          where: { videoId: id },
+          create: {
+            videoId: id,
+            content: transcript,
+          },
+          update: {
+            content: transcript,
+          },
+        });
+      }
+
+      // 3. Aktualizace kapitol
       await tx.chapter.deleteMany({
         where: { videoId: id },
       });
 
-      // Vytvoření nových kapitol
       if (parsedChapters.length > 0) {
         const chapterData = parsedChapters.map((chapter, index) => ({
           ...chapter,
@@ -163,11 +175,6 @@ export async function PUT(
   }
 }
 
-/**
- * DELETE: Smaže video
- * NFR1: Chráněno RBAC
- * NFR3: Mazání kapitol řešeno přes `onDelete: Cascade` ve schématu
- */
 export async function DELETE(
   request: Request,
   context: { params: Promise<{ id: string }> }
@@ -180,6 +187,7 @@ export async function DELETE(
     const { allowed, error } = await checkPermissions(id, session);
     if (!allowed) return error;
 
+    // Díky onDelete: Cascade v Prisma schématu se Transcript smaže automaticky
     await prisma.video.delete({
       where: { id: id },
     });

@@ -3,7 +3,6 @@
 import { useState, FormEvent, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 
-// Definice typů pro TypeScript
 interface Collection {
   id: string;
   name: string;
@@ -13,8 +12,9 @@ interface VideoData {
   youtubeId: string;
   title: string;
   summary: string;
+  transcript?: string | null; // NOVÉ
   chapters?: { text: string }[];
-  collections?: Collection[]; // Video nám vrátí seznam objektů sbírek, ve kterých je
+  collections?: Collection[];
 }
 
 export default function EditVideoPage() {
@@ -25,18 +25,21 @@ export default function EditVideoPage() {
   // --- Stavy formuláře ---
   const [title, setTitle] = useState('');
   const [summary, setSummary] = useState('');
+  const [transcript, setTranscript] = useState(''); // NOVÉ
   const [structuredContent, setStructuredContent] = useState('');
   
-  // --- NOVÉ: Stavy pro sbírky ---
-  const [allCollections, setAllCollections] = useState<Collection[]>([]); // Všechny dostupné sbírky
-  const [selectedCollectionIds, setSelectedCollectionIds] = useState<string[]>([]); // ID vybraných sbírek
+  // --- Stavy pro sbírky ---
+  const [allCollections, setAllCollections] = useState<Collection[]>([]);
+  const [selectedCollectionIds, setSelectedCollectionIds] = useState<string[]>([]);
 
   // --- Stavy UI ---
   const [youtubeId, setYoutubeId] = useState('');
   const [isPageLoading, setIsPageLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isFetching, setIsFetching] = useState(false); // Pro stahování z YT
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [fetchWarning, setFetchWarning] = useState<string | null>(null);
 
   // 1. Načtení dat při startu
   useEffect(() => {
@@ -45,10 +48,9 @@ export default function EditVideoPage() {
     const loadData = async () => {
       setIsPageLoading(true);
       try {
-        // Spustíme oba dotazy paralelně pro rychlejší načtení
         const [videoRes, collectionsRes] = await Promise.all([
-          fetch(`/api/videos/${id}`),     // Načtení videa
-          fetch('/api/collections')       // Načtení všech dostupných sbírek
+          fetch(`/api/videos/${id}`),
+          fetch('/api/collections')
         ]);
 
         if (!videoRes.ok) throw new Error('Nepodařilo se načíst data videa.');
@@ -61,6 +63,8 @@ export default function EditVideoPage() {
         setTitle(videoData.title);
         setSummary(videoData.summary);
         setYoutubeId(videoData.youtubeId);
+        // Pokud API vrátí transcript (bude implementováno v backend kroku), nastavíme ho
+        if (videoData.transcript) setTranscript(videoData.transcript);
 
         // Složení textu kapitol
         let content = '';
@@ -72,7 +76,6 @@ export default function EditVideoPage() {
         // B. Nastavení sbírek
         setAllCollections(collectionsData);
 
-        // Zde převedeme pole objektů [{id: "1", name: "A"}, ...] na pole ID ["1", ...]
         if (videoData.collections) {
           const initialIds = videoData.collections.map(col => col.id);
           setSelectedCollectionIds(initialIds);
@@ -88,17 +91,54 @@ export default function EditVideoPage() {
     loadData();
   }, [id]);
 
-  // 2. Logika pro zaškrtávání checkboxů
   const toggleCollection = (collectionId: string) => {
     setSelectedCollectionIds(prev => {
       if (prev.includes(collectionId)) {
-        // Pokud už je v seznamu, odstraníme ho
         return prev.filter(id => id !== collectionId);
       } else {
-        // Pokud není, přidáme ho
         return [...prev, collectionId];
       }
     });
+  };
+
+  // NOVÁ FUNKCE: Stáhnout data znovu (pro existující video)
+  const handleFetchFromYoutube = async () => {
+    if (!youtubeId) return;
+
+    // Zrekonstruujeme URL
+    const reconstructedUrl = `https://www.youtube.com/watch?v=${youtubeId}`;
+    
+    setIsFetching(true);
+    setFetchWarning(null);
+    
+    try {
+      const res = await fetch(`/api/youtube/fetch-data?url=${encodeURIComponent(reconstructedUrl)}`);
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.message || 'Chyba při stahování');
+
+      // U editace se zeptáme, zda přepsat existující data, pokud nejsou prázdná
+      if (!title || confirm('Chcete přepsat stávající NÁZEV novým z YouTube?')) {
+         if (data.title) setTitle(data.title);
+      }
+      if (!summary || confirm('Chcete přepsat stávající SHRNUTÍ novým z YouTube?')) {
+         if (data.description) setSummary(data.description);
+      }
+      
+      // Přepis doplníme vždy, pokud je prázdný, jinak se zeptáme
+      if (data.transcript) {
+        if (!transcript || confirm('Chcete nahradit stávající PŘEPIS nově staženým?')) {
+           setTranscript(data.transcript);
+        }
+      } else {
+        setFetchWarning('Metadata stažena, ale titulky nebyly nalezeny.');
+      }
+
+    } catch (err: any) {
+      alert('Chyba: ' + err.message);
+    } finally {
+      setIsFetching(false);
+    }
   };
 
   // 3. Odeslání formuláře
@@ -115,8 +155,9 @@ export default function EditVideoPage() {
         body: JSON.stringify({
           title,
           summary,
+          transcript, // NOVÉ
           structuredContent,
-          collectionIds: selectedCollectionIds, // NOVÉ: Posíláme pole ID sbírek
+          collectionIds: selectedCollectionIds,
         }),
       });
 
@@ -145,13 +186,26 @@ export default function EditVideoPage() {
 
   return (
     <div className="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
-      <h1 className="text-2xl font-bold mb-6">Upravit video</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Upravit video</h1>
+        
+        {/* Tlačítko pro opětovné načtení dat */}
+        <button
+           type="button"
+           onClick={handleFetchFromYoutube}
+           disabled={isFetching}
+           className="text-xs bg-gray-700 hover:bg-gray-600 text-gray-200 py-1 px-3 rounded flex items-center gap-2 transition-colors"
+        >
+           {isFetching ? 'Stahuji...' : '↻ Aktualizovat data z YouTube'}
+        </button>
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-6">
 
         {/* YouTube ID (Read-only) */}
         <div>
           <label className="block text-sm font-medium text-gray-300">
-            YouTube ID (nelze měnit)
+            YouTube ID
           </label>
           <input
             type="text"
@@ -159,6 +213,7 @@ export default function EditVideoPage() {
             disabled
             className="mt-1 block w-full rounded-md border-gray-600 bg-gray-900 shadow-sm text-gray-400 p-2 cursor-not-allowed"
           />
+          {fetchWarning && <p className="text-xs text-yellow-400 mt-1">{fetchWarning}</p>}
         </div>
 
         {/* Název */}
@@ -191,7 +246,7 @@ export default function EditVideoPage() {
           />
         </div>
 
-        {/* --- NOVÁ SEKCE: SBÍRKY --- */}
+        {/* --- SBÍRKY --- */}
         <div className="bg-gray-900 p-4 rounded-md border border-gray-700">
           <h3 className="text-sm font-medium text-gray-300 mb-3">Zařadit do sbírek</h3>
           
@@ -212,11 +267,25 @@ export default function EditVideoPage() {
               ))}
             </div>
           )}
-          <p className="mt-2 text-xs text-gray-500">
-             Vyberte sbírky, ve kterých se má toto video zobrazovat.
+        </div>
+
+        {/* NOVÉ POLE: Přepis videa */}
+        <div>
+          <label htmlFor="transcript" className="block text-sm font-medium text-gray-300">
+            Přepis videa (Transcript)
+          </label>
+          <textarea
+            id="transcript"
+            rows={8}
+            value={transcript}
+            onChange={(e) => setTranscript(e.target.value)}
+            className="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-white p-2 text-sm"
+            placeholder="Zde se objeví stažený přepis titulků..."
+          />
+          <p className="mt-1 text-xs text-gray-500">
+             Tento text bude použit pro AI generování kapitol.
           </p>
         </div>
-        {/* --------------------------- */}
 
         {/* Strukturovaný obsah */}
         <div>
@@ -231,7 +300,7 @@ export default function EditVideoPage() {
             className="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-white p-2 font-mono"
           />
           <p className="mt-2 text-xs text-gray-400">
-            Formát: "1.1. Text (MM:SS - MM:SS)". Hierarchie dle číslování.
+            Formát: "1.1. Text (MM:SS - MM:SS)".
           </p>
         </div>
 
