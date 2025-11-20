@@ -4,14 +4,10 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { parseStructuredContent } from '@/lib/parser';
 
-// Singleton pattern pro PrismaClient (best practice)
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 const prisma = globalForPrisma.prisma || new PrismaClient();
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
-/**
- * Pomocná funkce pro extrakci YouTube ID z různých formátů URL
- */
 function extractYouTubeId(url: string): string | null {
   const regex =
     /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
@@ -21,7 +17,7 @@ function extractYouTubeId(url: string): string | null {
 
 export async function POST(request: Request) {
   try {
-    // 1. Ověření sezení a role na serveru
+    // 1. Ověření sezení a role
     const session = await getServerSession(authOptions);
 
     if (!session || session.user?.role !== 'ADMIN') {
@@ -33,7 +29,8 @@ export async function POST(request: Request) {
 
     // 2. Zpracování požadavku
     const body = await request.json();
-    const { youtubeUrl, title, summary, structuredContent } = body;
+    // NOVÉ: Přijímáme i 'transcript'
+    const { youtubeUrl, title, summary, structuredContent, transcript } = body;
 
     if (!youtubeUrl || !title || !summary) {
       return new NextResponse(JSON.stringify({ message: 'Missing required fields' }), {
@@ -42,7 +39,6 @@ export async function POST(request: Request) {
       });
     }
 
-    // 3. Extrakce YouTube ID
     const youtubeId = extractYouTubeId(youtubeUrl);
     if (!youtubeId) {
       return new NextResponse(JSON.stringify({ message: 'Invalid YouTube URL' }), {
@@ -51,16 +47,12 @@ export async function POST(request: Request) {
       });
     }
 
-    // 4. PARSOVÁNÍ KAPITOL (PŘED TRANSAKCÍ)
-    // Musíme to provést zde, aby případná chyba parseru 
-    // zabránila spuštění databázové transakce.
+    // 3. Parsování kapitol
     const parsedChapters = parseStructuredContent(structuredContent || '');
 
-    // 5. POUŽITÍ DATABÁZOVÉ TRANSAKCE
-    // Tím zajistíme, že se video a jeho kapitoly uloží
-    // buď obojí, nebo nic.
+    // 4. Transakce (Video + Transcript + Kapitoly)
     const newVideo = await prisma.$transaction(async (tx) => {
-      // 5a. Vytvoření videa
+      // A. Vytvoření videa
       const video = await tx.video.create({
         data: {
           youtubeId: youtubeId,
@@ -70,14 +62,23 @@ export async function POST(request: Request) {
         },
       });
 
-      // 5b. Vytvoření kapitol (pokud nějaké jsou)
+      // B. Uložení přepisu (pokud existuje) - NOVÉ
+      if (transcript && transcript.trim() !== '') {
+        await tx.transcript.create({
+          data: {
+            videoId: video.id,
+            content: transcript,
+            language: 'cs', // Defaultně předpokládáme češtinu, nebo dle detekce
+          }
+        });
+      }
+
+      // C. Vytvoření kapitol
       if (parsedChapters.length > 0) {
-        // Parser nyní vrací kompletní data včetně 'text' jako plný řádek
-        // (= Zdroj Pravdy), takže automaticky ukládáme správná data
         const chapterData = parsedChapters.map((chapter, index) => ({
           ...chapter,
-          order: index, // Pořadí kapitoly
-          videoId: video.id, // Propojení s právě vytvořeným videem
+          order: index,
+          videoId: video.id,
         }));
 
         await tx.chapter.createMany({
@@ -89,24 +90,21 @@ export async function POST(request: Request) {
     });
 
     return new NextResponse(JSON.stringify(newVideo), {
-      status: 201, // 201 Created
+      status: 201,
       headers: { 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
-    // 6. OŠETŘENÍ CHYB PARSERU A DB
     if (error instanceof Error) {
-      // Chyba z našeho parseru
       if (error.message.startsWith('Neplatný formát řádku')) {
         return new NextResponse(JSON.stringify({ message: error.message }), {
           status: 400,
           headers: { 'Content-Type': 'application/json' },
         });
       }
-      // Prisma unique constraint violation
       if ((error as any).code === 'P2002') {
         return new NextResponse(JSON.stringify({ message: 'Video with this ID already exists' }), {
-          status: 409, // Conflict
+          status: 409,
           headers: { 'Content-Type': 'application/json' },
         });
       }

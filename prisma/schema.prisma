@@ -24,7 +24,7 @@ model User {
 
   // Vztah: Uživatel může přidat více videí
   videos      Video[]
-  // NOVÉ: Sbírky vytvořené uživatelem
+  // Sbírky vytvořené uživatelem
   collections Collection[]
 }
 
@@ -42,8 +42,10 @@ model Video {
   author    User     @relation(fields: [authorId], references: [id])
 
   chapters    Chapter[]
-  // NOVÉ: Relace M:N (Video může být ve více sbírkách)
+  // Relace M:N (Video může být ve více sbírkách)
   collections Collection[]
+  // Relace 1:1 na přepis
+  transcript  Transcript?
 }
 
 model Chapter {
@@ -59,12 +61,12 @@ model Chapter {
   videoId String
 }
 
-// NOVÝ MODEL - Sbírky videí
+// Model pro sbírky videí
 model Collection {
   id          String   @id @default(cuid())
   name        String
   description String?  @db.Text
-  isPublic    Boolean  @default(false) // Příznak viditelnosti pro Fázi 8
+  isPublic    Boolean  @default(false) // Příznak viditelnosti
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -75,4 +77,21 @@ model Collection {
 
   // Vztah M:N s videi
   videos      Video[]
+}
+
+// Model pro přepisy videí
+model Transcript {
+  id          String   @id @default(cuid())
+  
+  // Relace 1:1 na Video
+  videoId     String   @unique
+  video       Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  
+  // Obsah
+  content     String   @db.Text      // Surový text titulků spojený do jednoho bloku
+  fullData    Json?                  // Kompletní JSON s časovými značkami (pro budoucí AI)
+  language    String   @default("cs") // Jazyk titulků
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

@@ -1,0 +1,141 @@
+JÁ_PROMPT:
+V příloze jsou všechny dokumenty týkajících se zadání ve webovém projektu aplikace  která spravuje sbírky videí z youtube, uspořádáva jejich obsah do strukturovaného obsahu a bude vytvářet kompiláty obsahu více videí do jednoho textového materiálu který bude sloužit jako průvodce touto knihovnou videí. resp. návštěvník této knihovny bude moci pročítat tyto  knihovní materiály které budou odkazovat na podkladová videa. Nyní jsme v další vývojové fázi aplikace kdy bych těl implementovat automatické získávání údajů z youtube jako je název videa, jeho popis a přepis videa. resp. bylo by možné vytvořit propojení na zdroj a příslušná pole na stránca https://mediathek-three.vercel.app/admin/edit/ v tomto projektu plnit automaticky kromě pole pro vložení url videa resp. po vložení url videa by byl zahájen automaticky import do zbývajících polí v tomto formuláři resp. do polí název videa a shrnutí/popis a přepis videa (toto pole by se nově v tomto vývojovém cyklu vytvořilo a bylo by umístěno na stránce https://mediathek-three.vercel.app/admin/edit/ mezi poli [Zařadit do sbírek] a [Strukturovaný Obsah (Kapitoly)] ). Přepis videa by byl nahráván pouze do formuláře a poté uložen v databázi v nějaké tabulce spravující přepisy videí - tyto budou také použity k titulkování daných videí a také k dalšímu zpracování strukturovaného obsahu. Teprve v dalším vývojovém cyklu aplikace by se řešilo navazující zadání resp. funkcionalita vytvoření strukturovaného obsahu videa pomocí některé z API služeb umělé inteligence (např. gemini). Resp. nyní bychom zatím řešili pouze získání informací resp. názvu, shrnutí/popis z youtube a získání přepisu videa. Je možné vytvořit takovéto standardní zadání pro tuto aplikaci. Technická realizovatelnost by se řešila až v dalším kroku tohoto vývojového cyklu. Dík ;-)
+[README_01_01ZADANI][README_02_01ZADANI][README_03_01ZADANI][README_04_01ZADANI][README_05_01ZADANI][README_06_01ZADANI][README_07_01ZADANI][README_08_01ZADANI][README_09_01ZADANI]
+
+AI_RESPONZE:
+To je naprosto skvělý a logický krok. Přecházíme od "manuální dřiny" k **automatizaci**.
+
+Přesně jak píšete – abychom mohli v budoucnu zapojit AI (Gemini) pro generování těch úžasných strukturovaných obsahů, musíme nejprve AI "nakrmit" daty. A ta data (přepis/titulky) leží na YouTube.
+
+Tímto krokem vybudujeme "most" mezi YouTube a vaší databází.
+
+Připravil jsem **robustní zadání pro Fázi 10**, které přesně specifikuje, co se má dít na stránce editace a jak se mají data ukládat, aniž bychom zatím řešili složitost AI zpracování (to přijde potom).
+
+Zde je návrh dokumentu:
+
+-----
+
+# 📄 Zadání projektu: Webová aplikace Mediathek (Fáze 10 - Automatizace Získávání Dat)
+
+**Datum:** 19. listopadu 2025
+**Verze:** 10.0
+**Navazuje na:** Fáze 7 (Správa obsahu) a Fáze 9 (Příprava rolí)
+
+## 1\. Název projektu
+
+Mediathek
+
+## 2\. 🎯 Cíl Fáze
+
+Cílem této fáze je výrazně zefektivnit práci kurátora (Admina) automatizací získávání vstupních dat.
+Místo ručního kopírování názvů, popisů a hledání přepisů videí aplikace automaticky stáhne tato metadata přímo ze zdroje (YouTube) na základě vložené URL.
+Klíčovým prvkem je **získání a uložení přepisu (transcriptu)** videa, který bude sloužit jako nezbytný vstup pro budoucí generování strukturovaného obsahu pomocí umělé inteligence.
+
+## 3\. Rozsah pro Fázi 10
+
+  * **Backend (API):** Implementace logiky pro stahování metadat (Název, Popis) a titulků (Transcript) z YouTube API nebo pomocí scraping knihoven.
+  * **Databáze:** Rozšíření datového modelu o tabulku (nebo pole) pro uložení přepisu videa.
+  * **Frontend (UI/UX):** Úprava formulářů `admin/add` a `admin/edit`.
+      * Implementace tlačítka nebo automatického triggeru "Načíst data z YouTube".
+      * Přidání nového pole "Přepis videa" (Transcript) do formuláře.
+  * **Out of Scope (Mimo rozsah):**
+      * Zpracování přepisu pomocí AI (Gemini/ChatGPT).
+      * Automatické generování kapitol (toto bude Fáze 11).
+      * Veřejné zobrazení přepisu (zatím slouží jen pro backend a admina).
+
+## 4\. 🏛️ Návrh Řešení a Architektura
+
+### 4.1. Databázový Model (Prisma)
+
+Je nutné vytvořit místo pro uložení přepisu. Protože přepis může být dlouhý text nebo strukturovaný JSON (s časovými značkami), doporučuje se vytvořit samostatný model nebo rozšířit `Video`.
+
+**Návrh úpravy `schema.prisma`:**
+
+```prisma
+model Video {
+  // ... stávající pole
+  transcript   Transcript?  // Relace 1:1 (Video může mít jeden přepis)
+}
+
+model Transcript {
+  id          String   @id @default(cuid())
+  videoId     String   @unique
+  video       Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  
+  content     String   @db.Text // Surový text přepisu (pro čtení)
+  fullData    Json?    // Strukturovaný formát s časovými značkami (pro budoucí AI zpracování)
+  language    String   @default("cs") // Jazyk titulků
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+```
+
+### 4.2. Uživatelské Rozhraní (Frontend)
+
+Změny se týkají primárně stránky `/admin/edit/[id]` (a analogicky `/admin/add`).
+
+**Logika formuláře:**
+
+1.  **Vstup:** Administrátor vloží/změní YouTube URL.
+2.  **Akce:** Aplikace (automaticky po vložení nebo na tlačítko "Načíst data") zavolá náš interní API endpoint.
+3.  **Reakce:**
+      * Pole **Název** se vyplní názvem z YouTube.
+      * Pole **Shrnutí/Popis** se předvyplní popisem z YouTube (admin ho může následně upravit/zkrátit).
+      * Nové pole **Přepis videa** se vyplní staženým textem titulků.
+
+**Umístění nového pole:**
+Dle zadání bude pole "Přepis videa" umístěno strategicky:
+
+1.  Název & Shrnutí
+2.  Zařadit do sbírek (Collections)
+3.  **[NOVÉ] Přepis videa (Transcript)** – *velké textové pole (textarea), read-only nebo editovatelné.*
+4.  Strukturovaný Obsah (Kapitoly)
+
+### 4.3. Backend (Data Fetching)
+
+Bude vytvořen nový API endpoint (např. `/api/youtube/fetch-data`), který přijme URL videa.
+
+  * **Metadata:** Použije YouTube Data API (nebo `oEmbed` endpoint) pro získání `Title` a `Description`.
+  * **Transcript:** Použije knihovnu (např. `youtube-captions-scraper` nebo `ytdl-core`), která dokáže extrahovat titulky (upřednostní manuálně vytvořené, pokud nejsou, vezme automaticky generované).
+
+## 5\. 🚦 Funkční Požadavky (FR)
+
+  * **FR1 (Auto-fill Metadata):** Po zadání platné YouTube URL do formuláře se automaticky (nebo na kliknutí) stáhne a vyplní Název a Popis videa do příslušných polí input/textarea.
+  * **FR2 (Fetch Transcript):** Systém musí být schopen stáhnout titulky k videu. Musí preferovat český jazyk, pokud není, zkusí anglický (nebo dle nastavení).
+  * **FR3 (Zobrazení Přepisu):** Stažený přepis se zobrazí ve formuláři v novém poli "Přepis videa".
+  * **FR4 (Uložení):** Při uložení videa (tlačítko "Uložit") se obsah pole "Přepis videa" uloží do databáze (do tabulky `Transcript`).
+  * **FR5 (Editace):** Pokud admin pole přepisu ručně upraví, uloží se upravená verze.
+
+## 6\. 🔒 Nefunkční Požadavky (NFR)
+
+  * **NFR1 (Ošetření chyb):** Pokud video nemá titulky, aplikace nesmí spadnout via error. Musí zobrazit hlášku "Titulky nebyly nalezeny" a pole zůstane prázdné (nebo umožní ruční vložení).
+  * **NFR2 (Výkon):** Stahování dat z YouTube nesmí blokovat UI. Musí být indikován stav "Načítám data..." (loading spinner).
+  * **NFR3 (API Limity):** Řešení musí brát v úvahu limity YouTube API (pokud bude použito oficiální API) nebo stabilitu scraping knihoven.
+
+## 7\. 💻 Technologický Stack
+
+  * **Backend:** Next.js API Routes.
+  * **Knihovny:**
+      * `youtube-captions-scraper` (pro získání titulků bez nutnosti složité OAuth autentizace).
+      * případně `googleapis` (pro oficiální metadata, pokud bude třeba).
+
+## 8\. ✅ Akceptační Kritéria (Definice "Hotovo")
+
+1.  Admin otevře stránku `/admin/add` nebo `/admin/edit`.
+2.  Vloží URL videa z YouTube.
+3.  Během krátké chvíle se automaticky vyplní Název a Popis.
+4.  V novém poli "Přepis videa" (mezi Sbírkami a Kapitoly) se objeví textový přepis videa.
+5.  Admin klikne na "Uložit".
+6.  V databázi (ověřeno přes Prisma Studio) je vytvořen záznam `Transcript` propojený s daným videem a obsahuje text titulků.
+
+## 9\. 🚀 Budoucí Rozvoj (Mimo rozsah této fáze)
+
+  * **Fáze 11 (AI Strukturalizace):** Odeslání uloženého přepisu (z tabulky Transcript) do API (např. Google Gemini) s promptem: *"Vytvoř z tohoto textu strukturovaný obsah s časovými značkami ve formátu MTF-H."* Výsledek se pak vloží do pole "Strukturovaný obsah".
+
+-----
+
+**Souhlasíte s tímto zněním zadání?** Pokud ano, je připraveno k předání realizačnímu týmu (nebo k vašemu vlastnímu vývoji jako *roadmapa*).
+
+id_chat: 
+https://gemini.google.com/u/1/app/453443199fc84a89
