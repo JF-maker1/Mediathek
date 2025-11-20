@@ -26,7 +26,7 @@ function formatTime(ms: number): string {
     return `[${minutes}:${seconds.toString().padStart(2, '0')}]`;
 }
 
-// Pomocná funkce pro ruční stažení obsahu (HTML nebo XML)
+// Pomocná funkce pro ruční stažení obsahu
 async function fetchContent(url: string): Promise<string> {
     const res = await fetch(url, {
         headers: {
@@ -61,7 +61,7 @@ async function scrapeMetadataFromHtml(videoId: string) {
     }
 }
 
-// Fallback 2: oEmbed API (Nejspolehlivější pro Title)
+// Fallback 2: oEmbed API (Nejspolehlivější pro Title, ale bez Description)
 async function fetchOEmbedMetadata(videoId: string) {
     try {
         log('Fallback (oEmbed): Volám oficiální API...');
@@ -74,11 +74,41 @@ async function fetchOEmbedMetadata(videoId: string) {
         const json = await res.json();
         
         log(`oEmbed úspěšný! Title: "${json.title}"`);
-        return { title: json.title || '', description: '' }; // oEmbed bohužel nevrací popis
+        return { title: json.title || '', description: '' };
     } catch (e: any) {
         log(`oEmbed selhal: ${e.message}`);
         return { title: '', description: '' };
     }
+}
+
+// Fallback 3: Invidious API (Záchrana pro Description)
+async function fetchInvidiousMetadata(videoId: string) {
+    // Seznam veřejných instancí (kdyby jedna nešla)
+    const instances = [
+        'https://inv.tux.pizza',
+        'https://vid.puffyan.us',
+        'https://invidious.drgns.space'
+    ];
+
+    for (const instance of instances) {
+        try {
+            log(`Fallback (Invidious): Zkouším ${instance}...`);
+            const res = await fetch(`${instance}/api/v1/videos/${videoId}`, {
+                 headers: { 'User-Agent': 'Mozilla/5.0' }
+            });
+            
+            if (res.ok) {
+                const json = await res.json();
+                const title = json.title || '';
+                const description = json.description || '';
+                log(`Invidious úspěšný! Získána data.`);
+                return { title, description };
+            }
+        } catch (e) {
+            log(`Instance ${instance} selhala.`);
+        }
+    }
+    return { title: '', description: '' };
 }
 
 // Pomocná funkce pro ruční stažení XML titulků z baseUrl
@@ -148,7 +178,7 @@ export async function GET(request: Request) {
     log('Získávám Info o videu (GetInfo)...');
     const info = await yt.getInfo(videoId);
     
-    // --- ZÍSKÁNÍ METADAT (4-stupňová raketa) ---
+    // --- ZÍSKÁNÍ METADAT (5-stupňová raketa) ---
     let title = info.basic_info.title || '';
     let description = info.basic_info.short_description || '';
 
@@ -161,31 +191,38 @@ export async function GET(request: Request) {
             if (videoDetails) {
                 title = videoDetails.title || '';
                 description = videoDetails.shortDescription || '';
-                log(`RAW metadata OK. Title: "${title.substring(0, 20)}..."`);
+                log(`RAW metadata OK.`);
             }
         } catch (e) {}
     }
 
     // Stupeň 3: HTML Scraping
-    if (!title) {
+    if (!title || !description) {
         const htmlData = await scrapeMetadataFromHtml(videoId);
-        if (htmlData.title) {
-            title = htmlData.title;
-            if (!description) description = htmlData.description;
+        if (!title && htmlData.title) title = htmlData.title;
+        if (!description && htmlData.description) description = htmlData.description;
+    }
+
+    // Stupeň 4: Invidious API (Nový hrdina pro Description)
+    if (!description) {
+        log('Popis stále chybí. Volám Invidious API...');
+        const invData = await fetchInvidiousMetadata(videoId);
+        if (invData.description) {
+            description = invData.description;
+            if (!title) title = invData.title;
         }
     }
 
-    // Stupeň 4: oEmbed (Poslední záchrana pro Title)
+    // Stupeň 5: oEmbed (Poslední záchrana pro Title)
     if (!title) {
         const oembedData = await fetchOEmbedMetadata(videoId);
-        if (oembedData.title) {
-            title = oembedData.title;
-            // oEmbed nemá popis, ale alespoň budeme mít název
-        }
+        if (oembedData.title) title = oembedData.title;
     }
     // -------------------------------------------
 
     log(`Finální Metadata - Title: "${title.substring(0, 20)}..."`);
+    if (description) log(`Popis získán (${description.length} znaků).`);
+    else log(`! Popis se nepodařilo získat ani z Invidious.`);
 
     // 4. Získání přepisu (Transcript)
     let transcript = '';
