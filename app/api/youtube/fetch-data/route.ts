@@ -32,21 +32,20 @@ async function fetchContent(url: string): Promise<string> {
         headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Accept-Language': 'en-US,en;q=0.9',
-            'Cookie': 'SOCS=CAI' // Sušenka pro obejití Consent Wall
+            'Cookie': 'SOCS=CAI'
         }
     });
     if (!res.ok) throw new Error(`Status ${res.status}`);
     return res.text();
 }
 
-// Pomocná funkce pro extrakci metadat z HTML (Záchranná síť)
+// Fallback 1: HTML Scraping
 async function scrapeMetadataFromHtml(videoId: string) {
     try {
-        log('Fallback: Stahuji HTML stránku pro scraping metadat...');
+        log('Fallback (HTML): Stahuji stránku...');
         const url = `https://www.youtube.com/watch?v=${videoId}`;
         const html = await fetchContent(url);
         
-        // Regex pro <meta property="og:title" content="...">
         const titleMatch = html.match(/<meta property="og:title" content="(.*?)"/);
         const descMatch = html.match(/<meta property="og:description" content="(.*?)"/);
         
@@ -60,6 +59,59 @@ async function scrapeMetadataFromHtml(videoId: string) {
         log(`HTML Scraping selhal: ${e.message}`);
         return { title: '', description: '' };
     }
+}
+
+// Fallback 2: oEmbed API (Nejspolehlivější pro Title)
+async function fetchOEmbedMetadata(videoId: string) {
+    try {
+        log('Fallback (oEmbed): Volám oficiální API...');
+        const url = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`;
+        const res = await fetch(url, {
+             headers: { 'User-Agent': 'Googlebot/2.1 (+http://www.google.com/bot.html)' }
+        });
+        
+        if (!res.ok) throw new Error(`Status ${res.status}`);
+        const json = await res.json();
+        
+        log(`oEmbed úspěšný! Title: "${json.title}"`);
+        return { title: json.title || '', description: '' }; // oEmbed bohužel nevrací popis
+    } catch (e: any) {
+        log(`oEmbed selhal: ${e.message}`);
+        return { title: '', description: '' };
+    }
+}
+
+// Pomocná funkce pro ruční stažení XML titulků z baseUrl
+async function fetchManualTranscript(baseUrl: string): Promise<string | null> {
+    try {
+        const res = await fetch(baseUrl, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            }
+        });
+        const xml = await res.text();
+        
+        const regex = /<text[^>]*start="([\d.]+)"[^>]*>([\s\S]*?)<\/text>/g;
+        let match;
+        const parts = [];
+        
+        while ((match = regex.exec(xml)) !== null) {
+            const startSec = parseFloat(match[1]);
+            const content = he.decode(match[2].replace(/<[^>]*>/g, '')); 
+            if (content.trim()) {
+                const timeStr = formatTime(startSec * 1000);
+                parts.push(`${timeStr} ${content}`);
+            }
+        }
+        
+        if (parts.length > 0) {
+            return parts.join('\n');
+        }
+        
+    } catch (e) {
+        console.error('Manual fetch error:', e);
+    }
+    return null;
 }
 
 export async function GET(request: Request) {
@@ -96,31 +148,40 @@ export async function GET(request: Request) {
     log('Získávám Info o videu (GetInfo)...');
     const info = await yt.getInfo(videoId);
     
-    // --- ZÍSKÁNÍ METADAT (Třístupňová raketa) ---
+    // --- ZÍSKÁNÍ METADAT (4-stupňová raketa) ---
     let title = info.basic_info.title || '';
     let description = info.basic_info.short_description || '';
 
     // Stupeň 2: RAW data z API
     if (!title) {
-        log('Basic info title je prázdný. Zkouším hledat v raw player_response...');
+        log('Basic info prázdné. Zkouším RAW...');
         try {
             // @ts-ignore
             const videoDetails = info.player_response?.videoDetails;
             if (videoDetails) {
                 title = videoDetails.title || '';
                 description = videoDetails.shortDescription || '';
-                log(`RAW metadata nalezena! Title: "${title.substring(0, 20)}..."`);
+                log(`RAW metadata OK. Title: "${title.substring(0, 20)}..."`);
             }
         } catch (e) {}
     }
 
-    // Stupeň 3: HTML Scraping (Poslední záchrana)
+    // Stupeň 3: HTML Scraping
     if (!title) {
-        log('RAW metadata také selhala. Spouštím HTML Scraping...');
-        const scrapedData = await scrapeMetadataFromHtml(videoId);
-        title = scrapedData.title;
-        // Popis bereme jen pokud jsme ho nezískali dříve, nebo pokud je ten z HTML lepší
-        if (!description) description = scrapedData.description;
+        const htmlData = await scrapeMetadataFromHtml(videoId);
+        if (htmlData.title) {
+            title = htmlData.title;
+            if (!description) description = htmlData.description;
+        }
+    }
+
+    // Stupeň 4: oEmbed (Poslední záchrana pro Title)
+    if (!title) {
+        const oembedData = await fetchOEmbedMetadata(videoId);
+        if (oembedData.title) {
+            title = oembedData.title;
+            // oEmbed nemá popis, ale alespoň budeme mít název
+        }
     }
     // -------------------------------------------
 
@@ -130,7 +191,6 @@ export async function GET(request: Request) {
     let transcript = '';
     let warning = null;
 
-    // A. Pokus o Moderní API (getTranscript)
     try {
         log('Pokus 1: info.getTranscript()...');
         const transcriptData = await info.getTranscript();
@@ -151,51 +211,23 @@ export async function GET(request: Request) {
     } catch (e: any) {
         log(`Pokus 1 selhal: ${e.message}.`);
         
-        // B. Pokus o Fallback (Ruční stažení přes baseUrl z metadat)
-        log('Pokus 2: Hledám caption_tracks v metadatech (Fallback)...');
-        
+        // Fallback pro přepis (XML)
+        log('Pokus 2: Hledám caption_tracks (Fallback)...');
         const captions = (info as any).captions?.caption_tracks;
         
         if (captions && Array.isArray(captions) && captions.length > 0) {
-            log(`Nalezeno ${captions.length} stop v metadatech.`);
-            
             const manualTrack = captions.find((t: any) => t.kind !== 'asr');
             const targetTrack = manualTrack || captions[0];
             
-            log(`Vybírám stopu: ${targetTrack.name?.text} (${targetTrack.language_code})`);
-            
             if (targetTrack.base_url) {
                 log('Stahuji XML z base_url...');
-                
-                // Ruční stažení a parsování XML (integrováno do fetchContent logiky)
-                try {
-                    const xml = await fetchContent(targetTrack.base_url);
-                    const regex = /<text[^>]*start="([\d.]+)"[^>]*>([\s\S]*?)<\/text>/g;
-                    let match;
-                    const parts = [];
-                    
-                    while ((match = regex.exec(xml)) !== null) {
-                        const startSec = parseFloat(match[1]);
-                        const content = he.decode(match[2].replace(/<[^>]*>/g, '')); 
-                        if (content.trim()) {
-                            const timeStr = formatTime(startSec * 1000);
-                            parts.push(`${timeStr} ${content}`);
-                        }
-                    }
-                    
-                    if (parts.length > 0) {
-                        transcript = parts.join('\n');
-                        log(`Úspěch! Staženo ${transcript.length} znaků přes Fallback.`);
-                        warning = `Použit fallback režim (XML).`;
-                    }
-                } catch (e) {
-                     log(`Chyba XML fallbacku: ${e}`);
+                const manualText = await fetchManualTranscript(targetTrack.base_url);
+                if (manualText && manualText.length > 0) {
+                    transcript = manualText;
+                    log(`Úspěch (Fallback XML).`);
+                    warning = `Použit fallback režim (XML).`;
                 }
-            } else {
-                log('Stopa nemá base_url.');
             }
-        } else {
-            log('Metadata neobsahují žádné caption_tracks.');
         }
     }
 
