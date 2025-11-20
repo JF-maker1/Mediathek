@@ -37,14 +37,13 @@ async function fetchManualTranscript(baseUrl: string): Promise<string | null> {
         const xml = await res.text();
         
         // Jednoduchý regex parser pro XML s časovými značkami
-        // Hledá: <text start="123.45" ...>Obsah</text>
         const regex = /<text[^>]*start="([\d.]+)"[^>]*>([\s\S]*?)<\/text>/g;
         let match;
         const parts = [];
         
         while ((match = regex.exec(xml)) !== null) {
             const startSec = parseFloat(match[1]);
-            const content = he.decode(match[2].replace(/<[^>]*>/g, '')); // Dekódovat a odstranit vnořené tagy
+            const content = he.decode(match[2].replace(/<[^>]*>/g, '')); 
             
             if (content.trim()) {
                 const timeStr = formatTime(startSec * 1000);
@@ -86,6 +85,7 @@ export async function GET(request: Request) {
 
     // 3. Inicializace InnerTube
     log('Inicializuji youtubei.js (InnerTube)...');
+    // Změna: Zkusíme US lokaci, bývá pro metadata spolehlivější
     const yt = await Innertube.create({
         cache: new UniversalCache(false),
         generate_session_locally: true,
@@ -96,8 +96,30 @@ export async function GET(request: Request) {
     log('Získávám Info o videu (GetInfo)...');
     const info = await yt.getInfo(videoId);
     
-    const title = info.basic_info.title || '';
-    const description = info.basic_info.short_description || '';
+    // --- OPRAVA METADAT (Robustní extrakce) ---
+    // Nejprve zkusíme standardní cestu přes knihovnu
+    let title = info.basic_info.title || '';
+    let description = info.basic_info.short_description || '';
+
+    // Pokud je title prázdný (Vercel problém), zkusíme vytáhnout RAW data přímo z JSON odpovědi
+    if (!title) {
+        log('Basic info title je prázdný. Zkouším hledat v raw player_response...');
+        try {
+            // @ts-ignore - Přistupujeme k interní vlastnosti, kterou TypeScript nemusí vidět
+            const videoDetails = info.player_response?.videoDetails;
+            if (videoDetails) {
+                title = videoDetails.title || '';
+                description = videoDetails.shortDescription || '';
+                log(`RAW metadata nalezena! Title: "${title.substring(0, 20)}..."`);
+            } else {
+                log('RAW videoDetails nenalezeny.');
+            }
+        } catch (e) {
+            log(`Chyba při extrakci RAW metadat: ${e}`);
+        }
+    }
+    // -------------------------------------------
+
     log(`Metadata získána. Title: "${title.substring(0, 20)}..."`);
 
     // 4. Získání přepisu (Transcript)
@@ -113,15 +135,13 @@ export async function GET(request: Request) {
             const segments = transcriptData.transcript.content.body.initial_segments;
             log(`Úspěch! Nalezeno ${segments.length} segmentů.`);
             
-            // ZMĚNA: Formátování s časovými značkami
+            // Formátování s časovými značkami
             transcript = segments.map((seg: any) => {
                 const text = seg.snippet?.text || '';
-                // start_ms je v milisekundách, ale jako string
                 const startMs = parseInt(seg.start_ms || '0', 10);
                 const timeStr = formatTime(startMs);
-                
                 return `${timeStr} ${text}`;
-            }).join('\n'); // Spojíme novým řádkem pro lepší čitelnost
+            }).join('\n');
 
             log(`Přepis zformátován (s časovými značkami).`);
         }
@@ -131,7 +151,6 @@ export async function GET(request: Request) {
         // B. Pokus o Fallback (Ruční stažení přes baseUrl z metadat)
         log('Pokus 2: Hledám caption_tracks v metadatech (Fallback)...');
         
-        // TypeScript workaround
         const captions = (info as any).captions?.caption_tracks;
         
         if (captions && Array.isArray(captions) && captions.length > 0) {
