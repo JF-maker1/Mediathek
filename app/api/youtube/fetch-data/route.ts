@@ -26,39 +26,40 @@ function formatTime(ms: number): string {
     return `[${minutes}:${seconds.toString().padStart(2, '0')}]`;
 }
 
-// Pomocná funkce pro ruční stažení XML titulků z baseUrl (Fallback)
-async function fetchManualTranscript(baseUrl: string): Promise<string | null> {
+// Pomocná funkce pro ruční stažení obsahu (HTML nebo XML)
+async function fetchContent(url: string): Promise<string> {
+    const res = await fetch(url, {
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Cookie': 'SOCS=CAI' // Sušenka pro obejití Consent Wall
+        }
+    });
+    if (!res.ok) throw new Error(`Status ${res.status}`);
+    return res.text();
+}
+
+// Pomocná funkce pro extrakci metadat z HTML (Záchranná síť)
+async function scrapeMetadataFromHtml(videoId: string) {
     try {
-        const res = await fetch(baseUrl, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            }
-        });
-        const xml = await res.text();
+        log('Fallback: Stahuji HTML stránku pro scraping metadat...');
+        const url = `https://www.youtube.com/watch?v=${videoId}`;
+        const html = await fetchContent(url);
         
-        // Jednoduchý regex parser pro XML s časovými značkami
-        const regex = /<text[^>]*start="([\d.]+)"[^>]*>([\s\S]*?)<\/text>/g;
-        let match;
-        const parts = [];
+        // Regex pro <meta property="og:title" content="...">
+        const titleMatch = html.match(/<meta property="og:title" content="(.*?)"/);
+        const descMatch = html.match(/<meta property="og:description" content="(.*?)"/);
         
-        while ((match = regex.exec(xml)) !== null) {
-            const startSec = parseFloat(match[1]);
-            const content = he.decode(match[2].replace(/<[^>]*>/g, '')); 
-            
-            if (content.trim()) {
-                const timeStr = formatTime(startSec * 1000);
-                parts.push(`${timeStr} ${content}`);
-            }
-        }
+        const title = titleMatch ? he.decode(titleMatch[1]) : '';
+        const description = descMatch ? he.decode(descMatch[1]) : '';
         
-        if (parts.length > 0) {
-            return parts.join('\n');
-        }
+        if (title) log(`HTML Scraping úspěšný! Title: "${title.substring(0, 20)}..."`);
         
-    } catch (e) {
-        console.error('Manual fetch error:', e);
+        return { title, description };
+    } catch (e: any) {
+        log(`HTML Scraping selhal: ${e.message}`);
+        return { title: '', description: '' };
     }
-    return null;
 }
 
 export async function GET(request: Request) {
@@ -85,7 +86,6 @@ export async function GET(request: Request) {
 
     // 3. Inicializace InnerTube
     log('Inicializuji youtubei.js (InnerTube)...');
-    // Změna: Zkusíme US lokaci, bývá pro metadata spolehlivější
     const yt = await Innertube.create({
         cache: new UniversalCache(false),
         generate_session_locally: true,
@@ -96,31 +96,35 @@ export async function GET(request: Request) {
     log('Získávám Info o videu (GetInfo)...');
     const info = await yt.getInfo(videoId);
     
-    // --- OPRAVA METADAT (Robustní extrakce) ---
-    // Nejprve zkusíme standardní cestu přes knihovnu
+    // --- ZÍSKÁNÍ METADAT (Třístupňová raketa) ---
     let title = info.basic_info.title || '';
     let description = info.basic_info.short_description || '';
 
-    // Pokud je title prázdný (Vercel problém), zkusíme vytáhnout RAW data přímo z JSON odpovědi
+    // Stupeň 2: RAW data z API
     if (!title) {
         log('Basic info title je prázdný. Zkouším hledat v raw player_response...');
         try {
-            // @ts-ignore - Přistupujeme k interní vlastnosti, kterou TypeScript nemusí vidět
+            // @ts-ignore
             const videoDetails = info.player_response?.videoDetails;
             if (videoDetails) {
                 title = videoDetails.title || '';
                 description = videoDetails.shortDescription || '';
                 log(`RAW metadata nalezena! Title: "${title.substring(0, 20)}..."`);
-            } else {
-                log('RAW videoDetails nenalezeny.');
             }
-        } catch (e) {
-            log(`Chyba při extrakci RAW metadat: ${e}`);
-        }
+        } catch (e) {}
+    }
+
+    // Stupeň 3: HTML Scraping (Poslední záchrana)
+    if (!title) {
+        log('RAW metadata také selhala. Spouštím HTML Scraping...');
+        const scrapedData = await scrapeMetadataFromHtml(videoId);
+        title = scrapedData.title;
+        // Popis bereme jen pokud jsme ho nezískali dříve, nebo pokud je ten z HTML lepší
+        if (!description) description = scrapedData.description;
     }
     // -------------------------------------------
 
-    log(`Metadata získána. Title: "${title.substring(0, 20)}..."`);
+    log(`Finální Metadata - Title: "${title.substring(0, 20)}..."`);
 
     // 4. Získání přepisu (Transcript)
     let transcript = '';
@@ -135,7 +139,6 @@ export async function GET(request: Request) {
             const segments = transcriptData.transcript.content.body.initial_segments;
             log(`Úspěch! Nalezeno ${segments.length} segmentů.`);
             
-            // Formátování s časovými značkami
             transcript = segments.map((seg: any) => {
                 const text = seg.snippet?.text || '';
                 const startMs = parseInt(seg.start_ms || '0', 10);
@@ -163,13 +166,30 @@ export async function GET(request: Request) {
             
             if (targetTrack.base_url) {
                 log('Stahuji XML z base_url...');
-                const manualText = await fetchManualTranscript(targetTrack.base_url);
-                if (manualText && manualText.length > 0) {
-                    transcript = manualText;
-                    log(`Úspěch! Staženo ${transcript.length} znaků přes Fallback.`);
-                    warning = `Použit fallback režim (XML).`;
-                } else {
-                    log('Fallback stažení vrátilo prázdná data.');
+                
+                // Ruční stažení a parsování XML (integrováno do fetchContent logiky)
+                try {
+                    const xml = await fetchContent(targetTrack.base_url);
+                    const regex = /<text[^>]*start="([\d.]+)"[^>]*>([\s\S]*?)<\/text>/g;
+                    let match;
+                    const parts = [];
+                    
+                    while ((match = regex.exec(xml)) !== null) {
+                        const startSec = parseFloat(match[1]);
+                        const content = he.decode(match[2].replace(/<[^>]*>/g, '')); 
+                        if (content.trim()) {
+                            const timeStr = formatTime(startSec * 1000);
+                            parts.push(`${timeStr} ${content}`);
+                        }
+                    }
+                    
+                    if (parts.length > 0) {
+                        transcript = parts.join('\n');
+                        log(`Úspěch! Staženo ${transcript.length} znaků přes Fallback.`);
+                        warning = `Použit fallback režim (XML).`;
+                    }
+                } catch (e) {
+                     log(`Chyba XML fallbacku: ${e}`);
                 }
             } else {
                 log('Stopa nemá base_url.');
