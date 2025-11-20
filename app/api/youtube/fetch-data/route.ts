@@ -39,13 +39,26 @@ async function fetchContent(url: string): Promise<string> {
     return res.text();
 }
 
-// Fallback 1: HTML Scraping
+// Fallback 1: HTML Scraping (Vylepšený - Googlebot Style)
 async function scrapeMetadataFromHtml(videoId: string) {
     try {
-        log('Fallback (HTML): Stahuji stránku...');
+        log('Fallback (HTML/Googlebot): Stahuji stránku...');
         const url = `https://www.youtube.com/watch?v=${videoId}`;
-        const html = await fetchContent(url);
         
+        // Tváříme se jako Googlebot - YouTube mu servíruje statická metadata bez JS/Cookies
+        const res = await fetch(url, {
+            headers: {
+                'User-Agent': 'Googlebot/2.1 (+http://www.google.com/bot.html)',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.5'
+                // Žádné cookies!
+            }
+        });
+        
+        if (!res.ok) throw new Error(`HTML fetch status ${res.status}`);
+        const html = await res.text();
+        
+        // Hledáme standardní OpenGraph tagy
         const titleMatch = html.match(/<meta property="og:title" content="(.*?)"/);
         const descMatch = html.match(/<meta property="og:description" content="(.*?)"/);
         
@@ -53,6 +66,7 @@ async function scrapeMetadataFromHtml(videoId: string) {
         const description = descMatch ? he.decode(descMatch[1]) : '';
         
         if (title) log(`HTML Scraping úspěšný! Title: "${title.substring(0, 20)}..."`);
+        if (description) log(`HTML Description nalezen (${description.length} znaků).`);
         
         return { title, description };
     } catch (e: any) {
@@ -61,7 +75,7 @@ async function scrapeMetadataFromHtml(videoId: string) {
     }
 }
 
-// Fallback 2: oEmbed API (Nejspolehlivější pro Title, ale bez Description)
+// Fallback 2: oEmbed API (Záloha pro Title)
 async function fetchOEmbedMetadata(videoId: string) {
     try {
         log('Fallback (oEmbed): Volám oficiální API...');
@@ -81,9 +95,8 @@ async function fetchOEmbedMetadata(videoId: string) {
     }
 }
 
-// Fallback 3: Invidious API (Záchrana pro Description)
+// Fallback 3: Invidious API (Poslední instance)
 async function fetchInvidiousMetadata(videoId: string) {
-    // Seznam veřejných instancí (kdyby jedna nešla)
     const instances = [
         'https://inv.tux.pizza',
         'https://vid.puffyan.us',
@@ -93,19 +106,25 @@ async function fetchInvidiousMetadata(videoId: string) {
     for (const instance of instances) {
         try {
             log(`Fallback (Invidious): Zkouším ${instance}...`);
+            // Krátký timeout, ať nezdržujeme
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 3000);
+            
             const res = await fetch(`${instance}/api/v1/videos/${videoId}`, {
-                 headers: { 'User-Agent': 'Mozilla/5.0' }
+                 headers: { 'User-Agent': 'Mozilla/5.0' },
+                 signal: controller.signal
             });
+            clearTimeout(timeoutId);
             
             if (res.ok) {
                 const json = await res.json();
                 const title = json.title || '';
                 const description = json.description || '';
-                log(`Invidious úspěšný! Získána data.`);
+                log(`Invidious úspěšný!`);
                 return { title, description };
             }
         } catch (e) {
-            log(`Instance ${instance} selhala.`);
+            log(`Instance ${instance} selhala/timeout.`);
         }
     }
     return { title: '', description: '' };
@@ -178,7 +197,7 @@ export async function GET(request: Request) {
     log('Získávám Info o videu (GetInfo)...');
     const info = await yt.getInfo(videoId);
     
-    // --- ZÍSKÁNÍ METADAT (5-stupňová raketa) ---
+    // --- ZÍSKÁNÍ METADAT (Vícevrstvá strategie) ---
     let title = info.basic_info.title || '';
     let description = info.basic_info.short_description || '';
 
@@ -196,21 +215,19 @@ export async function GET(request: Request) {
         } catch (e) {}
     }
 
-    // Stupeň 3: HTML Scraping
+    // Stupeň 3: HTML Scraping (Googlebot - nejlepší pro Description)
     if (!title || !description) {
         const htmlData = await scrapeMetadataFromHtml(videoId);
         if (!title && htmlData.title) title = htmlData.title;
         if (!description && htmlData.description) description = htmlData.description;
     }
 
-    // Stupeň 4: Invidious API (Nový hrdina pro Description)
+    // Stupeň 4: Invidious API (Kdyby Googlebot selhal)
     if (!description) {
         log('Popis stále chybí. Volám Invidious API...');
         const invData = await fetchInvidiousMetadata(videoId);
-        if (invData.description) {
-            description = invData.description;
-            if (!title) title = invData.title;
-        }
+        if (invData.description) description = invData.description;
+        if (!title && invData.title) title = invData.title;
     }
 
     // Stupeň 5: oEmbed (Poslední záchrana pro Title)
@@ -222,7 +239,7 @@ export async function GET(request: Request) {
 
     log(`Finální Metadata - Title: "${title.substring(0, 20)}..."`);
     if (description) log(`Popis získán (${description.length} znaků).`);
-    else log(`! Popis se nepodařilo získat ani z Invidious.`);
+    else log(`! Popis se nepodařilo získat.`);
 
     // 4. Získání přepisu (Transcript)
     let transcript = '';
