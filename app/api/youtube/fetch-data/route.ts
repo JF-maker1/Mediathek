@@ -31,10 +31,54 @@ async function fetchWithBrowserHeaders(url: string) {
         headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Accept-Language': 'en-US,en;q=0.9',
-            'Cookie': 'SOCS=CAI; CONSENT=YES+cb.20210328-17-p0.en+FX+417' // Kombinace cookies pro jistotu
+            'Cookie': 'SOCS=CAI; CONSENT=YES+cb.20210328-17-p0.en+FX+417'
         }
     });
 }
+
+// VTT Parser pro Invidious
+function parseVttToPlain(vtt: string): string {
+    const lines = vtt.split('\n');
+    const result = [];
+    
+    for(let i=0; i<lines.length; i++) {
+        const line = lines[i].trim();
+        // Hledáme časovou řádku: 00:00:00.000 --> 00:00:05.000
+        if(line.includes('-->')) {
+            const startTime = line.split('-->')[0].trim(); // 00:00:00.000
+            
+            // Načtení textu pod časem
+            let text = '';
+            let j = i + 1;
+            while(j < lines.length && lines[j].trim() !== '' && !lines[j].includes('-->')) {
+                text += lines[j].trim() + ' ';
+                j++;
+            }
+            
+            // Formátování času na [MM:SS]
+            const timeParts = startTime.split(':');
+            let timeStr = '';
+            if(timeParts.length === 3) {
+                const h = parseInt(timeParts[0]);
+                const m = parseInt(timeParts[1]);
+                const s = parseInt(timeParts[2].split('.')[0]);
+                
+                if(h > 0) timeStr = `[${h}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}]`;
+                else timeStr = `[${m}:${s.toString().padStart(2,'0')}]`;
+            }
+            
+            if(text) {
+                // Odstranění HTML tagů a dekódování entit
+                const cleanText = text.replace(/<[^>]*>/g, '');
+                result.push(`${timeStr} ${he.decode(cleanText).trim()}`);
+            }
+            i = j - 1;
+        }
+    }
+    return result.join('\n');
+}
+
+// --- SCENÁŘE PRO ZÍSKÁNÍ DAT ---
 
 // Fallback 1: HTML Scraping (Metadata)
 async function scrapeMetadataFromHtml(videoId: string) {
@@ -42,7 +86,6 @@ async function scrapeMetadataFromHtml(videoId: string) {
         log('Fallback (HTML/Googlebot): Stahuji stránku...');
         const url = `https://www.youtube.com/watch?v=${videoId}`;
         
-        // Zde používáme Googlebota, ten dostává čisté meta tagy
         const res = await fetch(url, {
             headers: {
                 'User-Agent': 'Googlebot/2.1 (+http://www.google.com/bot.html)',
@@ -89,7 +132,7 @@ async function fetchOEmbedMetadata(videoId: string) {
     }
 }
 
-// Fallback 3: Invidious API
+// Fallback 3: Invidious API (Metadata)
 async function fetchInvidiousMetadata(videoId: string) {
     const instances = [
         'https://inv.tux.pizza',
@@ -123,6 +166,56 @@ async function fetchInvidiousMetadata(videoId: string) {
     return { title: '', description: '' };
 }
 
+// NOVÉ: Invidious Transcript (Proxied)
+async function fetchInvidiousTranscript(videoId: string): Promise<string | null> {
+    const instances = [
+        'https://inv.tux.pizza',
+        'https://vid.puffyan.us',
+        'https://invidious.drgns.space',
+        'https://invidious.fdn.fr',
+        'https://yt.artemislena.eu'
+    ];
+
+    for (const instance of instances) {
+        try {
+            log(`Fallback (Invidious Transcript): Zkouším ${instance}...`);
+            const res = await fetch(`${instance}/api/v1/videos/${videoId}`, {
+                 headers: { 'User-Agent': 'Mozilla/5.0' }
+            });
+            
+            if (res.ok) {
+                const json = await res.json();
+                const captions = json.captions;
+                
+                if (Array.isArray(captions) && captions.length > 0) {
+                    log(`Invidious našel ${captions.length} stop titulků.`);
+                    
+                    // Výběr jazyka: CS/SK -> EN -> První
+                    let track = captions.find((t: any) => t.languageCode === 'cs' || t.languageCode === 'sk');
+                    if (!track) track = captions.find((t: any) => t.languageCode === 'en');
+                    if (!track) track = captions[0]; 
+
+                    // Invidious vrací relativní URL, musíme spojit s instancí
+                    const captionUrl = instance + track.url;
+                    log(`Stahuji titulky z: ${captionUrl}`);
+                    
+                    const capRes = await fetch(captionUrl);
+                    if (capRes.ok) {
+                        const vttText = await capRes.text();
+                        const plainText = parseVttToPlain(vttText);
+                        if (plainText.length > 0) {
+                            return plainText;
+                        }
+                    }
+                }
+            }
+        } catch (e) {
+            // ignore failure, try next instance
+        }
+    }
+    return null;
+}
+
 // Helper: Ruční stažení XML
 async function fetchManualTranscript(baseUrl: string): Promise<string | null> {
     try {
@@ -152,7 +245,7 @@ async function fetchManualTranscript(baseUrl: string): Promise<string | null> {
     return null;
 }
 
-// NOVÉ: Scraping caption URL - Vylepšená verze (Deep Parse)
+// Deep Scraping caption URL přímo z HTML
 async function scrapeTranscriptUrlFromHtml(videoId: string): Promise<string | null> {
     try {
         log('Fallback (HTML/Captions): Hledám adresu titulků (Deep Search)...');
@@ -169,40 +262,28 @@ async function scrapeTranscriptUrlFromHtml(videoId: string): Promise<string | nu
             try {
                 const playerResponse = JSON.parse(playerMatch[1]);
                 tracks = playerResponse?.captions?.playerCaptionsTracklistRenderer?.captionTracks;
-                if (tracks) log('Nalezen ytInitialPlayerResponse s titulky.');
-            } catch (e) {
-                log('Chyba parsování ytInitialPlayerResponse.');
-            }
+            } catch (e) {}
         }
 
-        // 2. Pokus: Pokud selhal JSON parse, zkusíme najít přímo řetězec captionTracks (i escapovaný)
+        // 2. Pokus: Regex přímo na captionTracks
         if (!tracks) {
-            // Hledáme "captionTracks": [ ... ] nebo \"captionTracks\": [ ... ]
-            // Tento regex chytí i obsah uvnitř hranatých závorek
             const directRegex = /(?:\"|\\")captionTracks(?:\"|\\")\s*:\s*(\[.*?\])/;
             const directMatch = html.match(directRegex);
             
             if (directMatch && directMatch[1]) {
                 try {
-                    // Musíme odstranit escape znaky, pokud tam jsou
                     const cleanJson = directMatch[1].replace(/\\"/g, '"');
                     tracks = JSON.parse(cleanJson);
-                    log('Nalezen captionTracks přes Regex.');
-                } catch (e) {
-                    log('Regex match se nepodařilo parsovat.');
-                }
+                } catch (e) {}
             }
         }
 
-        // Pokud máme stopy, vybereme tu správnou
         if (Array.isArray(tracks) && tracks.length > 0) {
-            // Priorita: 1. Čeština/Slovenština, 2. Angličtina, 3. Cokoliv
             let track = tracks.find((t: any) => t.languageCode === 'cs' || t.languageCode === 'sk');
             if (!track) track = tracks.find((t: any) => t.languageCode === 'en');
             if (!track) track = tracks[0];
 
             if (track && track.baseUrl) {
-                log(`Vybrána stopa: ${track.name?.simpleText || track.languageCode}`);
                 return track.baseUrl;
             }
         }
@@ -249,7 +330,7 @@ export async function GET(request: Request) {
         log(`InnerTube Init/GetInfo chyba: ${e.message}`);
     }
     
-    // --- ZÍSKÁNÍ METADAT ---
+    // --- METADATA (Stejné jako dříve) ---
     let title = ytInfo?.basic_info?.title || '';
     let description = ytInfo?.basic_info?.short_description || '';
 
@@ -283,7 +364,7 @@ export async function GET(request: Request) {
 
     log(`Finální Metadata - Title: "${title.substring(0, 20)}..."`);
     
-    // --- ZÍSKÁNÍ PŘEPISU (Vícevrstvá obrana) ---
+    // --- TRANSKRIPT (Vícevrstvá obrana + Invidious) ---
     let transcript = '';
     let warning = null;
 
@@ -306,7 +387,7 @@ export async function GET(request: Request) {
         }
     }
 
-    // Pokus 2: InnerTube Caption Tracks (Fallback)
+    // Pokus 2: InnerTube Caption Tracks
     if (!transcript && ytInfo) {
         try {
             log('Pokus 2: InnerTube caption_tracks...');
@@ -314,7 +395,6 @@ export async function GET(request: Request) {
             if (captions && captions.length > 0) {
                 const targetTrack = captions[0];
                 if (targetTrack.base_url) {
-                    log('Stahuji XML z base_url...');
                     const manualText = await fetchManualTranscript(targetTrack.base_url);
                     if (manualText) {
                         transcript = manualText;
@@ -322,13 +402,11 @@ export async function GET(request: Request) {
                         warning = `Použit fallback režim (XML).`;
                     }
                 }
-            } else {
-                log('InnerTube nenašel žádné caption_tracks.');
             }
         } catch (e) {}
     }
 
-    // Pokus 3: HTML Scraping (Poslední záchrana pro Vercel)
+    // Pokus 3: HTML Scraping
     if (!transcript) {
         log('Pokus 3: HTML Scraping (Bypass Vercel)...');
         const baseUrl = await scrapeTranscriptUrlFromHtml(videoId);
@@ -339,11 +417,22 @@ export async function GET(request: Request) {
                 transcript = manualText;
                 log('Úspěch (HTML Scraping)!');
                 warning = 'Použit silný fallback (HTML Scraping).';
-            } else {
-                log('Stažení XML z HTML URL selhalo.');
             }
         } else {
             log('HTML Scraping nenašel stopu titulků.');
+        }
+    }
+
+    // Pokus 4: Invidious API (Poslední záchrana)
+    if (!transcript) {
+        log('Pokus 4: Invidious Proxy (Poslední instance)...');
+        const invText = await fetchInvidiousTranscript(videoId);
+        if (invText) {
+            transcript = invText;
+            log('Úspěch (Invidious API)!');
+            warning = 'Použit Invidious Proxy (YouTube přímo neodpovídal).';
+        } else {
+            log('Invidious také selhal.');
         }
     }
 
