@@ -26,33 +26,27 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'Chybí přepis videa (transcript).' }, { status: 400 });
     }
 
-    // 4. Příprava Finálního Promptu (Dle zadání Fáze 11)
-    // Používáme backticks (`) pro víceřádkový text.
+    // 4. Příprava Finálního Promptu (Upraveno pro opravu pozice času)
     const systemPrompt = `
-Proveď detailní hierarchický rozklad (hierarchický strom) přiloženého přepisu videa. Cílem je získat přehled o obsahu videa, podobný obsahu knihy.
+Proveď detailní hierarchický rozklad (hierarchický strom) přiloženého přepisu videa. Cílem je získat přehled o obsahu videa.
 
-**Požadavky na strukturu a formát:**
+**STRUKTURA A FORMÁT (Dodržuj přesně):**
 
-1.  **Hlavní Téma (Kořen):** Identifikuj nejdůležitější hlavní téma (ústřední myšlenku) celého videa. Uveď ho jako číslovaný bod "0. Hlavní téma".
-2.  **Hierarchický Rozklad (Strom):** Rozlož Hlavní téma do hierarchické struktury číslovaného seznamu.
-    * **Číslování:** Použij standardní hierarchické číslování (např. 1., 2., 1.1., 1.2., 2.1., 2.2., 2.3., 1.1.1. atd.).
-    * **Větvení:** Každý nadřazený pojem (tam, kde je to logické) rozděl na dva či více podřízených pojmů (např. bod 2. se může rozdělit na 2.1., 2.2. a 2.3.).
-3.  **Hloubka Rozkladu:** Pokračuj v hierarchickém rozkladu, ale zastav se na maximálně **čtvrté úrovni** (např. na úrovni 1.1.1.1.). Již nevytvářej pátou úroveň (např. 1.1.1.1.1.).
-4.  **Struktura Každého Bodu:** Každý číslovaný bod musí obsahovat dvě části:
-    * A) **Výstižný Název Tématu.** Pro tento název **nepoužívej žádné formátování** (jako je tučné písmo nebo hvězdičky **).
-    * B) [Následovaný stručným popisem obsahu daného tématu, uzavřeným v hranatých závorkách].
-5.  **Časové Úseky:** Ke každému bodu na každé úrovni hierarchie přidej přesný časový úsek ve formátu (MM:SS-MM:SS). Tato časová značka musí být umístěna **vždy až na samém konci daného řádku**.
-6.  **Formát Závorek (Kritické):**
-    * Pro časové úseky používej **výhradně kulaté závorky ()**.
-    * Pro jakékoli doplňující poznámky, shrnutí obsahu nebo popisky (viz bod 4B) používej **výhradně hranaté závorky []**.
-    * Je povoleno i vnořování hranatých závorek (např. [text popisující [vnořený text] detail]).
-    * Každý řádek smí obsahovat pouze jeden pár kulatých závorek, vyhrazený pro časovou značku.
-7.  **Jazyk:** Použij češtinu.
-8.  **Formátování a Oddělovače (Kritické pro .txt):**
-    * Mezi hlavními částmi nejvyšší úrovně (např. mezi body 1. a 2.) **NEPOUŽÍVEJ** žádné horizontální oddělovače (jako ---).
-    * Každý číslovaný bod (včetně názvu, popisu a časové značky) musí být na samostatném řádku.
-    * **Každý řádek musí začínat POUZE svým hierarchickým číslováním** (např. "0.", "1.", "1.1.", "1.1.1.1."). **NEPOUŽÍVEJ** žádné znaky odrážek (jako * nebo -) ani automatické číslování Markdownu před těmito čísly.
-    * Odsazení pro vizuální hierarchii vytvoř pomocí mezer (např. dvě mezery pro každou další úroveň).
+1.  **Hierarchie:** Použij číslovaný seznam (0., 1., 1.1., 1.1.1.). Max hloubka 4 úrovně.
+2.  **Obsah řádku:** Každý řádek musí následovat PŘESNĚ tento vzor:
+    \`ČÍSLO. Název Tématu [Stručný popis obsahu] (ČAS-ČAS)\`
+
+3.  **Pravidla pro pozici elementů:**
+    * **ZAČÁTEK:** Vždy začni číslem (např. "1.1.").
+    * **PROSTŘEDEK:** Následuje název a poté popis v hranatých závorkách [ ].
+    * **KONEC:** Časová značka v kulatých závorkách (MM:SS-MM:SS) musí být **absolutně posledním textem na řádku**. Nikdy ji nedávej doprostřed!
+
+4.  **Příklad správného formátu:**
+    * *Špatně:* 1.1. Úvod (00:00-01:00) [O čem to je]
+    * *Správně:* 1.1. Úvod [O čem to je] (00:00-01:00)
+
+5.  **Jazyk:** Čeština.
+6.  **Formátování:** Nepoužívej tučné písmo (**), markdown ani odrážky. Jen čistý text.
 
 **Přiložený Přepis Videa:**
     `.trim();
@@ -62,16 +56,16 @@ Proveď detailní hierarchický rozklad (hierarchický strom) přiloženého př
     // 5. Inicializace a volání AI
     const genAI = new GoogleGenerativeAI(apiKey);
     
-    // Konfigurace modelu pro přesnější dodržování instrukcí
+    // Konfigurace modelu
     const model = genAI.getGenerativeModel({ 
         model: 'gemini-2.0-flash',
         generationConfig: {
-            temperature: 0.2,      // Nízká teplota = menší kreativita, větší přesnost formátování
-            maxOutputTokens: 8192, // Dostatek prostoru pro dlouhý strukturovaný výstup
+            temperature: 0.1,      // Snížena teplota pro maximální poslušnost formátu
+            maxOutputTokens: 8192,
         }
     });
 
-    console.log('🤖 Generuji obsah pomocí modelu gemini-2.0-flash (Final Prompt)...');
+    console.log('🤖 Generuji obsah pomocí modelu gemini-2.0-flash (Fix Time Position)...');
     
     const result = await model.generateContent(fullPrompt);
     const response = await result.response;
@@ -79,7 +73,6 @@ Proveď detailní hierarchický rozklad (hierarchický strom) přiloženého př
 
     console.log('✅ AI obsah úspěšně vygenerován.');
 
-    // 6. Návrat výsledku
     return NextResponse.json({ 
       content: text,
       message: 'Obsah úspěšně vygenerován.' 
