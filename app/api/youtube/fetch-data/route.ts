@@ -30,24 +30,20 @@ async function fetchWithBrowserHeaders(url: string) {
     return fetch(url, {
         headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Accept-Language': 'en-US,en;q=0.9',
+            'Accept-Language': 'cs-CZ,cs;q=0.9,en;q=0.8', 
             'Cookie': 'SOCS=CAI; CONSENT=YES+cb.20210328-17-p0.en+FX+417'
         }
     });
 }
 
-// VTT Parser pro Invidious
+// VTT Parser
 function parseVttToPlain(vtt: string): string {
     const lines = vtt.split('\n');
     const result = [];
-    
     for(let i=0; i<lines.length; i++) {
         const line = lines[i].trim();
-        // Hledáme časovou řádku: 00:00:00.000 --> 00:00:05.000
         if(line.includes('-->')) {
-            const startTime = line.split('-->')[0].trim(); // 00:00:00.000
-            
-            // Načtení textu pod časem
+            const startTime = line.split('-->')[0].trim();
             let text = '';
             let j = i + 1;
             while(j < lines.length && lines[j].trim() !== '' && !lines[j].includes('-->')) {
@@ -55,20 +51,17 @@ function parseVttToPlain(vtt: string): string {
                 j++;
             }
             
-            // Formátování času na [MM:SS]
             const timeParts = startTime.split(':');
             let timeStr = '';
             if(timeParts.length === 3) {
                 const h = parseInt(timeParts[0]);
                 const m = parseInt(timeParts[1]);
                 const s = parseInt(timeParts[2].split('.')[0]);
-                
                 if(h > 0) timeStr = `[${h}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}]`;
                 else timeStr = `[${m}:${s.toString().padStart(2,'0')}]`;
             }
             
             if(text) {
-                // Odstranění HTML tagů a dekódování entit
                 const cleanText = text.replace(/<[^>]*>/g, '');
                 result.push(`${timeStr} ${he.decode(cleanText).trim()}`);
             }
@@ -78,53 +71,40 @@ function parseVttToPlain(vtt: string): string {
     return result.join('\n');
 }
 
-// --- SCENÁŘE PRO ZÍSKÁNÍ DAT ---
+// --- FALLBACKS ---
 
-// Fallback 1: HTML Scraping (Metadata)
 async function scrapeMetadataFromHtml(videoId: string) {
     try {
         log('Fallback (HTML/Googlebot): Stahuji stránku...');
         const url = `https://www.youtube.com/watch?v=${videoId}`;
-        
         const res = await fetch(url, {
             headers: {
                 'User-Agent': 'Googlebot/2.1 (+http://www.google.com/bot.html)',
                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
             }
         });
-        
         if (!res.ok) throw new Error(`HTML fetch status ${res.status}`);
         const html = await res.text();
-        
         const titleMatch = html.match(/<meta property="og:title" content="(.*?)"/);
         const descMatch = html.match(/<meta property="og:description" content="(.*?)"/);
-        
-        const title = titleMatch ? he.decode(titleMatch[1]) : '';
-        const description = descMatch ? he.decode(descMatch[1]) : '';
-        
-        if (title) log(`HTML Scraping úspěšný! Title: "${title.substring(0, 20)}..."`);
-        if (description) log(`HTML Description nalezen (${description.length} znaků).`);
-        
-        return { title, description };
+        return { 
+            title: titleMatch ? he.decode(titleMatch[1]) : '', 
+            description: descMatch ? he.decode(descMatch[1]) : '' 
+        };
     } catch (e: any) {
         log(`HTML Scraping selhal: ${e.message}`);
         return { title: '', description: '' };
     }
 }
 
-// Fallback 2: oEmbed API
 async function fetchOEmbedMetadata(videoId: string) {
     try {
         log('Fallback (oEmbed): Volám oficiální API...');
-        const url = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`;
-        const res = await fetch(url, {
+        const res = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`, {
              headers: { 'User-Agent': 'Googlebot/2.1 (+http://www.google.com/bot.html)' }
         });
-        
         if (!res.ok) throw new Error(`Status ${res.status}`);
         const json = await res.json();
-        
-        log(`oEmbed úspěšný! Title: "${json.title}"`);
         return { title: json.title || '', description: '' };
     } catch (e: any) {
         log(`oEmbed selhal: ${e.message}`);
@@ -132,160 +112,125 @@ async function fetchOEmbedMetadata(videoId: string) {
     }
 }
 
-// Fallback 3: Invidious API (Metadata)
 async function fetchInvidiousMetadata(videoId: string) {
-    const instances = [
-        'https://inv.tux.pizza',
-        'https://vid.puffyan.us',
-        'https://invidious.drgns.space'
-    ];
-
+    const instances = ['https://inv.tux.pizza', 'https://vid.puffyan.us'];
     for (const instance of instances) {
         try {
-            log(`Fallback (Invidious): Zkouším ${instance}...`);
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 3000);
-            
+            setTimeout(() => controller.abort(), 3000);
             const res = await fetch(`${instance}/api/v1/videos/${videoId}`, {
                  headers: { 'User-Agent': 'Mozilla/5.0' },
                  signal: controller.signal
             });
-            clearTimeout(timeoutId);
-            
             if (res.ok) {
                 const json = await res.json();
-                const title = json.title || '';
-                const description = json.description || '';
-                log(`Invidious úspěšný!`);
-                return { title, description };
+                return { title: json.title || '', description: json.description || '' };
             }
-        } catch (e) {
-            // ignore
-        }
+        } catch (e) {}
     }
     return { title: '', description: '' };
 }
 
-// NOVÉ: Invidious Transcript (Proxied)
 async function fetchInvidiousTranscript(videoId: string): Promise<string | null> {
     const instances = [
         'https://inv.tux.pizza',
         'https://vid.puffyan.us',
         'https://invidious.drgns.space',
-        'https://invidious.fdn.fr',
-        'https://yt.artemislena.eu'
+        'https://invidious.fdn.fr'
     ];
-
     for (const instance of instances) {
         try {
-            log(`Fallback (Invidious Transcript): Zkouším ${instance}...`);
-            const res = await fetch(`${instance}/api/v1/videos/${videoId}`, {
-                 headers: { 'User-Agent': 'Mozilla/5.0' }
-            });
-            
+            log(`Fallback (Invidious): Zkouším ${instance}...`);
+            const res = await fetch(`${instance}/api/v1/videos/${videoId}`, { headers: { 'User-Agent': 'Mozilla/5.0' } });
             if (res.ok) {
                 const json = await res.json();
                 const captions = json.captions;
-                
                 if (Array.isArray(captions) && captions.length > 0) {
-                    log(`Invidious našel ${captions.length} stop titulků.`);
-                    
-                    // Výběr jazyka: CS/SK -> EN -> První
-                    let track = captions.find((t: any) => t.languageCode === 'cs' || t.languageCode === 'sk');
+                    let track = captions.find((t: any) => t.languageCode === 'sk' || t.languageCode === 'cs');
                     if (!track) track = captions.find((t: any) => t.languageCode === 'en');
                     if (!track) track = captions[0]; 
-
-                    // Invidious vrací relativní URL, musíme spojit s instancí
-                    const captionUrl = instance + track.url;
-                    log(`Stahuji titulky z: ${captionUrl}`);
-                    
-                    const capRes = await fetch(captionUrl);
+                    const capRes = await fetch(instance + track.url);
                     if (capRes.ok) {
-                        const vttText = await capRes.text();
-                        const plainText = parseVttToPlain(vttText);
-                        if (plainText.length > 0) {
-                            return plainText;
-                        }
+                        return parseVttToPlain(await capRes.text());
                     }
                 }
             }
-        } catch (e) {
-            // ignore failure, try next instance
-        }
+        } catch (e) {}
     }
     return null;
 }
 
-// Helper: Ruční stažení XML
 async function fetchManualTranscript(baseUrl: string): Promise<string | null> {
     try {
         const res = await fetchWithBrowserHeaders(baseUrl);
         const xml = await res.text();
-        
         const regex = /<text[^>]*start="([\d.]+)"[^>]*>([\s\S]*?)<\/text>/g;
         let match;
         const parts = [];
-        
         while ((match = regex.exec(xml)) !== null) {
             const startSec = parseFloat(match[1]);
             const content = he.decode(match[2].replace(/<[^>]*>/g, '')); 
             if (content.trim()) {
-                const timeStr = formatTime(startSec * 1000);
-                parts.push(`${timeStr} ${content}`);
+                parts.push(`${formatTime(startSec * 1000)} ${content}`);
             }
         }
-        
-        if (parts.length > 0) {
-            return parts.join('\n');
-        }
-        
+        if (parts.length > 0) return parts.join('\n');
     } catch (e) {
         console.error('Manual fetch error:', e);
     }
     return null;
 }
 
-// Deep Scraping caption URL přímo z HTML
+// VYLEPŠENÝ SCRAPER (Deep Search + Dirty Regex)
 async function scrapeTranscriptUrlFromHtml(videoId: string): Promise<string | null> {
     try {
         log('Fallback (HTML/Captions): Hledám adresu titulků (Deep Search)...');
         const res = await fetchWithBrowserHeaders(`https://www.youtube.com/watch?v=${videoId}`);
         const html = await res.text();
 
-        // 1. Pokus: Najít ytInitialPlayerResponse objekt
-        const playerResponseRegex = /var\s+ytInitialPlayerResponse\s*=\s*({.+?});/;
-        const playerMatch = html.match(playerResponseRegex);
+        // 1. Pokus: Regex přímo na URL (nejhrubší síla)
+        // Hledáme jakýkoliv odkaz na API timedtext, který je v uvozovkách
+        // Vzor: "baseUrl":"https://www.youtube.com/api/timedtext?..."
+        const dirtyRegex = /"baseUrl":"(https:\/\/www\.youtube\.com\/api\/timedtext[^"]*)"/g;
+        let dirtyMatch;
+        
+        // Projdeme všechny nalezené URL a zkusíme najít českou/slovenskou
+        let bestUrl = null;
+        let enUrl = null;
+        let anyUrl = null;
 
-        let tracks = null;
-
-        if (playerMatch && playerMatch[1]) {
-            try {
-                const playerResponse = JSON.parse(playerMatch[1]);
-                tracks = playerResponse?.captions?.playerCaptionsTracklistRenderer?.captionTracks;
-            } catch (e) {}
-        }
-
-        // 2. Pokus: Regex přímo na captionTracks
-        if (!tracks) {
-            const directRegex = /(?:\"|\\")captionTracks(?:\"|\\")\s*:\s*(\[.*?\])/;
-            const directMatch = html.match(directRegex);
+        while ((dirtyMatch = dirtyRegex.exec(html)) !== null) {
+            // Odstraníme escape znaky (\u0026 -> &)
+            let url = dirtyMatch[1].replace(/\\u0026/g, '&').replace(/\\/g, '');
             
-            if (directMatch && directMatch[1]) {
-                try {
-                    const cleanJson = directMatch[1].replace(/\\"/g, '"');
-                    tracks = JSON.parse(cleanJson);
-                } catch (e) {}
+            if (url.includes('lang=cs') || url.includes('lang=sk')) {
+                bestUrl = url;
+                break; // Našli jsme ideál
             }
+            if (url.includes('lang=en')) enUrl = url;
+            if (!anyUrl) anyUrl = url;
         }
 
-        if (Array.isArray(tracks) && tracks.length > 0) {
-            let track = tracks.find((t: any) => t.languageCode === 'cs' || t.languageCode === 'sk');
-            if (!track) track = tracks.find((t: any) => t.languageCode === 'en');
-            if (!track) track = tracks[0];
+        if (bestUrl || enUrl || anyUrl) {
+            const finalUrl = bestUrl || enUrl || anyUrl;
+            log(`Dirty Regex našel URL titulků!`);
+            return finalUrl;
+        }
 
-            if (track && track.baseUrl) {
-                return track.baseUrl;
-            }
+        // 2. Pokus: Strukturované hledání (CaptionTracks)
+        const directRegex = /(?:\"|\\")captionTracks(?:\"|\\")\s*:\s*(\[.*?\])/;
+        const directMatch = html.match(directRegex);
+        if (directMatch && directMatch[1]) {
+            try {
+                const cleanJson = directMatch[1].replace(/\\"/g, '"');
+                const tracks = JSON.parse(cleanJson);
+                if (Array.isArray(tracks) && tracks.length > 0) {
+                    let track = tracks.find((t: any) => t.languageCode === 'sk' || t.languageCode === 'cs');
+                    if (!track) track = tracks.find((t: any) => t.languageCode === 'en');
+                    if (!track) track = tracks[0];
+                    if (track && track.baseUrl) return track.baseUrl;
+                }
+            } catch (e) {}
         }
         
     } catch (e: any) {
@@ -305,24 +250,23 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url);
     const url = searchParams.get('url');
-    log(`Start request for URL: ${url}`);
-
     if (!url) return NextResponse.json({ message: 'Missing URL' }, { status: 400 });
 
     const videoId = extractYouTubeId(url);
-    log(`Extracted Video ID: ${videoId}`);
-    
     if (!videoId) return NextResponse.json({ message: 'Invalid ID' }, { status: 400 });
 
-    // --- KROK 1: InnerTube (Zlatá cesta) ---
-    log('Inicializuji youtubei.js (InnerTube)...');
+    log(`Start request for Video ID: ${videoId}`);
+
+    // --- KROK 1: InnerTube (WEB Client - Oprava pro Lokál) ---
+    log('Inicializuji youtubei.js (Klient: DEFAULT/WEB)...');
     let ytInfo = null;
     try {
         const yt = await Innertube.create({
             cache: new UniversalCache(false),
             generate_session_locally: true,
-            lang: 'en',
-            location: 'US' 
+            lang: 'cs',
+            location: 'CZ'
+            // Odstraněno client_type: 'ANDROID' -> Způsobovalo pády na lokále
         });
         log('Získávám Info o videu (GetInfo)...');
         ytInfo = await yt.getInfo(videoId);
@@ -330,7 +274,7 @@ export async function GET(request: Request) {
         log(`InnerTube Init/GetInfo chyba: ${e.message}`);
     }
     
-    // --- METADATA (Stejné jako dříve) ---
+    // --- METADATA ---
     let title = ytInfo?.basic_info?.title || '';
     let description = ytInfo?.basic_info?.short_description || '';
 
@@ -344,19 +288,16 @@ export async function GET(request: Request) {
             }
         } catch (e) {}
     }
-
     if (!title || !description) {
         const htmlData = await scrapeMetadataFromHtml(videoId);
         if (!title && htmlData.title) title = htmlData.title;
         if (!description && htmlData.description) description = htmlData.description;
     }
-
     if (!description) {
         const invData = await fetchInvidiousMetadata(videoId);
         if (invData.description) description = invData.description;
         if (!title && invData.title) title = invData.title;
     }
-
     if (!title) {
         const oembedData = await fetchOEmbedMetadata(videoId);
         if (oembedData.title) title = oembedData.title;
@@ -364,7 +305,7 @@ export async function GET(request: Request) {
 
     log(`Finální Metadata - Title: "${title.substring(0, 20)}..."`);
     
-    // --- TRANSKRIPT (Vícevrstvá obrana + Invidious) ---
+    // --- TRANSKRIPT ---
     let transcript = '';
     let warning = null;
 
@@ -406,7 +347,7 @@ export async function GET(request: Request) {
         } catch (e) {}
     }
 
-    // Pokus 3: HTML Scraping
+    // Pokus 3: HTML Scraping (Deep + Dirty Regex)
     if (!transcript) {
         log('Pokus 3: HTML Scraping (Bypass Vercel)...');
         const baseUrl = await scrapeTranscriptUrlFromHtml(videoId);
@@ -423,16 +364,14 @@ export async function GET(request: Request) {
         }
     }
 
-    // Pokus 4: Invidious API (Poslední záchrana)
+    // Pokus 4: Invidious API
     if (!transcript) {
-        log('Pokus 4: Invidious Proxy (Poslední instance)...');
+        log('Pokus 4: Invidious Proxy...');
         const invText = await fetchInvidiousTranscript(videoId);
         if (invText) {
             transcript = invText;
             log('Úspěch (Invidious API)!');
-            warning = 'Použit Invidious Proxy (YouTube přímo neodpovídal).';
-        } else {
-            log('Invidious také selhal.');
+            warning = 'Použit Invidious Proxy.';
         }
     }
 
