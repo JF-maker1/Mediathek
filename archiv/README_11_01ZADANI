@@ -1,0 +1,137 @@
+JÁ_PROMPT:
+V příloze jsou všechny dokumenty týkajících se zadání ve webovém projektu aplikace, která spravuje sbírky videí z youtube, uspořádáva jejich obsah do strukturovaného obsahu a bude vytvářet kompiláty obsahu více videí do jednoho textového materiálu který bude sloužit jako průvodce touto knihovnou videí. resp. návštěvník této knihovny bude moci pročítat tyto  knihovní materiály které budou odkazovat na podkladová videa z kterých byly vytvořeny. resp. aplikace bude tímto vlastně napomáhat vytvářet kompaktní sbírky k určitým tématům a vytvářet nad těmito videi kompaktní a přehledné materiály. Nyní jsme v další vývojové fázi aplikace kdy bych chtěl implementovat po automatickém získávání údajů z youtube jako je název videa, jeho popis a přepis videa také tedy vytvoření strukturovaného obsahu videa pomocí některé z API služeb umělé inteligence (např. gemini později i dalších). resp. na stránce [https://mediathek-three.vercel.app/admin/add] by vzniklo další tlačítko "Vytvořit strukturovaný obsah pomocí služby AI" (které bude umístěno nad editačním polem pro strukturovaný obsah) a bude aktivní pro zmáčknutí/potvrzení klikem myši pokud bude naplněno pole pro přepis videa. Po jeho zmáčnknutí dojde k volání některé služby AI pomocí API (zatím pouze GEmini do budoucna bude možné vybrat z více možných služeb) na kterou se odešlou potřebné údaje (mezi nimi bude předem definovaný prompt a přepis videa - pro účely testovní této funkcnality volání služby AI bude tento prompt zatím zjednodušený a bude znít takto [Prosím z přiloženého přepisu videa v příloze vytvoř jednoduchý jednoúrovňový strukturovaný obsah tohoto videa, kde každá odrážka bude číslována svým pořadím ve formátu "X."] - po úspěšném otestování této funkcionality doplníme prompt do jeho celého znění). Tento takto vytvořený strukturovaný obsah se poté uloží do editačního pole pro strukturovaný obsah. Podobně jako při získávání údajů z youtube doplníme pod tlačítko pro vytvoření strukturovaného obsahu případně i log této operace pro přehled jak je tento strukturovaný obsah získáván abychom mohli i tuto funkcionalitu odladit na základě jejího průběhu. Je možné vytvořit takovéto standardní zadání této funkcionality pro tuto aplikaci? ... technická realizovatelnost by se řešila až v dalším kroku tohoto vývojového cyklu kde budou i podklady z realizační fáze a snímek aktuální aplikace z projektového adresáře aplikace. Dík ;-) V příloze jsou tyto podkladové dokumuenty dokumentující dosavadní vývoj této webové aplikace:
+
+[README_01_01ZADANI][README_02_01ZADANI][README_03_01ZADANI][README_04_01ZADANI][README_05_01ZADANI][README_06_01ZADANI][README_07_01ZADANI][README_08_01ZADANI][README_09_01ZADANI][README_10_01ZADANI]
+
+AI_RESPONZE:
+
+Rozumím. Toto je naprosto logický a strategický krok. Poté, co jsme v minulé fázi (Fáze 10) úspěšně zautomatizovali získávání "hrubých dat" (název, popis, přepis), je nyní čas zapojit inteligenci, která tato data zpracuje do užitečné struktury.
+
+Tímto krokem se aplikace posouvá z "nástroje pro ukládání" na "nástroj pro asistovanou tvorbu".
+
+Zde je návrh zadání pro Fázi 11, zpracovaný ve standardní struktuře, na kterou jste zvyklý, s důrazem na procesní logiku (logy, závislosti tlačítek) a testovací povahu prvního promptu.
+
+📄 Zadání projektu: Webová aplikace Mediathek (Fáze 11 - Integrace AI pro generování obsahu)
+Datum: 22. listopadu 2025 Verze: 11.0
+
+
+Navazuje na: Fáze 10 (Automatizace získávání dat z YouTube )
+
+1. Název projektu
+Mediathek
+
+2. 🎯 Cíl Fáze
+Cílem této fáze je integrovat služby umělé inteligence (konkrétně Google Gemini) do procesu tvorby obsahu.  Automatizujeme nejpracnější část kurátorské činnosti – tvorbu strukturovaného obsahu (kapitol). V této fázi vytvoříme technický kanál (pipeline), který vezme získaný přepis videa, odešle ho AI s definovaným promptem a získaný výsledek vloží do editoru. Pro účely testování stability tohoto kanálu budeme zatím používat zjednodušený prompt, abychom ověřili funkčnost spojení, než přejdeme k ladění komplexního formátu MTF-H.
+
+3. Rozsah pro Fázi 11
+Backend (Integrace API): Implementace komunikace s API Google Gemini (Google AI Studio).
+
+Frontend (UI - Tlačítko): Přidání tlačítka "Vytvořit strukturovaný obsah pomocí AI" na stránku /admin/add.
+
+Frontend (Logika interakce): Implementace závislosti tlačítka na poli "Přepis videa" (tlačítko bude aktivní pouze, pokud existuje přepis).
+
+Frontend (Zpětná vazba): Rozšíření logovacího okna (implementovaného v Fázi 10) o výpis stavů AI operace (např. "Odesílám prompt...", "Zpracovávám odpověď...", "Hotovo").
+
+Prompt Engineering (Testovací): Implementace testovacího promptu pro ověření funkčnosti ("...vytvoř jednoduchý jednoúrovňový strukturovaný obsah...").
+
+Mimo rozsah:
+
+Generování finálního komplexního MTF-H formátu (to bude předmětem ladění v další fázi po ověření kanálu).
+
+Výběr z více modelů AI (zatím hardcoded Gemini).
+
+Automatické ukládání do DB (výsledek se pouze vloží do formuláře ke kontrole).
+
+4. 🏛️ Návrh Řešení a Workflow
+4.1. Uživatelský scénář (Workflow)
+Administrátor vloží URL videa a stiskne "Načíst data z YouTube" (funkčnost z Fáze 10).
+
+Aplikace stáhne metadata a přepis videa.
+
+Jakmile je pole "Přepis videa" naplněno, aktivuje se (odemkne) nové tlačítko "Vytvořit strukturovaný obsah pomocí AI".
+
+Administrátor stiskne toto tlačítko.
+
+Log: V sekci "Průběh zpracování" se objeví: "Inicializace AI modelu (Gemini)...".
+
+Aplikace na pozadí odešle:
+
+System/User Prompt: [Prosím z přiloženého přepisu videa v příloze vytvoř jednoduchý jednoúrovňový strukturovaný obsah tohoto videa, kde každá odrážka bude číslována svým pořadím ve formátu "X."]
+
+Data: Obsah pole "Přepis videa".
+
+Log: "Čekám na odpověď AI...".
+
+AI vrátí vygenerovaný text.
+
+Aplikace vloží tento text do pole "Strukturovaný obsah".
+
+Log: "Obsah úspěšně vygenerován a vložen."
+
+4.2. Technický přístup (High-level)
+API Klíč: Bude nutné bezpečně uložit API klíč pro Google Gemini (environment variables).
+
+Server-Side volání: Volání AI API musí proběhnout na serveru (např. Server Action), aby nebyl API klíč vystaven klientovi.
+
+Prompting: Prompt bude prozatím definován jako konstanta v kódu, s možností budoucího přesunu do konfigurace.
+
+5. 🚦 Funkční Požadavky (FR)
+FR1 (Tlačítko): Na stránce /admin/add nad polem structuredContent (Strukturovaný obsah) bude tlačítko "Vytvořit strukturovaný obsah pomocí AI".
+
+FR2 (Validace): Tlačítko bude ve výchozím stavu neaktivní (disabled). Aktivuje se (enabled) pouze v momentě, kdy pole transcript (Přepis) obsahuje text.
+
+FR3 (API Integrace): Aplikace musí být schopna navázat spojení se službou Google Gemini a autentizovat se platným klíčem.
+
+FR4 (Zpracování): Aplikace odešle definovaný testovací prompt a text přepisu, přijme textovou odpověď.
+
+FR5 (Vložení): Přijatý text se automaticky vloží do pole structuredContent. Pokud pole již něco obsahovalo, obsah se přepíše (nebo připojí - k diskuzi v realizaci, preferováno přepsání pro tento test).
+
+FR6 (Logging): Každý krok (Odeslání, Čekání, Příjem, Chyba) se vypíše do komponenty Log (stejné, kterou používá YouTube fetcher) s časovým razítkem.
+
+6. 🔒 Nefunkční Požadavky (NFR)
+NFR1 (Bezpečnost): API klíč k AI službě nesmí být nikdy součástí klientského kódu (browser bundle).
+
+NFR2 (Error Handling): Pokud AI služba neodpoví nebo vrátí chybu (např. příliš dlouhý text, vyčerpaný limit), aplikace nesmí spadnout. Do logu se vypíše chybová hláška (např. "Chyba AI: Quota exceeded").
+
+NFR3 (Odezva): UI musí indikovat, že se "něco děje" (loading state na tlačítku), protože generování může trvat několik sekund.
+
+7. 💻 Technologický Stack
+Stávající: Next.js, React.
+
+Nové: Google AI SDK for JavaScript (nebo přímé REST volání, pokud bude SDK příliš robustní).
+
+8. ✅ Akceptační Kriteria (Definice "Hotovo")
+Na stránce /admin/add je viditelné nové tlačítko.
+
+Tlačítko nelze stisknout, pokud není načten přepis.
+
+Po načtení přepisu a stisku tlačítka se v logu objeví informace o komunikaci s AI.
+
+Do pole "Strukturovaný obsah" se po chvíli objeví text vygenerovaný AI, který odpovídá zadání (jednoduchý seznam bodů 1., 2., 3...).
+
+V případě vypnutí internetu nebo neplatného klíče se do logu vypíše srozumitelná chyba.
+
+9. 🚀 Budoucí Rozvoj (Mimo Rozsah)
+Ladění promptu pro dosažení formátu MTF-H (časové značky, hierarchie).
+
+Možnost editace promptu přímo v admin rozhraní.
+
+Výběr z více modelů (GPT-4, Claude).
+
+Streaming odpovědi (text se píše postupně, jak ho AI generuje).
+
+Mohu nyní tento dokument uložit jako README_11_01ZADANI? (Případně na základě vašeho souhlasu vytvořím tento soubor pro vaši evidenci).
+
+------------------------------------------------------------------------
+
+Nyní se nacházíme ve fázi, kdy máme funkční správu videí, sbírky a veřejný náhled. Dalším logickým krokem je zefektivnění práce kurátora.Tvořit strukturovaný obsah (časové značky a kapitoly) ručně je pracné. Chceme využít AI (Google Gemini) k tomu, aby na základě přepisu videa (transcript) tento obsah "předpřipravila".Cílem je implementovat tlačítko v administraci, které vezme text přepisu, pošle ho do AI s instrukcí a výsledek vloží do editoru strukturovaného obsahu.
+
+📄 Zadání projektu: Webová aplikace Mediathek (Fáze 10 - AI Asistent pro Strukturovaný Obsah)Datum: 22. listopadu 2025Verze: 10.0Navazuje na: Fáze 9 (UX Vylepšení: Karta Kurátora)1. 🎯 Cíl FázeCílem této fáze je implementovat AI asistenta do editačního formuláře videa (/admin/add a /admin/edit/[id]). Tento asistent automatizuje tvorbu strukturovaného obsahu (kapitol).Kurátor vloží (nebo v budoucnu stáhne) přepis videa (transcript), klikne na tlačítko a aplikace pomocí API (Google Gemini) vygeneruje návrh strukturovaného obsahu ve formátu MTF-H (hierarchické číslování + časové značky), který se vloží do editoru. Součástí je i logování průběhu operace pro ladění.2. 📋 Rozsah pro Fázi 10Databáze (Prisma): Rozšíření modelu Video o pole transcript (Text), aby bylo možné přepis uložit trvale.UI (Formulář):Přidání nového velkého textového pole "Přepis videa" (Transcript) do formulářů pro přidání/editaci.Implementace tlačítka "Vytvořit strukturovaný obsah pomocí služby AI".Implementace oblasti pro Log operace (výpis kroků procesu pod tlačítkem).Backend (API): Vytvoření nového endpointu (např. /api/ai/generate), který:Přijme přepis videa.Sestaví prompt.Zavolá externí službu (Google Gemini API).Vrátí vygenerovaný text.Logika (Frontend):Validace: Tlačítko je aktivní pouze pokud je pole "Přepis videa" neprázdné.Akce: Po kliknutí se zobrazí indikátor načítání, vypisují se logy a po úspěchu se naplní pole "Strukturovaný obsah".Mimo rozsah: V této fázi neřešíme automatické stahování titulků z YouTube. Přepis se vkládá do pole manuálně (copy-paste).3. 🏛️ Návrh Řešení a Architektura3.1. Databázový ModelUpravit prisma/schema.prisma:model Video {
+  // ... stávající pole
+  transcript String? @db.Text // Nové pole pro surový text přepisu
+}
+3.2. Uživatelské Rozhraní (UI)Na stránkách /admin/add a /admin/edit/[id]:Sekce Přepis: Pod polem "Shrnutí" (Summary) bude nové pole textarea pro "Přepis videa".Sekce AI Akce:Umístění: Mezi polem "Přepis videa" a polem "Strukturovaný obsah".Tlačítko: "✨ Vytvořit strukturovaný obsah pomocí služby AI" (disabled, pokud je přepis prázdný).Log Box: Malý box (např. s šedým pozadím a monospace fontem), který zobrazuje stav:Příklad:[14:00:01] Odesílám požadavek na AI...[14:00:03] Gemini API: Data přijata, zpracovávám...[14:00:08] Odpověď úspěšně získána.[14:00:08] Vkládám do editoru.3.3. Integrace AI (Gemini)Použijeme google-generative-ai SDK (nebo přímé REST API volání).Prompt (Zjednodušený pro testování):"Prosím z přiloženého přepisu videa v příloze vytvoř jednoduchý jednoúrovňový strukturovaný obsah tohoto videa, kde každá odrážka bude číslována svým pořadím ve formátu 'X.'Přepis:[ZDE SE VLOŽÍ TEXT PŘEPISU]"4. 🚦 Funkční Požadavky (FR)FR1 (Uložení přepisu): Aplikace musí umožnit uložit a načíst text přepisu videa v databázi.FR2 (Validace): Tlačítko AI generování musí být neaktivní (disabled), pokud je pole přepisu prázdné.FR3 (Volání AI): Po kliknutí aplikace odešle text na backend, který zavolá Gemini API.FR4 (Zobrazení výsledku): Vygenerovaný text od AI se automaticky vloží do pole "Strukturovaný obsah" (Structured Content). Pokud tam už něco bylo, přepíše to (nebo se zeptá/přidá na konec - pro teď stačí přepsat s upozorněním).FR5 (Logování): Uživatel vidí vizuální zpětnou vazbu o průběhu operace (Log), aby věděl, že aplikace "nezamrzla".5. 🔒 Nefunkční Požadavky (NFR)NFR1 (API Key Security): API klíč pro Gemini nesmí být nikdy vystaven na straně klienta (browseru). Volání musí jít přes Next.js API Route.NFR2 (Timeout): AI může generovat odpověď několik sekund. API volání musí mít nastavený dostatečný timeout (např. 30-60s), aby neskončilo chybou při delším zpracování.6. ✅ Akceptační Kriteria (Definice "Hotovo")Databáze obsahuje sloupec transcript.V admin formuláři lze vložit text přepisu a uložit ho.Tlačítko AI generování funguje a volá API.V Log boxu se vypisují stavy procesu.Do pole "Strukturovaný obsah" se vloží smysluplný text vygenerovaný AI na základě vloženého přepisu.7. 💡 Poznámky k implementaci (Pro realizační tým)Jako model AI využijte gemini-1.5-flash (je rychlý a levný/zdarma v rámci limitů) nebo gemini-pro.Pro API klíč využijte proměnnou prostředí GEMINI_API_KEY v .env.local.
+
+
+id_chat: 
+https://gemini.google.com/u/1/app/bb3c89564047df5b

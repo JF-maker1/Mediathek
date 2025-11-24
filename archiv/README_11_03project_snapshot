@@ -1,0 +1,3074 @@
+# Snímek Projektu: Mediathek
+
+*Vygenerováno: 2025-11-24 18:17:57*
+
+## 1. Souhrn Projektu
+
+Jedná se o projekt **web_app_mediathek**, postavený na následujícím technologickém stacku: **Next.js, React, TypeScript, Tailwind CSS, Prisma, NextAuth.js, YouTube.js (InnerTube), Google Gemini AI**.
+
+## 2. Analýza Projektu (package.json)
+
+### Dostupné Skripty
+
+| Příkaz (`npm run ...`) | Popis |
+| ---------------------- | ----- |
+| `dev` | `next dev` |
+| `build` | `dotenv -e .env.local -- prisma generate && dotenv -e .env.local -- prisma migrate deploy && next build` |
+| `start` | `next start` |
+| `lint` | `eslint` |
+| `prisma:migrate` | `dotenv -e .env.local -- prisma migrate dev` |
+| `prisma:studio` | `dotenv -e .env.local -- prisma studio` |
+| `prisma:generate` | `dotenv -e .env.local -- prisma generate` |
+
+### Klíčové Závislosti
+
+| Knihovna | Verze | Účel |
+| -------- | ----- | ---- |
+| `next` | `16.0.1` | Full-stack React framework |
+| `react` | `19.2.0` | Knihovna pro tvorbu UI |
+| `prisma` | `^6.18.0` | ORM a nástroj pro databázi |
+| `@prisma/client` | `^6.18.0` | ORM a nástroj pro databázi |
+| `next-auth` | `^4.24.13` | Knihovna pro autentizaci |
+| `bcrypt` | `^6.0.0` | Knihovna pro hashování hesel |
+| `react-youtube` | `^10.1.0` | Knihovna pro vložení YouTube přehrávače |
+| `youtubei.js` | `^16.0.1` | YouTube API klient (InnerTube) - Fáze 10 |
+| `@google/generative-ai` | `^0.24.1` | Google Gemini AI SDK - Fáze 11 |
+| `he` | `^1.2.0` | HTML Entity Decoder (pro text titulků) |
+| `tailwindcss` | `^4` | Utility-first CSS framework |
+| `typescript` | `^5` | Typový systém pro JavaScript |
+| `eslint` | `^9` | Linter pro kvalitu kódu |
+| `dotenv` | `^17.2.3` | N/A |
+| `react-dom` | `19.2.0` | N/A |
+| `@tailwindcss/postcss` | `^4` | N/A |
+| `@types/bcrypt` | `^6.0.0` | N/A |
+| `@types/he` | `^1.2.3` | N/A |
+| `@types/node` | `^20` | N/A |
+| `@types/react` | `^19` | N/A |
+| `@types/react-dom` | `^19` | N/A |
+| `dotenv-cli` | `^11.0.0` | N/A |
+| `eslint-config-next` | `16.0.1` | N/A |
+| `ts-node` | `^10.9.2` | N/A |
+
+## 3. Environmentální Proměnné
+
+Byl nalezen soubor `.env`. Aplikace očekává následující proměnné (hodnoty jsou skryty):
+```
+DATABASE_URL
+```
+
+Byl nalezen soubor `.env.local`. Aplikace očekává následující proměnné (hodnoty jsou skryty):
+```
+DATABASE_URL
+DATABASE_URL_UNPOOLED
+NEON_PROJECT_ID
+PGDATABASE
+PGHOST
+PGHOST_UNPOOLED
+PGPASSWORD
+PGUSER
+POSTGRES_DATABASE
+POSTGRES_HOST
+POSTGRES_PASSWORD
+POSTGRES_PRISMA_URL
+POSTGRES_URL
+POSTGRES_URL_NON_POOLING
+POSTGRES_URL_NO_SSL
+POSTGRES_USER
+VERCEL_OIDC_TOKEN
+NEXTAUTH_SECRET
+GEMINI_API_KEY
+```
+
+## 4. Systémové Prostředí
+
+```
+Node.js verze: v24.11.0
+NPM verze:     11.6.1
+Prisma verze:  ^6.18.0 (z package.json)
+Git verze:     git version 2.47.3
+Systém:        Linux rpi5 6.12.47+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.12.47-1+rpt1 (2025-09-16) aarch64 GNU/Linux
+```
+
+## 5. Stav Git Repozitáře
+
+```
+On branch feature/faze-11-ai-content
+M app/admin/add/page.tsx
+ M app/admin/edit/[id]/page.tsx
+ M archiv/README_10_02REALIZACE
+ M package-lock.json
+ M package.json
+?? app/api/ai/
+?? archiv/README_10_03project_snapshot
+?? archiv/README_11_01ZADANI
+?? archiv/README_11_02REALIZACE
+```
+
+## 6. Struktura Projektového Adresáře
+
+```
+./
+    1763586862976-player-script.js
+    1763586489510-player-script.js
+    1763587042519-player-script.js
+    postcss.config.mjs
+    middleware.ts
+    1763586688369-player-script.js
+    1763586489527-player-script.js
+    README.md
+    next-env.d.ts
+    .gitignore
+    project_snapshot.md
+    1763586862960-player-script.js
+    test-env.js
+    1763586688358-player-script.js
+    1763587042502-player-script.js
+    next.config.ts
+    prisma.config.ts
+    package.json
+    tsconfig.json
+    eslint.config.mjs
+    components/
+        Navbar.tsx
+        VideoDetailClientWrapper.tsx
+        VideoGrid.tsx
+        Providers.tsx
+        DeleteButton.tsx
+        VideoPlayer.tsx
+        ChapterList.tsx
+    prisma/
+        schema.prisma
+        migrations/
+            migration_lock.toml
+            20251112204337_add_chapter_model/
+                migration.sql
+            20251119175653_add_transcript_model/
+                migration.sql
+            20251116101540_add_collection_model/
+                migration.sql
+            20251102210418_init_user_model/
+                migration.sql
+            20251104201217_add_video_model/
+                migration.sql
+    .vercel/
+        project.json
+        README.txt
+    app/
+        favicon.ico
+        layout.tsx
+        page.tsx
+        globals.css
+        dashboard/
+            page.tsx
+        api/
+            ai/
+                generate/
+                    route.ts
+            auth/
+                [...nextauth]/
+                    route.ts
+            videos/
+                route.ts
+                [id]/
+                    route.ts
+            youtube/
+                fetch-data/
+                    route.ts
+            collections/
+                route.ts
+                [id]/
+                    route.ts
+            register/
+                route.ts
+        video/
+            [id]/
+                page.tsx
+        admin/
+            dashboard/
+                page.tsx
+            add/
+                page.tsx
+            collections/
+                page.tsx
+            manage/
+                page.tsx
+            edit/
+                [id]/
+                    page.tsx
+        register/
+            page.tsx
+        login/
+            page.tsx
+    public/
+        file.svg
+        window.svg
+        next.svg
+        vercel.svg
+        globe.svg
+    lib/
+        parser.ts
+    types/
+        next-auth.d.ts
+```
+
+## 7. Obsah Klíčových Souborů
+
+### `package.json`
+
+```json
+{
+  "name": "web_app_mediathek",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "dotenv -e .env.local -- prisma generate && dotenv -e .env.local -- prisma migrate deploy && next build",
+    "start": "next start",
+    "lint": "eslint",
+    "prisma:migrate": "dotenv -e .env.local -- prisma migrate dev",
+    "prisma:studio": "dotenv -e .env.local -- prisma studio",
+    "prisma:generate": "dotenv -e .env.local -- prisma generate"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@prisma/client": "^6.18.0",
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.2.3",
+    "he": "^1.2.0",
+    "next": "16.0.1",
+    "next-auth": "^4.24.13",
+    "prisma": "^6.18.0",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "react-youtube": "^10.1.0",
+    "youtubei.js": "^16.0.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/bcrypt": "^6.0.0",
+    "@types/he": "^1.2.3",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "dotenv-cli": "^11.0.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.0.1",
+    "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5"
+  }
+}
+
+```
+
+### `middleware.ts`
+
+```typescript
+    import { withAuth } from 'next-auth/middleware';
+    import { NextResponse } from 'next/server';
+    
+    export default withAuth(
+      // `middleware` se volá POUZE pokud je token platný (uživatel přihlášen)
+      function middleware(req) {
+        const token = req.nextauth.token;
+        const { pathname } = req.nextUrl;
+    
+        // 1. Ochrana /admin
+        if (pathname.startsWith('/admin')) {
+          // Pokud je přihlášen, ale NENÍ admin, přesměruj pryč
+          if (token?.role !== 'ADMIN') {
+            // Můžeme přesměrovat na dashboard nebo domovskou stránku
+            return NextResponse.redirect(new URL('/dashboard', req.url));
+          }
+        }
+        
+        // 2. Pro /dashboard stačí být přihlášen, což `withAuth` již řeší.
+    
+        // Pokud projde kontrolou role, pokračuj
+        return NextResponse.next();
+      },
+      {
+        // Callback pro `withAuth`
+        callbacks: {
+          // Volá se VŽDY, když se přistupuje na chráněnou trasu v `matcher`u
+          authorized: ({ token }) => {
+            // Pokud uživatel nemá token (není přihlášen),
+            // `withAuth` ho automaticky přesměruje na `signIn` stránku.
+            return !!token; // !!token převede token (nebo null) na boolean
+          },
+        },
+        pages: {
+          signIn: '/login', // Stránka pro přesměrování nepřihlášených
+        },
+      }
+    );
+    
+    // Konfigurace matcheru (které stránky chránit)
+    export const config = {
+      matcher: [
+        '/dashboard/:path*', // Původní chráněná trasa
+        '/admin/:path*',    // Nová chráněná trasa pro adminy
+      ],
+    };
+```
+
+### `prisma/schema.prisma`
+
+```text
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Definice rolí pro uživatele
+enum Role {
+  USER
+  ADMIN
+}
+
+// Datový model pro uživatele
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Vztah: Uživatel může přidat více videí
+  videos      Video[]
+  // Sbírky vytvořené uživatelem
+  collections Collection[]
+}
+
+model Video {
+  id        String   @id @default(cuid())
+  youtubeId String   @unique // ID videa z URL (např. "dQw4w9WgXcQ")
+  title     String   // Manuálně zadaný název
+  summary   String   @db.Text // Manuálně zadané shrnutí (delší text)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Propojení na autora
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+
+  chapters    Chapter[]
+  // Relace M:N (Video může být ve více sbírkách)
+  collections Collection[]
+  // Relace 1:1 na přepis
+  transcript  Transcript?
+}
+
+model Chapter {
+  id        String   @id @default(cuid())
+  text      String   // Zobrazený text (např. "1.1. Úvod...")
+  startTime Int      // Čas "od" v sekundách
+  endTime   Int?     // Čas "do" v sekundách (nepovinné)
+  level     Int      // Úroveň zanoření (0 = kořen, 1 = podkapitola)
+  order     Int      // Pořadí kapitoly v rámci videa
+
+  // Relace k videu. Při smazání videa se smažou i kapitoly.
+  video   Video  @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  videoId String
+}
+
+// Model pro sbírky videí
+model Collection {
+  id          String   @id @default(cuid())
+  name        String
+  description String?  @db.Text
+  isPublic    Boolean  @default(false) // Příznak viditelnosti
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Vlastnictví (RBAC)
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
+
+  // Vztah M:N s videi
+  videos      Video[]
+}
+
+// Model pro přepisy videí
+model Transcript {
+  id          String   @id @default(cuid())
+  
+  // Relace 1:1 na Video
+  videoId     String   @unique
+  video       Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  
+  // Obsah
+  content     String   @db.Text      // Surový text titulků spojený do jednoho bloku
+  fullData    Json?                  // Kompletní JSON s časovými značkami (pro budoucí AI)
+  language    String   @default("cs") // Jazyk titulků
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+```
+
+### `types/next-auth.d.ts`
+
+```typescript
+import 'next-auth';
+import 'next-auth/jwt';
+
+/**
+ * Rozšiřujeme standardní typy NextAuth, abychom TypeScriptu
+ * řekli, že budeme do session a tokenu přidávat vlastní data.
+ */
+
+declare module 'next-auth' {
+  /**
+   * Toto je objekt, který vidí klient (např. přes useSession())
+   */
+  interface Session {
+    user: {
+      id: string;
+      role: string;
+    } & DefaultSession['user']; // Zachováme i standardní vlastnosti (name, email, image)
+  }
+
+  /**
+   * Toto je objekt 'user', který vracíme z providera (authorize)
+   * a dostáváme v JWT callbacku.
+   */
+  interface User {
+    // Výchozí User již má id, name, email, image.
+    // My přidáváme pouze naši roli.
+    role: string;
+  }
+}
+
+/**
+ * Rozšíření JWT tokenu.
+ */
+declare module 'next-auth/jwt' {
+  /** Toto je obsah našeho JWT tokenu v cookie. */
+  interface JWT {
+    id: string;
+    role: string;
+  }
+}
+
+```
+
+### `app/layout.tsx`
+
+```typescript
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
+import Providers from "@/components/Providers";
+import Navbar from "@/components/Navbar"; // <-- 1. Importujte Navbar
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "Create Next App",
+  description: "Generated by create next app",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <Providers>
+          <Navbar /> {/* <-- 2. Vložte Navbar sem (dovnitř Providers) */}
+          <main>{children}</main>
+        </Providers>
+      </body>
+    </html>
+  );
+}
+```
+
+### `app/page.tsx`
+
+```typescript
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { PrismaClient, Prisma } from '@prisma/client';
+// 1. Importujeme naši sdílenou komponentu
+import VideoGrid from '@/components/VideoGrid';
+
+const prisma = new PrismaClient();
+
+// Vynutíme dynamické renderování, aby se session vždy četla čerstvá
+export const dynamic = 'force-dynamic';
+
+export default async function HomePage() {
+  const session = await getServerSession(authOptions);
+
+  // 2. Sestavení dynamického 'where' dotazu dle specifikace Fáze 8
+  
+  // Výchozí pravidlo: VISITOR a USER vidí jen videa,
+  // která jsou v ALESPOŇ JEDNÉ veřejné sbírce.
+  let whereClause: Prisma.VideoWhereInput = {
+    collections: {
+      some: {
+        isPublic: true,
+      },
+    },
+  };
+
+  // Výjimka: ADMIN vidí VŠECHNO (drafty, soukromé, veřejné)
+  if (session && session.user.role === 'ADMIN') {
+    whereClause = {}; // Prázdný 'where' znamená "vše"
+  }
+  
+  // TODO: Logika pro KURATORA (Fáze 9)
+  // if (session && session.user.role === 'KURATOR') {
+  //   whereClause = {
+  //     OR: [
+  //       { collections: { some: { isPublic: true } } },
+  // { authorId: session.user.id }
+  //     ]
+  //   };
+  // }
+
+  // 3. Finální dotaz do DB
+  // AKTUALIZACE: Přidáme 'include' autora, aby VideoGrid
+  // mohl zobrazit stejné detaily jako admin dashboard.
+  const videos = await prisma.video.findMany({
+    where: whereClause,
+    orderBy: {
+      createdAt: 'desc',
+    },
+    include: {
+      author: {
+        select: {
+          email: true
+        }
+      },
+      // PŘIDÁNO: Načtení názvů a ID přiřazených sbírek
+      collections: {
+        select: {
+          id: true,
+          name: true
+        }
+      }
+    }
+  });
+
+  // 4. Zobrazení pomocí sdílené komponenty
+  return (
+    <main className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+      <h1 className="text-3xl font-bold mb-8">Vítejte v Mediathek - zde je Vaše knihovna mediálního obsahu - prohlížejte sbírky shlednutých videí vytvořených jinými nejen pro sebe, ale také i pro Vás - vytvářejte témata - uspořádávejte i svou sbírku - vybírejte to nejlepší - dělejte si poznámky ke shlednutému - sdílejte svou sbírku s ostatními - dejte mediálnímu obsahu svůj jedinečný pohled</h1>
+      
+      {/* AKTUALIZACE: Použijeme stejnou komponentu, ale změníme
+        baseHref, aby odkazy směřovaly na budoucí
+        veřejnou stránku detailu (např. /video/[id]).
+        Prozatím můžeme nechat /admin/video, 
+        návštěvník bude přesměrován na /login (Test 5).
+      */}
+      <VideoGrid videos={videos} baseHref="/video" showEditButton={false} />
+    </main>
+  );
+}
+```
+
+### `components/Navbar.tsx`
+
+```typescript
+"use client";
+
+import Link from "next/link";
+import { useSession } from "next-auth/react";
+
+export default function Navbar() {
+  const { data: session, status } = useSession();
+
+  return (
+    <nav style={{ display: "flex", gap: "1rem", padding: "1rem", background: "#eee" }}>
+      <Link href="/">Domů</Link>
+
+      {status === "loading" && <p>...</p>}
+
+      {status === "unauthenticated" && (
+        <>
+          <Link href="/login">Přihlásit se</Link>
+          <Link href="/register">Registrovat</Link>
+        </>
+      )}
+
+      {status === "authenticated" && (
+        <>
+          <Link href="/dashboard">Můj Dashboard</Link>
+          
+          {/* --- ADMIN NAVIGACE --- */}
+          {session.user?.role === 'ADMIN' && (
+            <>
+              <Link href="/admin/dashboard" className="hover:underline">Přehled obsahu</Link>
+              <Link href="/admin/manage" className="hover:underline">Správa obsahu</Link>
+              <Link href="/admin/collections" className="hover:underline">Sbírky</Link>
+              <Link href="/admin/add" className="font-bold hover:underline">Přidat video</Link>
+            </>
+          )}
+          {/* --- KONEC ADMIN NAVIGACE --- */}
+
+          <span style={{ marginLeft: "auto" }}>
+            Přihlášen: {session.user?.email}
+          </span>
+        </>
+      )}
+    </nav>
+  );
+}
+```
+
+### `components/VideoDetailClientWrapper.tsx`
+
+```typescript
+"use client";
+
+import { useRef } from 'react';
+import { Prisma } from '@prisma/client';
+import VideoPlayer from '@/components/VideoPlayer';
+import ChapterList from '@/components/ChapterList';
+
+// Přijímáme data načtená na serveru
+type ChapterWithData = Prisma.ChapterGetPayload<{}>;
+
+interface VideoDetailClientWrapperProps {
+  youtubeId: string;
+  chapters: ChapterWithData[];
+  summary: string; // ZMĚNA: Nyní přijímáme i summary
+}
+
+export default function VideoDetailClientWrapper({
+  youtubeId,
+  chapters,
+  summary, // ZMĚNA: Používáme summary
+}: VideoDetailClientWrapperProps) {
+  // Reference pro ovládání přehrávače
+  const playerRef = useRef(null);
+
+  return (
+    // [NASTAVENI GRID A POMERU SLOUPCU ZDE] Grid a poměr sloupců
+    <div className="lg:grid lg:grid-cols-14 lg:gap-8">
+      
+      {/* --- LEVÝ SLOUPEC (Video a Shrnutí) --- */}
+      {/* [NASTAVENI GRID A POMERU SLOUPCU ZDE] Levý sloupec - video */}
+      <div className="lg:col-span-8">
+        {/* Přehrávač Videa */}
+        <div
+          className="relative bg-black rounded-lg overflow-hidden"
+          style={{ paddingTop: '56.25%' /* Poměr 16:9 */ }}
+        >
+          <VideoPlayer
+            youtubeId={youtubeId}
+            onReady={(event) => (playerRef.current = event.target)}
+          />
+        </div>
+
+        {/* Popis / Shrnutí (Přesunuto sem) */}
+        <div className="mt-8">
+          <h2 className="text-2xl font-semibold mb-4">Shrnutí</h2>
+          {/* Používáme opravené třídy pro barvu textu (z minulé úpravy) */}
+          <p className="text-gray-900 dark:text-gray-100 whitespace-pre-wrap text-lg">
+            {summary}
+          </p>
+        </div>
+      </div>
+
+      {/* --- PRAVÝ SLOUPEC (Strukturovaný Obsah) --- */}
+      {/* [NASTAVENI GRID A POMERU SLOUPCU ZDE] Pravý sloupec - obsah */}
+      <div className="lg:col-span-6 mt-8 lg:mt-0">
+        
+        {/* Wrapper, který zajistí "přilepení" (sticky) a scrollování */}
+        {/* 'lg:sticky' - přilepí se na desktopu
+            'lg:top-8' - odsazení 8px od vršku viewportu
+            'lg:max-h-[90vh]' - maximální výška (90% výšky okna)
+            'lg:overflow-y-auto' - přidá posuvník, pokud je obsah delší
+        */}
+        <div className="lg:sticky lg:top-8 lg:max-h-[90vh] lg:overflow-y-auto rounded-lg">
+          {/* Strukturovaný Obsah */}
+          <div>
+            {/* Odebráno mt-8, řeší se vnějším divem */}
+            <h2 className="text-2xl font-semibold mb-4">Strukturovaný obsah</h2>
+            <ChapterList chapters={chapters} playerRef={playerRef} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+### `components/VideoPlayer.tsx`
+
+```typescript
+"use client";
+
+import YouTube from 'react-youtube';
+
+interface VideoPlayerProps {
+  youtubeId: string;
+  // 1. PŘIDÁNÍ onReady PROPU
+  onReady?: (event: { target: any }) => void;
+}
+
+export default function VideoPlayer({ youtubeId, onReady }: VideoPlayerProps) {
+  const opts = {
+    height: '100%',
+    width: '100%',
+    playerVars: {
+      autoplay: 0,
+    },
+  };
+  
+  return (
+    <YouTube
+      videoId={youtubeId}
+      opts={opts}
+      className="absolute top-0 left-0 w-full h-full"
+      // 2. PROPOJENÍ onReady
+      onReady={onReady}
+    />
+  );
+}
+```
+
+### `components/ChapterList.tsx`
+
+```typescript
+"use client";
+
+import { Prisma } from '@prisma/client';
+import { RefObject } from 'react';
+
+// Explicitně definujeme typ, který očekáváme z Prisma dotazu
+type ChapterWithData = Prisma.ChapterGetPayload<{}>;
+
+interface ChapterListProps {
+  chapters: ChapterWithData[];
+  playerRef: RefObject<any>; // Reference na YouTube přehrávač
+}
+
+export default function ChapterList({ chapters, playerRef }: ChapterListProps) {
+  if (!chapters || chapters.length === 0) {
+    return <p className="text-gray-900 dark:text-gray-100">Pro toto video není dostupný strukturovaný obsah.</p>;
+  }
+
+  const handleChapterClick = (startTime: number) => {
+    playerRef.current?.seekTo(startTime); // Funkce pro skok v čase
+    playerRef.current?.playVideo(); // Volitelné: rovnou spustit přehrávání
+  };
+
+  return (
+    <div className="space-y-2">
+      {chapters.map((chapter) => {
+        return (
+          <button
+            key={chapter.id}
+            onClick={() => handleChapterClick(chapter.startTime)}
+            className="block w-full text-left p-3 rounded-md transition-colors 
+                       text-gray-900 dark:text-gray-100 
+                       hover:bg-gray-100 dark:hover:bg-gray-700"
+            style={{
+              // Hierarchické odsazení na základě 'level' z DB
+              marginLeft: `${chapter.level * 20}px`,
+              width: `calc(100% - ${chapter.level * 20}px)`,
+            }}
+          >
+            {/* Jednoduše zobrazíme 'text' z databáze - Zdroj Pravdy */}
+            {chapter.text}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+```
+
+### `components/VideoGrid.tsx`
+
+```typescript
+// V souladu se zadáním Fáze 8 vytváříme klientskou komponentu
+"use client";
+
+import Link from 'next/link';
+// Importujeme typy z Prisma
+import { Video, User } from '@prisma/client';
+
+// Typ pro data komponenty
+type VideoWithDetails = Video & {
+  author: { email: string | null } | null;
+  collections: { id: string; name: string }[];
+};
+
+interface VideoGridProps {
+  videos: VideoWithDetails[];
+  baseHref?: string;
+  showEditButton?: boolean;
+}
+
+// Komponenta pouze přijímá pole videí a vykresluje je
+export default function VideoGrid({ videos, baseHref = '/admin/video', showEditButton }: VideoGridProps) {
+  
+  // Pokud nejsou žádná videa, zobrazíme zprávu
+  if (videos.length === 0) {
+    return (
+      <p className="text-center text-gray-400">
+        Nebyly nalezeny žádné video záznamy.
+      </p>
+    );
+  }
+
+  // Vykreslení mřížky
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {videos.map((video) => (
+        <Link
+          href={`${baseHref}/${video.id}`}
+          key={video.id}
+          className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden flex flex-col transition-all duration-200 hover:shadow-lg hover:ring-2 hover:ring-indigo-500"
+        >
+          {/* Náhled videa z YouTube (Zóna 1 - část 1) */}
+          <div className="aspect-video bg-gray-100 dark:bg-gray-700 relative">
+             <img
+                src={`https://img.youtube.com/vi/${video.youtubeId}/mqdefault.jpg`}
+                alt={`Náhled videa ${video.title}`}
+                className="w-full h-full object-cover"
+                loading="lazy"
+             />
+          </div>
+
+          {/* Kontejner pro textový obsah (tělo i zápatí) */}
+          <div className="flex-1 flex flex-col">
+
+            {/* Zóna 1 - část 2 (Tělo - obsah z internetu) */}
+            {/* Přidán flex-1 pro lepší rozvržení - zápatí bude vždy dole */}
+            <div className="p-5 flex-1">
+              <h2 className="text-xl font-semibold mb-2 line-clamp-2" title={video.title}>
+                {video.title}
+              </h2>
+
+              <div className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                  <p>ID: <span className="font-mono">{video.youtubeId}</span></p>
+              </div>
+
+              <p className="text-gray-600 dark:text-gray-300 line-clamp-3 mb-0">
+                {video.summary}
+              </p>
+            </div>
+
+            {/* Zóna 2 (Zápatí - obsah aplikace) */}
+            {/* Snížené odsazení (pt-2 pb-2) a mezery (space-y-1) pro kompaktnější vzhled */}
+            <div className="mt-auto pt-2 pb-2 border-t border-gray-200 dark:border-gray-700 
+                            text-xs space-y-1 
+                            bg-violet-50 dark:bg-violet-900/30">
+              
+              {/* Sekce 1: Kurátorská metadata */}
+              <div className="text-gray-600 dark:text-gray-300 space-y-1 px-5">
+                <p>
+                  <strong>Sbírka(y):</strong> {
+                    video.collections.length > 0 
+                      ? video.collections.map(c => c.name).join(', ') 
+                      : 'Nezařazeno'
+                  }
+                </p>
+                <p>
+                  <strong>Kurátor:</strong> {video.author?.email || 'Neznámý'}
+                </p>
+              </div>
+
+              {/* Sekce 2: Datum a Edit link */}
+              <div className="flex justify-between items-center text-gray-500 dark:text-gray-400 px-5">
+                <span>
+                    {new Date(video.createdAt).toLocaleDateString('cs-CZ')}
+                </span>
+                {showEditButton === true && (
+                     <Link href={`/admin/edit/${video.id}`} className="text-indigo-500 hover:text-indigo-700 font-medium transition-colors hover:text-indigo-400">
+                        Upravit
+                     </Link>
+                )}
+              </div>
+            </div>
+            {/* === KONEC ZÁPATÍ === */}
+          </div>
+        </Link>
+      ))}
+    </div>
+  );
+}
+```
+
+### `app/admin/dashboard/page.tsx`
+
+```typescript
+import { PrismaClient } from '@prisma/client';
+import { getServerSession } from 'next-auth';
+import { redirect } from 'next/navigation';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import Link from 'next/link';
+// 1. Importujeme naši novou sdílenou komponentu
+import VideoGrid from '@/components/VideoGrid';
+
+const prisma = new PrismaClient();
+
+export const dynamic = 'force-dynamic';
+
+export default async function AdminDashboardPage() {
+  // 1. Bezpečnostní kontrola na serveru (zůstává)
+  const session = await getServerSession(authOptions);
+
+  if (!session || session.user?.role !== 'ADMIN') {
+    redirect('/');
+  }
+
+  // 2. Načtení dat z databáze
+  // AKTUALIZACE: Ponecháváme načítání autora, jak je ve vašem souboru.
+  // To je důležité pro VideoGrid.
+  const videos = await prisma.video.findMany({
+    orderBy: {
+      createdAt: 'desc',
+    },
+    include: {
+      author: {
+        select: {
+            email: true
+        }
+      },
+      // PŘIDÁNO: Načtení názvů a ID přiřazených sbírek
+      collections: {
+        select: {
+          id: true,
+          name: true
+        }
+      }
+    }
+  });
+
+  // 3. Vykreslení UI
+  return (
+    <main className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold">Přehled Obsahu (Admin Dashboard)</h1>
+        <Link
+          href="/admin/add"
+          className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition-colors"
+        >
+          + Přidat nové video
+        </Link>
+      </div>
+
+      {/* AKTUALIZACE: Celý původní blok (<div className="grid...">...</div>) 
+        je nyní nahrazen touto jedinou komponentou.
+      */}
+      <VideoGrid videos={videos} baseHref="/video" showEditButton={true} />
+      
+    </main>
+  );
+}
+```
+
+### `app/admin/manage/page.tsx`
+
+```typescript
+import { PrismaClient } from '@prisma/client';
+import { getServerSession } from 'next-auth';
+import { redirect } from 'next/navigation';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import Link from 'next/link';
+import DeleteButton from '@/components/DeleteButton'; // Importujeme novou komponentu
+
+const prisma = new PrismaClient();
+
+// Zajistí, že se stránka při každém načtení přegeneruje (dynamické)
+export const dynamic = 'force-dynamic'; 
+
+export default async function AdminManagePage() {
+  const session = await getServerSession(authOptions);
+
+  // Ochrana stránky
+  if (!session || session.user?.role !== 'ADMIN') {
+    redirect('/');
+  }
+
+  // Načítání dat na základě role (příprava na budoucí roli KURATOR)
+  // OPRAVA CHYBY: Musíme sestavit argumenty a zavolat findMany jen jednou.
+     
+  // 1. Definujeme 'where' podmínku na základě role
+  const whereCondition = 
+    session.user.role === 'ADMIN' 
+    ? {} // Admin vidí vše (prázdná podmínka)
+    : { authorId: session.user.id }; // Ostatní jen své
+
+  // 2. Zavoláme findMany POUZE JEDNOU s finálními argumenty
+  const videos = await prisma.video.findMany({
+    where: whereCondition, // Aplikujeme podmínku
+    orderBy: {
+      createdAt: 'desc',
+    },
+    select: {
+      id: true,
+      title: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  return (
+    <main className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold">Správa Obsahu</h1>
+        <Link
+          href="/admin/add"
+          className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition-colors"
+        >
+          + Přidat nové video
+        </Link>
+      </div>
+
+      <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead className="bg-gray-50 dark:bg-gray-700">
+            <tr>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Název
+              </th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Datum přidání
+              </th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Posl. úprava
+              </th>
+              <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Akce
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            {videos.length === 0 ? (
+              <tr>
+                <td colSpan={4} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                  Nebyla nalezena žádná videa.
+                </td>
+              </tr>
+            ) : (
+              videos.map((video) => (
+                <tr key={video.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900 dark:text-white">{video.title}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                    {new Date(video.createdAt).toLocaleDateString('cs-CZ')}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                    {new Date(video.updatedAt).toLocaleDateString('cs-CZ')}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
+                    <Link
+                      href={`/admin/edit/${video.id}`}
+                      className="text-indigo-500 hover:text-indigo-700 hover:underline"
+                    >
+                      Editovat
+                    </Link>
+                    <DeleteButton videoId={video.id} />
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </main>
+  );
+}
+```
+
+### `app/admin/add/page.tsx`
+
+```typescript
+"use client";
+
+import { useState, FormEvent } from 'react';
+
+export default function AddVideoPage() {
+  const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [title, setTitle] = useState('');
+  const [summary, setSummary] = useState('');
+  const [transcript, setTranscript] = useState('');
+  const [structuredContent, setStructuredContent] = useState('');
+
+  const [isLoading, setIsLoading] = useState(false); 
+  const [isFetching, setIsFetching] = useState(false);
+  const [isAiGenerating, setIsAiGenerating] = useState(false); // Stav pro AI
+
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [fetchWarning, setFetchWarning] = useState<string | null>(null);
+  
+  // Úložiště pro debug logy
+  const [debugLogs, setDebugLogs] = useState<string[]>([]);
+
+  const addLog = (msg: string) => {
+     const timestamp = new Date().toLocaleTimeString();
+     setDebugLogs(prev => [`[${timestamp}] ${msg}`, ...prev]);
+  };
+
+  const handleFetchFromYoutube = async () => {
+    if (!youtubeUrl) return;
+    
+    setIsFetching(true);
+    setFetchWarning(null);
+    setError(null);
+    setDebugLogs([]); 
+    addLog(`Start request for URL: ${youtubeUrl}`);
+
+    try {
+      const res = await fetch(`/api/youtube/fetch-data?url=${encodeURIComponent(youtubeUrl)}`);
+      const data = await res.json();
+
+      if (data.debugLogs) {
+          setDebugLogs(prev => [...data.debugLogs, ...prev]);
+      }
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Nepodařilo se stáhnout data z YouTube');
+      }
+
+      if (data.title) setTitle(data.title);
+      if (data.description) setSummary(data.description);
+      
+      if (typeof data.transcript === 'string') {
+        setTranscript(data.transcript);
+        addLog(`Přepis stažen (${data.transcript.length} znaků)`);
+      } else {
+        setFetchWarning('Metadata stažena, ale titulky nebyly nalezeny.');
+      }
+
+      if (data.warning) {
+         setFetchWarning(data.warning);
+      }
+
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message);
+      addLog(`Chyba YT: ${err.message}`);
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
+  // --- TOTO JE TA UPRAVENÁ FUNKCE PRO AI ---
+  const handleAiGenerate = async () => {
+    if (!transcript) return;
+
+    setIsAiGenerating(true);
+    setError(null);
+    // Vyčistíme staré logy ať vidíme jen AI akci
+    setDebugLogs([]); 
+    addLog('⚡ Inicializace AI modelu...');
+    addLog('📄 Odesílám přepis na server...');
+
+    try {
+      const res = await fetch('/api/ai/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ transcript }),
+      });
+
+      addLog(`📡 Server odpověděl: Status ${res.status} ${res.statusText}`);
+
+      // 1. Přečteme odpověď jako text (raw), abychom viděli, co server poslal
+      const rawText = await res.text();
+      addLog(`📦 Přijato dat: ${rawText.length} znaků`);
+
+      // 2. Zkusíme to parsovat jako JSON
+      let data;
+      try {
+          data = JSON.parse(rawText);
+      } catch (e) {
+          console.error("JSON Parse Error:", e);
+          console.log("Raw Text:", rawText);
+          throw new Error(`Server nevrátil platný JSON. Přišlo: "${rawText.substring(0, 50)}..."`);
+      }
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Chyba při generování obsahu');
+      }
+
+      // 3. Kontrola obsahu
+      if (!data.content) {
+          addLog('⚠️ Varování: Pole "content" v odpovědi je prázdné!');
+      } else {
+          addLog(`✅ Obsah v pořádku (${data.content.length} znaků). Vkládám...`);
+          setStructuredContent(data.content);
+      }
+      
+    } catch (err: any) {
+      console.error(err);
+      addLog(`❌ KRITICKÁ CHYBA: ${err.message}`);
+      setError(`Chyba AI: ${err.message}`);
+    } finally {
+      setIsAiGenerating(false);
+    }
+  };
+  // -----------------------------------------
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const res = await fetch('/api/videos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          youtubeUrl,
+          title,
+          summary,
+          transcript, 
+          structuredContent,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Něco se pokazilo');
+      }
+
+      setSuccess('Video bylo úspěšně přidáno!');
+      setYoutubeUrl('');
+      setTitle('');
+      setSummary('');
+      setTranscript('');
+      setStructuredContent('');
+      setFetchWarning(null);
+      setDebugLogs([]);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
+      <h1 className="text-2xl font-bold mb-6">Přidat nové video</h1>
+      
+      {/* DIAGNOSTICKÝ LOG PANEL */}
+      {debugLogs.length > 0 && (
+        <div className="mb-6 p-3 bg-black border border-gray-700 rounded font-mono text-xs text-green-400 max-h-48 overflow-y-auto shadow-inner">
+            <strong className="block mb-1 text-gray-500 border-b border-gray-800 pb-1">SYSTEM LOG:</strong>
+            {debugLogs.map((log, i) => (
+                <div key={i} className="py-0.5 border-b border-gray-900 last:border-0">{log}</div>
+            ))}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        
+        <div>
+          <label htmlFor="youtubeUrl" className="block text-sm font-medium text-gray-300">
+            YouTube URL
+          </label>
+          <div className="mt-1 flex gap-2">
+            <input
+              type="text"
+              id="youtubeUrl"
+              value={youtubeUrl}
+              onChange={(e) => setYoutubeUrl(e.target.value)}
+              required
+              className="block w-full rounded-md border-gray-600 bg-gray-800 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-white p-2"
+              placeholder="https://www.youtube.com/watch?v=..."
+            />
+            <button
+              type="button"
+              onClick={handleFetchFromYoutube}
+              disabled={isFetching || !youtubeUrl}
+              className="shrink-0 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center"
+            >
+              {isFetching ? 'Načítám...' : 'Načíst data z YouTube'}
+            </button>
+          </div>
+          {fetchWarning && (
+            <p className="mt-2 text-sm text-yellow-400">{fetchWarning}</p>
+          )}
+        </div>
+
+        <div>
+          <label htmlFor="title" className="block text-sm font-medium text-gray-300">
+            Název videa
+          </label>
+          <input
+            type="text"
+            id="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+            className="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-white p-2"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="summary" className="block text-sm font-medium text-gray-300">
+            Shrnutí / Popis
+          </label>
+          <textarea
+            id="summary"
+            rows={5}
+            value={summary}
+            onChange={(e) => setSummary(e.target.value)}
+            required
+            className="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-white p-2"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="transcript" className="block text-sm font-medium text-gray-300">
+            Přepis videa (Transcript)
+          </label>
+          <textarea
+            id="transcript"
+            rows={8}
+            value={transcript}
+            onChange={(e) => setTranscript(e.target.value)}
+            className="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-white p-2 text-sm font-mono bg-gray-900"
+          />
+        </div>
+
+        {/* TLAČÍTKO PRO AI GENERATOR */}
+        <div>
+            <div className="flex justify-between items-end mb-2">
+                <label htmlFor="structuredContent" className="block text-sm font-medium text-gray-300">
+                    Strukturovaný Obsah (Kapitoly)
+                </label>
+                
+                <button
+                    type="button"
+                    onClick={handleAiGenerate}
+                    disabled={!transcript || isAiGenerating}
+                    className={`text-xs font-bold py-1 px-3 rounded transition-colors flex items-center gap-2 ${
+                        !transcript 
+                        ? 'bg-gray-700 text-gray-400 cursor-not-allowed' 
+                        : 'bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-900/20'
+                    }`}
+                >
+                    {isAiGenerating ? (
+                    <>
+                        <span className="animate-spin">⚙️</span> Generuji...
+                    </>
+                    ) : (
+                    <>
+                        ✨ Vytvořit obsah pomocí AI
+                    </>
+                    )}
+                </button>
+            </div>
+
+            <textarea
+                id="structuredContent"
+                rows={10}
+                value={structuredContent}
+                onChange={(e) => setStructuredContent(e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-white p-2 font-mono"
+                placeholder="Zde se objeví vygenerovaný obsah..."
+            />
+        </div>
+
+        <div>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
+          >
+            {isLoading ? 'Ukládání...' : 'Uložit video'}
+          </button>
+        </div>
+      </form>
+
+      {success && <p className="mt-4 text-sm text-green-500 text-center font-bold">{success}</p>}
+      {error && <p className="mt-4 text-sm text-red-500 text-center font-bold">{error}</p>}
+    </div>
+  );
+}
+```
+
+### `app/admin/edit/[id]/page.tsx`
+
+```typescript
+"use client";
+
+import { useState, FormEvent, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
+
+interface Collection {
+  id: string;
+  name: string;
+}
+
+interface VideoData {
+  youtubeId: string;
+  title: string;
+  summary: string;
+  transcript?: string | null;
+  chapters?: { text: string }[];
+  collections?: Collection[];
+}
+
+export default function EditVideoPage() {
+  const router = useRouter();
+  const params = useParams();
+  const id = params.id as string;
+
+  // --- Stavy formuláře ---
+  const [title, setTitle] = useState('');
+  const [summary, setSummary] = useState('');
+  const [transcript, setTranscript] = useState('');
+  const [structuredContent, setStructuredContent] = useState('');
+  
+  // --- Stavy pro sbírky ---
+  const [allCollections, setAllCollections] = useState<Collection[]>([]);
+  const [selectedCollectionIds, setSelectedCollectionIds] = useState<string[]>([]);
+
+  // --- Stavy UI ---
+  const [youtubeId, setYoutubeId] = useState('');
+  const [isPageLoading, setIsPageLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
+  
+  // NOVÉ: Stav pro AI
+  const [isAiGenerating, setIsAiGenerating] = useState(false);
+  
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [fetchWarning, setFetchWarning] = useState<string | null>(null);
+
+  // LOGOVÁNÍ (Stejné jako v Add page)
+  const [debugLogs, setDebugLogs] = useState<string[]>([]);
+  const addLog = (msg: string) => {
+      const timestamp = new Date().toLocaleTimeString();
+      setDebugLogs(prev => [`[${timestamp}] ${msg}`, ...prev]);
+  };
+
+  // 1. Načtení dat při startu
+  useEffect(() => {
+    if (!id) return;
+
+    const loadData = async () => {
+      setIsPageLoading(true);
+      try {
+        const [videoRes, collectionsRes] = await Promise.all([
+          fetch(`/api/videos/${id}`),
+          fetch('/api/collections')
+        ]);
+
+        if (!videoRes.ok) throw new Error('Nepodařilo se načíst data videa.');
+        if (!collectionsRes.ok) throw new Error('Nepodařilo se načíst seznam sbírek.');
+
+        const videoData: VideoData = await videoRes.json();
+        const collectionsData: Collection[] = await collectionsRes.json();
+
+        setTitle(videoData.title);
+        setSummary(videoData.summary);
+        setYoutubeId(videoData.youtubeId);
+        if (videoData.transcript) setTranscript(videoData.transcript);
+
+        let content = '';
+        if (videoData.chapters && videoData.chapters.length > 0) {
+          content = videoData.chapters.map((ch: any) => ch.text).join('\n');
+        }
+        setStructuredContent(content);
+
+        setAllCollections(collectionsData);
+        if (videoData.collections) {
+          const initialIds = videoData.collections.map(col => col.id);
+          setSelectedCollectionIds(initialIds);
+        }
+
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setIsPageLoading(false);
+      }
+    };
+
+    loadData();
+  }, [id]);
+
+  const toggleCollection = (collectionId: string) => {
+    setSelectedCollectionIds(prev => {
+      if (prev.includes(collectionId)) {
+        return prev.filter(id => id !== collectionId);
+      } else {
+        return [...prev, collectionId];
+      }
+    });
+  };
+
+  // 2. Načtení z YouTube (Refresh)
+  const handleFetchFromYoutube = async () => {
+    if (!youtubeId) return;
+
+    const reconstructedUrl = `https://www.youtube.com/watch?v=${youtubeId}`;
+    
+    setIsFetching(true);
+    setFetchWarning(null);
+    setDebugLogs([]);
+    addLog(`Aktualizuji data pro ID: ${youtubeId}`);
+    
+    try {
+      const res = await fetch(`/api/youtube/fetch-data?url=${encodeURIComponent(reconstructedUrl)}`);
+      const data = await res.json();
+
+      if (data.debugLogs) {
+          setDebugLogs(prev => [...data.debugLogs, ...prev]);
+      }
+
+      if (!res.ok) throw new Error(data.message || 'Chyba při stahování');
+
+      if (!title || confirm('Chcete přepsat stávající NÁZEV novým z YouTube?')) {
+         if (data.title) setTitle(data.title);
+      }
+      if (!summary || confirm('Chcete přepsat stávající SHRNUTÍ novým z YouTube?')) {
+         if (data.description) setSummary(data.description);
+      }
+      
+      if (data.transcript) {
+        if (!transcript || confirm('Chcete nahradit stávající PŘEPIS nově staženým?')) {
+           setTranscript(data.transcript);
+           addLog('Přepis aktualizován.');
+        }
+      } else {
+        setFetchWarning('Metadata stažena, ale titulky nebyly nalezeny.');
+      }
+
+    } catch (err: any) {
+      addLog(`Chyba: ${err.message}`);
+      alert('Chyba: ' + err.message);
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
+  // 3. AI GENERATOR (Robustní verze)
+  const handleAiGenerate = async () => {
+    if (!transcript) return;
+
+    setIsAiGenerating(true);
+    setFetchWarning(null);
+    setDebugLogs([]); // Reset logu pro čistý přehled AI akce
+    addLog('⚡ Inicializace AI modelu...');
+    addLog('📄 Odesílám přepis na server...');
+
+    try {
+      const res = await fetch('/api/ai/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ transcript }),
+      });
+
+      addLog(`📡 Server odpověděl: Status ${res.status}`);
+      const rawText = await res.text();
+      
+      let data;
+      try {
+          data = JSON.parse(rawText);
+      } catch (e) {
+          throw new Error('Server nevrátil platný JSON. Viz konzole.');
+      }
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Chyba při generování obsahu');
+      }
+
+      if (structuredContent && !confirm('Pole již obsahuje data. Chcete je přepsat výstupem z AI?')) {
+          addLog('⚠️ Operace zrušena uživatelem.');
+          return;
+      }
+
+      if (data.content) {
+        setStructuredContent(data.content);
+        addLog(`✅ Obsah v pořádku (${data.content.length} znaků). Vloženo.`);
+        setSuccess('AI obsah byl vygenerován.');
+      }
+
+    } catch (err: any) {
+      console.error(err);
+      addLog(`❌ Chyba: ${err.message}`);
+      setError(`Chyba AI: ${err.message}`);
+    } finally {
+      setIsAiGenerating(false);
+    }
+  };
+
+  // 4. Odeslání formuláře
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const res = await fetch(`/api/videos/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title,
+          summary,
+          transcript,
+          structuredContent,
+          collectionIds: selectedCollectionIds,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Aktualizace se nezdařila');
+      }
+
+      setSuccess('Záznam byl úspěšně aktualizován!');
+      setDebugLogs([]);
+      
+      setTimeout(() => {
+        router.push('/admin/manage');
+      }, 1500);
+
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (isPageLoading) {
+    return <p className="text-center p-8 text-gray-400">Načítání dat videa a sbírek...</p>;
+  }
+
+  return (
+    <div className="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Upravit video</h1>
+        
+        <button
+           type="button"
+           onClick={handleFetchFromYoutube}
+           disabled={isFetching}
+           className="text-xs bg-gray-700 hover:bg-gray-600 text-gray-200 py-1 px-3 rounded flex items-center gap-2 transition-colors"
+        >
+           {isFetching ? 'Stahuji...' : '↻ Aktualizovat data z YouTube'}
+        </button>
+      </div>
+
+      {/* DIAGNOSTICKÝ LOG PANEL */}
+      {debugLogs.length > 0 && (
+        <div className="mb-6 p-3 bg-black border border-gray-700 rounded font-mono text-xs text-green-400 max-h-48 overflow-y-auto shadow-inner">
+            <strong className="block mb-1 text-gray-500 border-b border-gray-800 pb-1">SYSTEM LOG:</strong>
+            {debugLogs.map((log, i) => (
+                <div key={i} className="py-0.5 border-b border-gray-900 last:border-0">{log}</div>
+            ))}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+
+        {/* YouTube ID (Read-only) */}
+        <div>
+          <label className="block text-sm font-medium text-gray-300">
+            YouTube ID
+          </label>
+          <input
+            type="text"
+            value={youtubeId}
+            disabled
+            className="mt-1 block w-full rounded-md border-gray-600 bg-gray-900 shadow-sm text-gray-400 p-2 cursor-not-allowed"
+          />
+          {fetchWarning && <p className="text-xs text-yellow-400 mt-1">{fetchWarning}</p>}
+        </div>
+
+        {/* Název */}
+        <div>
+          <label htmlFor="title" className="block text-sm font-medium text-gray-300">
+            Název videa
+          </label>
+          <input
+            type="text"
+            id="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+            className="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-white p-2"
+          />
+        </div>
+
+        {/* Shrnutí */}
+        <div>
+          <label htmlFor="summary" className="block text-sm font-medium text-gray-300">
+            Shrnutí / Popis
+          </label>
+          <textarea
+            id="summary"
+            rows={5}
+            value={summary}
+            onChange={(e) => setSummary(e.target.value)}
+            required
+            className="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-white p-2"
+          />
+        </div>
+
+        {/* --- SBÍRKY --- */}
+        <div className="bg-gray-900 p-4 rounded-md border border-gray-700">
+          <h3 className="text-sm font-medium text-gray-300 mb-3">Zařadit do sbírek</h3>
+          
+          {allCollections.length === 0 ? (
+            <p className="text-sm text-gray-500 italic">Zatím nemáte vytvořeny žádné sbírky.</p>
+          ) : (
+            <div className="space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
+              {allCollections.map((collection) => (
+                <label key={collection.id} className="flex items-center space-x-3 cursor-pointer hover:bg-gray-800 p-2 rounded transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={selectedCollectionIds.includes(collection.id)}
+                    onChange={() => toggleCollection(collection.id)}
+                    className="h-4 w-4 rounded border-gray-600 text-indigo-600 focus:ring-indigo-500 bg-gray-700"
+                  />
+                  <span className="text-sm text-gray-200">{collection.name}</span>
+                </label>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Přepis videa */}
+        <div>
+          <label htmlFor="transcript" className="block text-sm font-medium text-gray-300">
+            Přepis videa (Transcript)
+          </label>
+          <textarea
+            id="transcript"
+            rows={8}
+            value={transcript}
+            onChange={(e) => setTranscript(e.target.value)}
+            className="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-white p-2 text-sm font-mono bg-gray-900"
+            placeholder="Zde se objeví stažený přepis titulků..."
+          />
+          <p className="mt-1 text-xs text-gray-500">
+             Tento text bude použit pro AI generování kapitol.
+          </p>
+        </div>
+
+        {/* Strukturovaný obsah */}
+        <div>
+            <div className="flex justify-between items-end mb-1">
+                <label htmlFor="structuredContent" className="block text-sm font-medium text-gray-300">
+                    Strukturovaný Obsah (Kapitoly)
+                </label>
+                
+                <button
+                    type="button"
+                    onClick={handleAiGenerate}
+                    disabled={!transcript || isAiGenerating}
+                    className={`text-xs font-bold py-1 px-3 rounded transition-colors flex items-center gap-2 ${
+                        !transcript 
+                        ? 'bg-gray-700 text-gray-400 cursor-not-allowed' 
+                        : 'bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-900/20'
+                    }`}
+                >
+                    {isAiGenerating ? (
+                    <>
+                        <span className="animate-spin">⚙️</span> Generuji...
+                    </>
+                    ) : (
+                    <>
+                        ✨ Vytvořit obsah pomocí AI
+                    </>
+                    )}
+                </button>
+            </div>
+
+          <textarea
+            id="structuredContent"
+            rows={15}
+            value={structuredContent}
+            onChange={(e) => setStructuredContent(e.target.value)}
+            className="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-white p-2 font-mono"
+          />
+          <p className="mt-2 text-xs text-gray-400">
+            Formát: "1.1. Text (MM:SS - MM:SS)".
+          </p>
+        </div>
+
+        {/* Submit Button */}
+        <div>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 w-full sm:w-auto"
+          >
+            {isSubmitting ? 'Ukládání...' : 'Uložit změny'}
+          </button>
+        </div>
+      </form>
+
+      {success && (
+        <div className="mt-4 p-3 bg-green-900/30 border border-green-500 rounded text-green-400 text-sm text-center">
+          {success}
+        </div>
+      )}
+      {error && (
+        <div className="mt-4 p-3 bg-red-900/30 border border-red-500 rounded text-red-400 text-sm text-center">
+          {error}
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+### `app/admin/collections/page.tsx`
+
+```typescript
+"use client";
+import { useState, useEffect, FormEvent } from 'react';
+import { useSession } from 'next-auth/react';
+
+// Typ pro Collection
+interface Collection {
+  id: string;
+  name: string;
+  description: string | null;
+  isPublic: boolean;
+  _count?: { videos: number };
+}
+
+export default function CollectionsPage() {
+  const { data: session } = useSession();
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [name, setName] = useState('');
+  const [desc, setDesc] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  // 1. Načtení sbírek
+  const fetchCollections = async () => {
+    const res = await fetch('/api/collections');
+    if (res.ok) setCollections(await res.json());
+  };
+
+  useEffect(() => { fetchCollections(); }, []);
+
+  // 2. Vytvoření sbírky
+  const handleCreate = async (e: FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    await fetch('/api/collections', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, description: desc }),
+    });
+    setName(''); setDesc('');
+    fetchCollections(); // Refresh tabulky
+    setLoading(false);
+  };
+
+  // 3. Přepnutí veřejnosti (isPublic)
+  const togglePublic = async (col: Collection) => {
+    await fetch(`/api/collections/${col.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ isPublic: !col.isPublic }),
+    });
+    fetchCollections();
+  };
+
+  // 4. Smazání
+  const handleDelete = async (id: string) => {
+    if (!confirm('Opravdu smazat sbírku?')) return;
+    await fetch(`/api/collections/${id}`, { method: 'DELETE' });
+    fetchCollections();
+  };
+
+  if (session?.user.role !== 'ADMIN') return <p>Access Denied</p>;
+
+  return (
+    <div className="max-w-4xl mx-auto p-6">
+      <h1 className="text-3xl font-bold mb-6">Správa Sbírek</h1>
+      
+      {/* Formulář pro přidání */}
+      <form onSubmit={handleCreate} className="bg-gray-800 p-4 rounded mb-8 space-y-4">
+        <h2 className="text-xl font-semibold">Nová Sbírka</h2>
+        <div>
+            <label className="block text-sm text-gray-400">Název</label>
+            <input className="w-full p-2 rounded bg-gray-700" value={name} onChange={e => setName(e.target.value)} required />
+        </div>
+        <div>
+            <label className="block text-sm text-gray-400">Popis</label>
+            <input className="w-full p-2 rounded bg-gray-700" value={desc} onChange={e => setDesc(e.target.value)} />
+        </div>
+        <button disabled={loading} className="bg-indigo-600 px-4 py-2 rounded hover:bg-indigo-700 text-white">
+            {loading ? 'Vytvářím...' : 'Vytvořit Sbírku'}
+        </button>
+      </form>
+
+      {/* Seznam sbírek */}
+      <div className="space-y-4">
+        {collections.map(col => (
+            <div key={col.id} className="bg-gray-900 border border-gray-700 p-4 rounded flex justify-between items-center">
+                <div>
+                    <h3 className="font-bold text-lg">{col.name}</h3>
+                    <p className="text-sm text-gray-400">{col.description}</p>
+                    <span className="text-xs bg-gray-700 px-2 py-1 rounded mt-1 inline-block">
+                        Počet videí: {col._count?.videos || 0}
+                    </span>
+                </div>
+                <div className="flex items-center gap-4">
+                    <button 
+                        onClick={() => togglePublic(col)}
+                        className={`px-3 py-1 rounded text-sm ${col.isPublic ? 'bg-green-900 text-green-300' : 'bg-yellow-900 text-yellow-300'}`}
+                    >
+                        {col.isPublic ? 'VEŘEJNÁ' : 'SOUKROMÁ'}
+                    </button>
+                    <button onClick={() => handleDelete(col.id)} className="text-red-500 hover:underline">Smazat</button>
+                </div>
+            </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+### `app/api/auth/[...nextauth]/route.ts`
+
+```typescript
+import NextAuth, { AuthOptions } from "next-auth"; // <-- Importujeme AuthOptions
+import { PrismaClient } from "@prisma/client";
+import CredentialsProvider from "next-auth/providers/credentials";
+import * as bcrypt from "bcrypt";
+
+const prisma = new PrismaClient();
+
+// Explicitně typujeme naše volby, aby TypeScript mohl odvodit
+// typy pro všechny callbacky (tím se zbavíme chyby 'any').
+export const authOptions: AuthOptions = {
+  providers: [
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email },
+        });
+
+        if (!user) {
+          return null;
+        }
+
+        const isPasswordValid = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
+
+        if (!isPasswordValid) {
+          return null;
+        }
+
+        // Vracíme objekt, který odpovídá naší rozšířené definici 'User'
+        // (viz types/next-auth.d.ts)
+        return {
+          id: user.id,
+          email: user.email,
+          role: user.role, // Prisma enum (USER/ADMIN) je kompatibilní se stringem
+        };
+      },
+    }),
+  ],
+  session: {
+    strategy: "jwt",
+  },
+  callbacks: {
+    // Díky AuthOptions a typovému souboru již TypeScript ví,
+    // že 'token' je JWT a 'user' je náš rozšířený User.
+    async jwt({ token, user }) {
+      // Při prvním přihlášení (kdy 'user' existuje) přeneseme data do tokenu
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+      }
+      return token;
+    },
+    // Zde přeneseme data z tokenu (který je v cookie) do session
+    // (kterou vidí klient)
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id;
+        session.user.role = token.role;
+      }
+      return session;
+    },
+  },
+  pages: {
+    signIn: "/login",
+  },
+};
+
+const handler = NextAuth(authOptions);
+
+export { handler as GET, handler as POST };
+
+```
+
+### `app/api/videos/route.ts`
+
+```typescript
+import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { parseStructuredContent } from '@/lib/parser';
+
+const globalForPrisma = global as unknown as { prisma: PrismaClient };
+const prisma = globalForPrisma.prisma || new PrismaClient();
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+
+function extractYouTubeId(url: string): string | null {
+  const regex =
+    /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+  const match = url.match(regex);
+  return match ? match[1] : null;
+}
+
+export async function POST(request: Request) {
+  try {
+    // 1. Ověření sezení a role
+    const session = await getServerSession(authOptions);
+
+    if (!session || session.user?.role !== 'ADMIN') {
+      return new NextResponse(JSON.stringify({ message: 'Unauthorized' }), {
+        status: 403,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    // 2. Zpracování požadavku
+    const body = await request.json();
+    // NOVÉ: Přijímáme i 'transcript'
+    const { youtubeUrl, title, summary, structuredContent, transcript } = body;
+
+    if (!youtubeUrl || !title || !summary) {
+      return new NextResponse(JSON.stringify({ message: 'Missing required fields' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    const youtubeId = extractYouTubeId(youtubeUrl);
+    if (!youtubeId) {
+      return new NextResponse(JSON.stringify({ message: 'Invalid YouTube URL' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    // 3. Parsování kapitol
+    const parsedChapters = parseStructuredContent(structuredContent || '');
+
+    // 4. Transakce (Video + Transcript + Kapitoly)
+    const newVideo = await prisma.$transaction(async (tx) => {
+      // A. Vytvoření videa
+      const video = await tx.video.create({
+        data: {
+          youtubeId: youtubeId,
+          title: title,
+          summary: summary,
+          authorId: session.user.id,
+        },
+      });
+
+      // B. Uložení přepisu (pokud existuje) - NOVÉ
+      if (transcript && transcript.trim() !== '') {
+        await tx.transcript.create({
+          data: {
+            videoId: video.id,
+            content: transcript,
+            language: 'cs', // Defaultně předpokládáme češtinu, nebo dle detekce
+          }
+        });
+      }
+
+      // C. Vytvoření kapitol
+      if (parsedChapters.length > 0) {
+        const chapterData = parsedChapters.map((chapter, index) => ({
+          ...chapter,
+          order: index,
+          videoId: video.id,
+        }));
+
+        await tx.chapter.createMany({
+          data: chapterData,
+        });
+      }
+
+      return video;
+    });
+
+    return new NextResponse(JSON.stringify(newVideo), {
+      status: 201,
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message.startsWith('Neplatný formát řádku')) {
+        return new NextResponse(JSON.stringify({ message: error.message }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+      if ((error as any).code === 'P2002') {
+        return new NextResponse(JSON.stringify({ message: 'Video with this ID already exists' }), {
+          status: 409,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
+    console.error('API_VIDEOS_POST_ERROR', error);
+    return new NextResponse(JSON.stringify({ message: 'Internal Server Error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+}
+```
+
+### `app/api/videos/[id]/route.ts`
+
+```typescript
+import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { parseStructuredContent } from '@/lib/parser';
+
+const prisma = new PrismaClient();
+
+async function checkPermissions(
+  videoId: string,
+  session: any
+): Promise<{ allowed: boolean; video: any; error?: NextResponse }> {
+  if (!session) {
+    return {
+      allowed: false,
+      video: null,
+      error: new NextResponse(JSON.stringify({ message: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    };
+  }
+
+  // ÚPRAVA: Načítáme i transcript a collections
+  const video = await prisma.video.findUnique({
+    where: { id: videoId },
+    include: { 
+      chapters: { orderBy: { order: 'asc' } },
+      collections: true,
+      transcript: true // NOVÉ: Načtení přepisu
+    },
+  });
+
+  if (!video) {
+    return {
+      allowed: false,
+      video: null,
+      error: new NextResponse(JSON.stringify({ message: 'Video not found' }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    };
+  }
+
+  const isOwner = video.authorId === session.user.id;
+  const isAdmin = session.user.role === 'ADMIN';
+
+  if (!isOwner && !isAdmin) {
+    return {
+      allowed: false,
+      video: video,
+      error: new NextResponse(JSON.stringify({ message: 'Forbidden' }), {
+        status: 403,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    };
+  }
+
+  // Zploštění struktury pro frontend (aby transcript byl přímo string, ne objekt)
+  // Toto není nutné, pokud frontend počítá s objektem, ale pro jednoduchost:
+  const videoResponse = {
+    ...video,
+    transcript: video.transcript?.content || null // Vrátíme jen text nebo null
+  };
+
+  return { allowed: true, video: videoResponse };
+}
+
+export async function GET(
+  request: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await getServerSession(authOptions);
+    const params = await context.params;
+    const { id } = params; 
+
+    const { allowed, video, error } = await checkPermissions(id, session);
+    if (!allowed) return error;
+
+    return NextResponse.json(video);
+  } catch (error) {
+    console.error('API_VIDEOS_GET_ERROR', error);
+    return new NextResponse(JSON.stringify({ message: 'Internal Server Error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+}
+
+export async function PUT(
+  request: Request,
+  context: { params: Promise<{ id:string }> }
+) {
+  try {
+    const session = await getServerSession(authOptions);
+    const params = await context.params;
+    const { id } = params;
+
+    const { allowed, error } = await checkPermissions(id, session);
+    if (!allowed) return error;
+
+    const body = await request.json();
+    // NOVÉ: Načítáme i transcript
+    const { title, summary, structuredContent, collectionIds, transcript } = body;
+
+    const parsedChapters = parseStructuredContent(structuredContent || '');
+
+    const updatedVideo = await prisma.$transaction(async (tx) => {
+      // 1. Aktualizace videa
+      const video = await tx.video.update({
+        where: { id: id },
+        data: {
+          title,
+          summary,
+          updatedAt: new Date(),
+          collections: collectionIds ? {
+            set: collectionIds.map((cid: string) => ({ id: cid }))
+          } : undefined,
+        },
+      });
+
+      // 2. Aktualizace / Vytvoření přepisu (Upsert) - NOVÉ
+      if (transcript !== undefined) {
+        if (transcript.trim() === '') {
+            // Pokud je prázdný, můžeme ho smazat, aby nezabíral místo? 
+            // Pro teď raději aktualizujeme na prázdný string nebo necháme být.
+            // Použijeme upsert, který zvládne obojí.
+        }
+        
+        await tx.transcript.upsert({
+          where: { videoId: id },
+          create: {
+            videoId: id,
+            content: transcript,
+          },
+          update: {
+            content: transcript,
+          },
+        });
+      }
+
+      // 3. Aktualizace kapitol
+      await tx.chapter.deleteMany({
+        where: { videoId: id },
+      });
+
+      if (parsedChapters.length > 0) {
+        const chapterData = parsedChapters.map((chapter, index) => ({
+          ...chapter,
+          order: index,
+          videoId: id,
+        }));
+        await tx.chapter.createMany({
+          data: chapterData,
+        });
+      }
+
+      return video;
+    });
+
+    return NextResponse.json(updatedVideo);
+  } catch (error: any) {
+    if (error.message.startsWith('Neplatný formát řádku')) {
+      return new NextResponse(JSON.stringify({ message: error.message }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    console.error('API_VIDEOS_PUT_ERROR', error);
+    return new NextResponse(JSON.stringify({ message: 'Internal Server Error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+}
+
+export async function DELETE(
+  request: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await getServerSession(authOptions);
+    const params = await context.params;
+    const { id } = params;
+
+    const { allowed, error } = await checkPermissions(id, session);
+    if (!allowed) return error;
+
+    // Díky onDelete: Cascade v Prisma schématu se Transcript smaže automaticky
+    await prisma.video.delete({
+      where: { id: id },
+    });
+
+    return new NextResponse(null, { status: 204 });
+  } catch (error) {
+    console.error('API_VIDEOS_DELETE_ERROR', error);
+    return new NextResponse(JSON.stringify({ message: 'Internal Server Error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+}
+```
+
+### `app/api/collections/route.ts`
+
+```typescript
+import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+
+const prisma = new PrismaClient();
+
+// POST: Vytvoření nové sbírky
+export async function POST(request: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || session.user?.role !== 'ADMIN') { 
+      return new NextResponse(JSON.stringify({ message: 'Unauthorized' }), { status: 403 });
+    }
+
+    const body = await request.json();
+    const { name, description } = body;
+
+    if (!name) {
+      return new NextResponse(JSON.stringify({ message: 'Name is required' }), { status: 400 });
+    }
+
+    const collection = await prisma.collection.create({
+      data: {
+        name,
+        description,
+        authorId: session.user.id,
+        isPublic: false,
+      },
+    });
+
+    return NextResponse.json(collection, { status: 201 });
+  } catch (error) {
+    console.error('API_COLLECTIONS_POST_ERROR', error);
+    return new NextResponse(JSON.stringify({ message: 'Internal Error' }), { status: 500 });
+  }
+}
+
+// GET: Seznam sbírek (Respektuje RBAC)
+export async function GET(request: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return new NextResponse(JSON.stringify({ message: 'Unauthorized' }), { status: 401 });
+    }
+
+    const where = session.user.role === 'ADMIN' ? {} : { authorId: session.user.id };
+
+    const collections = await prisma.collection.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      include: { _count: { select: { videos: true } } } 
+    });
+
+    return NextResponse.json(collections);
+  } catch (error) {
+    console.error('API_COLLECTIONS_GET_ERROR', error);
+    return new NextResponse(JSON.stringify({ message: 'Internal Error' }), { status: 500 });
+  }
+}
+
+```
+
+### `app/api/collections/[id]/route.ts`
+
+```typescript
+import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+
+// DŮLEŽITÉ: Vypnutí cachování pro tento endpoint
+export const dynamic = 'force-dynamic';
+
+const prisma = new PrismaClient();
+
+// Pomocná funkce pro kontrolu práv
+async function checkPermissions(collectionId: string, session: any) {
+  if (!session) {
+    return { allowed: false, code: 401, message: 'No session' };
+  }
+
+  try {
+    const collection = await prisma.collection.findUnique({ 
+        where: { id: collectionId } 
+    });
+  
+    if (!collection) {
+        return { allowed: false, code: 404, message: 'Collection not found' };
+    }
+
+    const isOwner = collection.authorId === session.user.id;
+    const isAdmin = session.user.role === 'ADMIN';
+
+    if (!isOwner && !isAdmin) {
+        return { allowed: false, code: 403, message: 'Forbidden' };
+    }
+
+    return { allowed: true, collection };
+  } catch (e) {
+      console.error("[checkPermissions] DB Error:", e);
+      return { allowed: false, code: 500, message: 'DB Error' };
+  }
+}
+
+// PUT: Update sbírky (Změna viditelnosti, názvu)
+export async function PUT(request: Request, context: { params: Promise<{ id: string }> }) {
+  try {
+    const session = await getServerSession(authOptions);
+    const params = await context.params;
+    const id = params.id;
+
+    const { allowed, code, message } = await checkPermissions(id, session);
+    
+    if (!allowed) {
+       return new NextResponse(JSON.stringify({ message }), { status: code });
+    }
+
+    const body = await request.json();
+    const { name, description, isPublic } = body;
+
+    const updated = await prisma.collection.update({
+      where: { id },
+      data: { name, description, isPublic },
+    });
+
+    return NextResponse.json(updated);
+  } catch (error) {
+    console.error('[PUT] Error:', error);
+    return new NextResponse(JSON.stringify({ message: 'Internal Error' }), { status: 500 });
+  }
+}
+
+// DELETE: Smazání sbírky
+export async function DELETE(request: Request, context: { params: Promise<{ id: string }> }) {
+  try {
+    const session = await getServerSession(authOptions);
+    const params = await context.params;
+    const id = params.id;
+
+    const { allowed, code, message } = await checkPermissions(id, session);
+    if (!allowed) {
+        return new NextResponse(JSON.stringify({ message }), { status: code });
+    }
+
+    await prisma.collection.delete({ where: { id } });
+    return new NextResponse(null, { status: 204 });
+  } catch (error) {
+    console.error('[DELETE] Error:', error);
+    return new NextResponse(JSON.stringify({ message: 'Internal Error' }), { status: 500 });
+  }
+}
+
+```
+
+### `app/api/youtube/fetch-data/route.ts`
+
+```typescript
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { Innertube, UniversalCache } from 'youtubei.js';
+import he from 'he';
+
+// --- LOGOVACÍ ÚLOŽIŠTĚ ---
+let debugLogs: string[] = [];
+function log(msg: string) {
+  const timestamp = new Date().toLocaleTimeString();
+  console.log(`[${timestamp}] ${msg}`);
+  debugLogs.push(`[${timestamp}] ${msg}`);
+}
+
+function extractYouTubeId(url: string): string | null {
+  const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+  const match = url.match(regex);
+  return match ? match[1] : null;
+}
+
+// Pomocná funkce pro formátování času (ms -> MM:SS)
+function formatTime(ms: number): string {
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `[${minutes}:${seconds.toString().padStart(2, '0')}]`;
+}
+
+// Pomocná funkce pro ruční stažení obsahu
+async function fetchContent(url: string): Promise<string> {
+    const res = await fetch(url, {
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Cookie': 'SOCS=CAI'
+        }
+    });
+    if (!res.ok) throw new Error(`Status ${res.status}`);
+    return res.text();
+}
+
+// Fallback 1: HTML Scraping (Vylepšený - Googlebot Style)
+async function scrapeMetadataFromHtml(videoId: string) {
+    try {
+        log('Fallback (HTML/Googlebot): Stahuji stránku...');
+        const url = `https://www.youtube.com/watch?v=${videoId}`;
+        
+        // Tváříme se jako Googlebot - YouTube mu servíruje statická metadata bez JS/Cookies
+        const res = await fetch(url, {
+            headers: {
+                'User-Agent': 'Googlebot/2.1 (+http://www.google.com/bot.html)',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.5'
+                // Žádné cookies!
+            }
+        });
+        
+        if (!res.ok) throw new Error(`HTML fetch status ${res.status}`);
+        const html = await res.text();
+        
+        // Hledáme standardní OpenGraph tagy
+        const titleMatch = html.match(/<meta property="og:title" content="(.*?)"/);
+        const descMatch = html.match(/<meta property="og:description" content="(.*?)"/);
+        
+        const title = titleMatch ? he.decode(titleMatch[1]) : '';
+        const description = descMatch ? he.decode(descMatch[1]) : '';
+        
+        if (title) log(`HTML Scraping úspěšný! Title: "${title.substring(0, 20)}..."`);
+        if (description) log(`HTML Description nalezen (${description.length} znaků).`);
+        
+        return { title, description };
+    } catch (e: any) {
+        log(`HTML Scraping selhal: ${e.message}`);
+        return { title: '', description: '' };
+    }
+}
+
+// Fallback 2: oEmbed API (Záloha pro Title)
+async function fetchOEmbedMetadata(videoId: string) {
+    try {
+        log('Fallback (oEmbed): Volám oficiální API...');
+        const url = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`;
+        const res = await fetch(url, {
+             headers: { 'User-Agent': 'Googlebot/2.1 (+http://www.google.com/bot.html)' }
+        });
+        
+        if (!res.ok) throw new Error(`Status ${res.status}`);
+        const json = await res.json();
+        
+        log(`oEmbed úspěšný! Title: "${json.title}"`);
+        return { title: json.title || '', description: '' };
+    } catch (e: any) {
+        log(`oEmbed selhal: ${e.message}`);
+        return { title: '', description: '' };
+    }
+}
+
+// Fallback 3: Invidious API (Poslední instance)
+async function fetchInvidiousMetadata(videoId: string) {
+    const instances = [
+        'https://inv.tux.pizza',
+        'https://vid.puffyan.us',
+        'https://invidious.drgns.space'
+    ];
+
+    for (const instance of instances) {
+        try {
+            log(`Fallback (Invidious): Zkouším ${instance}...`);
+            // Krátký timeout, ať nezdržujeme
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 3000);
+            
+            const res = await fetch(`${instance}/api/v1/videos/${videoId}`, {
+                 headers: { 'User-Agent': 'Mozilla/5.0' },
+                 signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+            
+            if (res.ok) {
+                const json = await res.json();
+                const title = json.title || '';
+                const description = json.description || '';
+                log(`Invidious úspěšný!`);
+                return { title, description };
+            }
+        } catch (e) {
+            log(`Instance ${instance} selhala/timeout.`);
+        }
+    }
+    return { title: '', description: '' };
+}
+
+// Pomocná funkce pro ruční stažení XML titulků z baseUrl
+async function fetchManualTranscript(baseUrl: string): Promise<string | null> {
+    try {
+        const res = await fetch(baseUrl, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            }
+        });
+        const xml = await res.text();
+        
+        const regex = /<text[^>]*start="([\d.]+)"[^>]*>([\s\S]*?)<\/text>/g;
+        let match;
+        const parts = [];
+        
+        while ((match = regex.exec(xml)) !== null) {
+            const startSec = parseFloat(match[1]);
+            const content = he.decode(match[2].replace(/<[^>]*>/g, '')); 
+            if (content.trim()) {
+                const timeStr = formatTime(startSec * 1000);
+                parts.push(`${timeStr} ${content}`);
+            }
+        }
+        
+        if (parts.length > 0) {
+            return parts.join('\n');
+        }
+        
+    } catch (e) {
+        console.error('Manual fetch error:', e);
+    }
+    return null;
+}
+
+export async function GET(request: Request) {
+  debugLogs = [];
+  
+  try {
+    // 1. Auth
+    const session = await getServerSession(authOptions);
+    if (!session || session.user?.role !== 'ADMIN') {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
+    // 2. URL
+    const { searchParams } = new URL(request.url);
+    const url = searchParams.get('url');
+    log(`Start request for URL: ${url}`);
+
+    if (!url) return NextResponse.json({ message: 'Missing URL' }, { status: 400 });
+
+    const videoId = extractYouTubeId(url);
+    log(`Extracted Video ID: ${videoId}`);
+    
+    if (!videoId) return NextResponse.json({ message: 'Invalid ID' }, { status: 400 });
+
+    // 3. Inicializace InnerTube
+    log('Inicializuji youtubei.js (InnerTube)...');
+    const yt = await Innertube.create({
+        cache: new UniversalCache(false),
+        generate_session_locally: true,
+        lang: 'en',
+        location: 'US' 
+    });
+
+    log('Získávám Info o videu (GetInfo)...');
+    const info = await yt.getInfo(videoId);
+    
+    // --- ZÍSKÁNÍ METADAT (Vícevrstvá strategie) ---
+    let title = info.basic_info.title || '';
+    let description = info.basic_info.short_description || '';
+
+    // Stupeň 2: RAW data z API
+    if (!title) {
+        log('Basic info prázdné. Zkouším RAW...');
+        try {
+            // @ts-ignore
+            const videoDetails = info.player_response?.videoDetails;
+            if (videoDetails) {
+                title = videoDetails.title || '';
+                description = videoDetails.shortDescription || '';
+                log(`RAW metadata OK.`);
+            }
+        } catch (e) {}
+    }
+
+    // Stupeň 3: HTML Scraping (Googlebot - nejlepší pro Description)
+    if (!title || !description) {
+        const htmlData = await scrapeMetadataFromHtml(videoId);
+        if (!title && htmlData.title) title = htmlData.title;
+        if (!description && htmlData.description) description = htmlData.description;
+    }
+
+    // Stupeň 4: Invidious API (Kdyby Googlebot selhal)
+    if (!description) {
+        log('Popis stále chybí. Volám Invidious API...');
+        const invData = await fetchInvidiousMetadata(videoId);
+        if (invData.description) description = invData.description;
+        if (!title && invData.title) title = invData.title;
+    }
+
+    // Stupeň 5: oEmbed (Poslední záchrana pro Title)
+    if (!title) {
+        const oembedData = await fetchOEmbedMetadata(videoId);
+        if (oembedData.title) title = oembedData.title;
+    }
+    // -------------------------------------------
+
+    log(`Finální Metadata - Title: "${title.substring(0, 20)}..."`);
+    if (description) log(`Popis získán (${description.length} znaků).`);
+    else log(`! Popis se nepodařilo získat.`);
+
+    // 4. Získání přepisu (Transcript)
+    let transcript = '';
+    let warning = null;
+
+    try {
+        log('Pokus 1: info.getTranscript()...');
+        const transcriptData = await info.getTranscript();
+        
+        if (transcriptData?.transcript?.content?.body?.initial_segments) {
+            const segments = transcriptData.transcript.content.body.initial_segments;
+            log(`Úspěch! Nalezeno ${segments.length} segmentů.`);
+            
+            transcript = segments.map((seg: any) => {
+                const text = seg.snippet?.text || '';
+                const startMs = parseInt(seg.start_ms || '0', 10);
+                const timeStr = formatTime(startMs);
+                return `${timeStr} ${text}`;
+            }).join('\n');
+
+            log(`Přepis zformátován (s časovými značkami).`);
+        }
+    } catch (e: any) {
+        log(`Pokus 1 selhal: ${e.message}.`);
+        
+        // Fallback pro přepis (XML)
+        log('Pokus 2: Hledám caption_tracks (Fallback)...');
+        const captions = (info as any).captions?.caption_tracks;
+        
+        if (captions && Array.isArray(captions) && captions.length > 0) {
+            const manualTrack = captions.find((t: any) => t.kind !== 'asr');
+            const targetTrack = manualTrack || captions[0];
+            
+            if (targetTrack.base_url) {
+                log('Stahuji XML z base_url...');
+                const manualText = await fetchManualTranscript(targetTrack.base_url);
+                if (manualText && manualText.length > 0) {
+                    transcript = manualText;
+                    log(`Úspěch (Fallback XML).`);
+                    warning = `Použit fallback režim (XML).`;
+                }
+            }
+        }
+    }
+
+    if (!transcript) {
+        if (!warning) warning = 'Titulky se nepodařilo získat.';
+        log('Všechny pokusy selhaly.');
+    }
+
+    return NextResponse.json({
+      title,
+      description,
+      transcript,
+      warning,
+      debugLogs 
+    });
+
+  } catch (error: any) {
+    log(`CRITICAL ERROR: ${error.message}`);
+    return NextResponse.json({ 
+        message: 'Internal Server Error', 
+        error: error.message,
+        debugLogs 
+    }, { status: 500 });
+  }
+}
+```
+
+### `app/api/ai/generate/route.ts`
+
+```typescript
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+export async function POST(request: Request) {
+  try {
+    // 1. Diagnostika API Klíče
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      console.error('CRITICAL: GEMINI_API_KEY is missing');
+      return NextResponse.json({ message: 'Server Error: API Key not configured' }, { status: 500 });
+    }
+
+    // 2. Bezpečnostní kontrola
+    const session = await getServerSession(authOptions);
+    if (!session || session.user?.role !== 'ADMIN') {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 403 });
+    }
+
+    // 3. Získání dat
+    const body = await request.json();
+    const { transcript } = body;
+
+    if (!transcript || typeof transcript !== 'string') {
+      return NextResponse.json({ message: 'Chybí přepis videa (transcript).' }, { status: 400 });
+    }
+
+    // 4. Příprava Promptu
+    const systemPrompt = `
+Prosím z přiloženého přepisu videa v příloze vytvoř jednoduchý jednoúrovňový strukturovaný obsah tohoto videa, kde každá odrážka bude číslována svým pořadím ve formátu "X."
+    `.trim();
+
+    const fullPrompt = `${systemPrompt}\n\n--- PŘEPIS VIDEA ---\n${transcript}`;
+
+    // 5. Inicializace a volání AI
+    const genAI = new GoogleGenerativeAI(apiKey);
+    
+    // POUŽÍVÁME MODEL Z VAŠEHO SEZNAMU (gemini-2.0-flash)
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+
+    console.log('🤖 Generuji obsah pomocí modelu gemini-2.0-flash...');
+    
+    const result = await model.generateContent(fullPrompt);
+    const response = await result.response;
+    const text = response.text();
+
+    console.log('✅ AI obsah úspěšně vygenerován.');
+
+    // 6. Návrat výsledku
+    return NextResponse.json({ 
+      content: text,
+      message: 'Obsah úspěšně vygenerován.' 
+    });
+
+  } catch (error: any) {
+    console.error('AI_GENERATE_ERROR', error);
+    return NextResponse.json({ 
+      message: 'Chyba při komunikaci s AI: ' + (error.message || 'Unknown error') 
+    }, { status: 500 });
+  }
+}
+```
+
+### `lib/parser.ts`
+
+```typescript
+// Definujeme typ pro návratovou hodnotu
+export interface ParsedChapter {
+  text: string;
+  startTime: number;
+  endTime: number | null;
+  level: number;
+}
+
+/**
+ * Převede časový řetězec (MM:SS) na sekundy.
+ */
+function timeToSeconds(timeStr: string): number {
+  const parts = timeStr.split(':').map(Number);
+  if (parts.length === 2) {
+    return parts[0] * 60 + parts[1];
+  }
+  // TODO: Zvážit ošetření neplatného formátu, i když Regex by to měl chytit
+  return 0;
+}
+
+/**
+ * Parsování strukturovaného obsahu z formátu MTF-H [cite: 185]
+ */
+export function parseStructuredContent(
+  rawText: string
+): Omit<ParsedChapter, 'order'>[] {
+  const lines = rawText.split('\n').filter((line) => line.trim() !== ''); // Ignoruj prázdné řádky [cite: 218]
+  const chapters: Omit<ParsedChapter, 'order'>[] = [];
+
+  for (const line of lines) {
+    const trimmedLine = line.trim();
+
+    // 1. Extrakce časové značky na konci [cite: 201]
+    const timeRegex = /\((\d{1,2}:\d{2})(?:\s*-\s*(\d{1,2}:\d{2}))?\)$/;
+    const timeMatch = trimmedLine.match(timeRegex);
+
+    if (!timeMatch) {
+      throw new Error(
+        `Neplatný formát řádku: Chybí časová značka (MM:SS) na konci. Řádek: "${trimmedLine}"`
+      ); // 
+    }
+
+    const startTime = timeToSeconds(timeMatch[1]);
+    const endTime = timeMatch[2] ? timeToSeconds(timeMatch[2]) : null;
+
+    // 2. Extrakce základu (vše před časem) [cite: 202]
+    const baseText = trimmedLine.substring(0, timeMatch.index).trim();
+
+    // 3. Extrakce číslování a výpočet úrovně [cite: 203]
+    const numberingRegex = /^(\d+(?:\.\d+)*)\.?\s+/;
+    const numberingMatch = baseText.match(numberingRegex);
+
+    if (!numberingMatch) {
+      throw new Error(
+        `Neplatný formát řádku: Chybí hierarchické číslování (např. 1.1.) na začátku. Řádek: "${trimmedLine}"`
+      ); // 
+    }
+
+    // 4. Výpočet úrovně [cite: 204]
+    // "1." -> level 0
+    // "1.1." -> level 1
+    // "1.1.1." -> level 2
+    const level = numberingMatch[1].split('.').length - 1;
+
+    // 5. Uložení textu (ZMĚNA: Ukládáme celý původní řádek) [cite: 205]
+    const text = trimmedLine; // Celý řádek včetně časové značky
+
+    chapters.push({ text, startTime, endTime, level });
+  }
+
+  return chapters;
+}
+```
+
+### `app/video/[id]/page.tsx`
+
+```typescript
+import { PrismaClient } from '@prisma/client';
+import { notFound } from 'next/navigation';
+// 1. IMPORT WRAPPERU
+import VideoDetailClientWrapper from '@/components/VideoDetailClientWrapper';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { getServerSession } from 'next-auth';
+
+const prisma = new PrismaClient();
+
+interface VideoDetailPageProps {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
+export const dynamic = 'force-dynamic';
+
+export default async function VideoDetailPage({ params }: VideoDetailPageProps) {
+  // Await params (Next.js 15+)
+  const { id } = await params;
+
+  // 1. Načtení session a kontrola admin role
+  const session = await getServerSession(authOptions);
+  const isAdmin = session?.user?.role === 'ADMIN';
+
+  // 2. Načtení videa včetně kolekcí (pro kontrolu veřejnosti)
+  const video = await prisma.video.findUnique({
+    where: { id: id },
+    include: {
+      chapters: {
+        orderBy: {
+          order: 'asc', // Seřadíme kapitoly dle 'order'
+        },
+      },
+      // PŘIDÁNO: Načtení kolekcí pro kontrolu veřejnosti
+      collections: {
+        select: {
+          isPublic: true
+        }
+      }
+    },
+  });
+
+  if (!video) {
+    notFound();
+  }
+
+  // 3. Kontrola, zda je video ve veřejné sbírce
+  const isPublic = video.collections.some(col => col.isPublic);
+
+  // 4. Finální bezpečnostní kontrola
+  if (!isPublic && !isAdmin) {
+    notFound();
+  }
+
+  return (
+    // ZMĚNA: Zvětšena šířka stránky na max-w-7xl/max-w-screen-2xl/max-w-[1366px] pro nový layout
+    <main className="max-w-[1366px] mx-auto p-4 sm:p-6 lg:p-8">
+      {/* Název Videa (zůstává nahoře) */}
+      <h1 className="text-3xl font-bold mb-5">{video.title}</h1>
+
+      {/* 3. POUŽITÍ KLIENTSKÉHO WRAPPERU */}
+      {/* ZMĚNA: Předáváme nyní i 'summary' dovnitř wrapperu */}
+      <VideoDetailClientWrapper
+        youtubeId={video.youtubeId}
+        chapters={video.chapters}
+        summary={video.summary}
+      />
+
+      {/* ZMĚNA: Původní <div className="mt-8"> se shrnutím
+          byl odsud odstraněn a přesunut dovnitř
+          VideoDetailClientWrapperu, aby mohl být součástí layoutu.
+      */}
+    </main>
+  );
+}
+```
+

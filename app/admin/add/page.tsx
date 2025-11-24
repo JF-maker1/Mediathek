@@ -11,12 +11,19 @@ export default function AddVideoPage() {
 
   const [isLoading, setIsLoading] = useState(false); 
   const [isFetching, setIsFetching] = useState(false);
+  const [isAiGenerating, setIsAiGenerating] = useState(false); // Stav pro AI
+
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [fetchWarning, setFetchWarning] = useState<string | null>(null);
   
-  // NOVÉ: Úložiště pro debug logy
+  // Úložiště pro debug logy
   const [debugLogs, setDebugLogs] = useState<string[]>([]);
+
+  const addLog = (msg: string) => {
+     const timestamp = new Date().toLocaleTimeString();
+     setDebugLogs(prev => [`[${timestamp}] ${msg}`, ...prev]);
+  };
 
   const handleFetchFromYoutube = async () => {
     if (!youtubeUrl) return;
@@ -24,15 +31,15 @@ export default function AddVideoPage() {
     setIsFetching(true);
     setFetchWarning(null);
     setError(null);
-    setDebugLogs([]); // Reset logů
+    setDebugLogs([]); 
+    addLog(`Start request for URL: ${youtubeUrl}`);
 
     try {
       const res = await fetch(`/api/youtube/fetch-data?url=${encodeURIComponent(youtubeUrl)}`);
       const data = await res.json();
 
-      // Uložíme logy, pokud přišly
       if (data.debugLogs) {
-          setDebugLogs(data.debugLogs);
+          setDebugLogs(prev => [...data.debugLogs, ...prev]);
       }
 
       if (!res.ok) {
@@ -44,6 +51,7 @@ export default function AddVideoPage() {
       
       if (typeof data.transcript === 'string') {
         setTranscript(data.transcript);
+        addLog(`Přepis stažen (${data.transcript.length} znaků)`);
       } else {
         setFetchWarning('Metadata stažena, ale titulky nebyly nalezeny.');
       }
@@ -55,10 +63,67 @@ export default function AddVideoPage() {
     } catch (err: any) {
       console.error(err);
       setError(err.message);
+      addLog(`Chyba YT: ${err.message}`);
     } finally {
       setIsFetching(false);
     }
   };
+
+  // --- TOTO JE TA UPRAVENÁ FUNKCE PRO AI ---
+  const handleAiGenerate = async () => {
+    if (!transcript) return;
+
+    setIsAiGenerating(true);
+    setError(null);
+    // Vyčistíme staré logy ať vidíme jen AI akci
+    setDebugLogs([]); 
+    addLog('⚡ Inicializace AI modelu...');
+    addLog('📄 Odesílám přepis na server...');
+
+    try {
+      const res = await fetch('/api/ai/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ transcript }),
+      });
+
+      addLog(`📡 Server odpověděl: Status ${res.status} ${res.statusText}`);
+
+      // 1. Přečteme odpověď jako text (raw), abychom viděli, co server poslal
+      const rawText = await res.text();
+      addLog(`📦 Přijato dat: ${rawText.length} znaků`);
+
+      // 2. Zkusíme to parsovat jako JSON
+      let data;
+      try {
+          data = JSON.parse(rawText);
+      } catch (e) {
+          console.error("JSON Parse Error:", e);
+          console.log("Raw Text:", rawText);
+          throw new Error(`Server nevrátil platný JSON. Přišlo: "${rawText.substring(0, 50)}..."`);
+      }
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Chyba při generování obsahu');
+      }
+
+      // 3. Kontrola obsahu
+      if (!data.content) {
+          addLog('⚠️ Varování: Pole "content" v odpovědi je prázdné!');
+      } else {
+          addLog(`✅ Obsah v pořádku (${data.content.length} znaků). Vkládám...`);
+          setStructuredContent(data.content);
+      }
+      
+    } catch (err: any) {
+      console.error(err);
+      addLog(`❌ KRITICKÁ CHYBA: ${err.message}`);
+      setError(`Chyba AI: ${err.message}`);
+    } finally {
+      setIsAiGenerating(false);
+    }
+  };
+  // -----------------------------------------
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -103,6 +168,17 @@ export default function AddVideoPage() {
   return (
     <div className="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
       <h1 className="text-2xl font-bold mb-6">Přidat nové video</h1>
+      
+      {/* DIAGNOSTICKÝ LOG PANEL */}
+      {debugLogs.length > 0 && (
+        <div className="mb-6 p-3 bg-black border border-gray-700 rounded font-mono text-xs text-green-400 max-h-48 overflow-y-auto shadow-inner">
+            <strong className="block mb-1 text-gray-500 border-b border-gray-800 pb-1">SYSTEM LOG:</strong>
+            {debugLogs.map((log, i) => (
+                <div key={i} className="py-0.5 border-b border-gray-900 last:border-0">{log}</div>
+            ))}
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-6">
         
         <div>
@@ -131,17 +207,6 @@ export default function AddVideoPage() {
           {fetchWarning && (
             <p className="mt-2 text-sm text-yellow-400">{fetchWarning}</p>
           )}
-          
-          {/* --- DEBUG LOG VÝPIS --- */}
-          {debugLogs.length > 0 && (
-             <div className="mt-4 p-3 bg-gray-900 border border-gray-700 rounded text-xs font-mono text-gray-400 max-h-48 overflow-y-auto">
-                <strong className="block mb-1 text-gray-200">Diagnostický Log:</strong>
-                {debugLogs.map((log, i) => (
-                    <div key={i}>{log}</div>
-                ))}
-             </div>
-          )}
-          {/* ----------------------- */}
         </div>
 
         <div>
@@ -181,36 +246,62 @@ export default function AddVideoPage() {
             rows={8}
             value={transcript}
             onChange={(e) => setTranscript(e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-white p-2 text-sm"
+            className="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-white p-2 text-sm font-mono bg-gray-900"
           />
         </div>
 
+        {/* TLAČÍTKO PRO AI GENERATOR */}
         <div>
-          <label htmlFor="structuredContent" className="block text-sm font-medium text-gray-300">
-            Strukturovaný Obsah (Kapitoly)
-          </label>
-          <textarea
-            id="structuredContent"
-            rows={10}
-            value={structuredContent}
-            onChange={(e) => setStructuredContent(e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-white p-2 font-mono"
-          />
+            <div className="flex justify-between items-end mb-2">
+                <label htmlFor="structuredContent" className="block text-sm font-medium text-gray-300">
+                    Strukturovaný Obsah (Kapitoly)
+                </label>
+                
+                <button
+                    type="button"
+                    onClick={handleAiGenerate}
+                    disabled={!transcript || isAiGenerating}
+                    className={`text-xs font-bold py-1 px-3 rounded transition-colors flex items-center gap-2 ${
+                        !transcript 
+                        ? 'bg-gray-700 text-gray-400 cursor-not-allowed' 
+                        : 'bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-900/20'
+                    }`}
+                >
+                    {isAiGenerating ? (
+                    <>
+                        <span className="animate-spin">⚙️</span> Generuji...
+                    </>
+                    ) : (
+                    <>
+                        ✨ Vytvořit obsah pomocí AI
+                    </>
+                    )}
+                </button>
+            </div>
+
+            <textarea
+                id="structuredContent"
+                rows={10}
+                value={structuredContent}
+                onChange={(e) => setStructuredContent(e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-white p-2 font-mono"
+                placeholder="Zde se objeví vygenerovaný obsah..."
+            />
         </div>
 
         <div>
           <button
             type="submit"
             disabled={isLoading}
-            className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
+            className="w-full inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
           >
             {isLoading ? 'Ukládání...' : 'Uložit video'}
           </button>
         </div>
       </form>
 
-      {success && <p className="mt-4 text-sm text-green-500">{success}</p>}
-      {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
+      {success && <p className="mt-4 text-sm text-green-500 text-center font-bold">{success}</p>}
+      {error && <p className="mt-4 text-sm text-red-500 text-center font-bold">{error}</p>}
     </div>
   );
 }

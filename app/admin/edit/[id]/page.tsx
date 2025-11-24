@@ -12,7 +12,7 @@ interface VideoData {
   youtubeId: string;
   title: string;
   summary: string;
-  transcript?: string | null; // NOVÉ
+  transcript?: string | null;
   chapters?: { text: string }[];
   collections?: Collection[];
 }
@@ -25,7 +25,7 @@ export default function EditVideoPage() {
   // --- Stavy formuláře ---
   const [title, setTitle] = useState('');
   const [summary, setSummary] = useState('');
-  const [transcript, setTranscript] = useState(''); // NOVÉ
+  const [transcript, setTranscript] = useState('');
   const [structuredContent, setStructuredContent] = useState('');
   
   // --- Stavy pro sbírky ---
@@ -36,10 +36,21 @@ export default function EditVideoPage() {
   const [youtubeId, setYoutubeId] = useState('');
   const [isPageLoading, setIsPageLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isFetching, setIsFetching] = useState(false); // Pro stahování z YT
+  const [isFetching, setIsFetching] = useState(false);
+  
+  // NOVÉ: Stav pro AI
+  const [isAiGenerating, setIsAiGenerating] = useState(false);
+  
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [fetchWarning, setFetchWarning] = useState<string | null>(null);
+
+  // LOGOVÁNÍ (Stejné jako v Add page)
+  const [debugLogs, setDebugLogs] = useState<string[]>([]);
+  const addLog = (msg: string) => {
+      const timestamp = new Date().toLocaleTimeString();
+      setDebugLogs(prev => [`[${timestamp}] ${msg}`, ...prev]);
+  };
 
   // 1. Načtení dat při startu
   useEffect(() => {
@@ -59,23 +70,18 @@ export default function EditVideoPage() {
         const videoData: VideoData = await videoRes.json();
         const collectionsData: Collection[] = await collectionsRes.json();
 
-        // A. Nastavení dat videa
         setTitle(videoData.title);
         setSummary(videoData.summary);
         setYoutubeId(videoData.youtubeId);
-        // Pokud API vrátí transcript (bude implementováno v backend kroku), nastavíme ho
         if (videoData.transcript) setTranscript(videoData.transcript);
 
-        // Složení textu kapitol
         let content = '';
         if (videoData.chapters && videoData.chapters.length > 0) {
           content = videoData.chapters.map((ch: any) => ch.text).join('\n');
         }
         setStructuredContent(content);
 
-        // B. Nastavení sbírek
         setAllCollections(collectionsData);
-
         if (videoData.collections) {
           const initialIds = videoData.collections.map(col => col.id);
           setSelectedCollectionIds(initialIds);
@@ -101,23 +107,27 @@ export default function EditVideoPage() {
     });
   };
 
-  // NOVÁ FUNKCE: Stáhnout data znovu (pro existující video)
+  // 2. Načtení z YouTube (Refresh)
   const handleFetchFromYoutube = async () => {
     if (!youtubeId) return;
 
-    // Zrekonstruujeme URL
     const reconstructedUrl = `https://www.youtube.com/watch?v=${youtubeId}`;
     
     setIsFetching(true);
     setFetchWarning(null);
+    setDebugLogs([]);
+    addLog(`Aktualizuji data pro ID: ${youtubeId}`);
     
     try {
       const res = await fetch(`/api/youtube/fetch-data?url=${encodeURIComponent(reconstructedUrl)}`);
       const data = await res.json();
 
+      if (data.debugLogs) {
+          setDebugLogs(prev => [...data.debugLogs, ...prev]);
+      }
+
       if (!res.ok) throw new Error(data.message || 'Chyba při stahování');
 
-      // U editace se zeptáme, zda přepsat existující data, pokud nejsou prázdná
       if (!title || confirm('Chcete přepsat stávající NÁZEV novým z YouTube?')) {
          if (data.title) setTitle(data.title);
       }
@@ -125,23 +135,75 @@ export default function EditVideoPage() {
          if (data.description) setSummary(data.description);
       }
       
-      // Přepis doplníme vždy, pokud je prázdný, jinak se zeptáme
       if (data.transcript) {
         if (!transcript || confirm('Chcete nahradit stávající PŘEPIS nově staženým?')) {
            setTranscript(data.transcript);
+           addLog('Přepis aktualizován.');
         }
       } else {
         setFetchWarning('Metadata stažena, ale titulky nebyly nalezeny.');
       }
 
     } catch (err: any) {
+      addLog(`Chyba: ${err.message}`);
       alert('Chyba: ' + err.message);
     } finally {
       setIsFetching(false);
     }
   };
 
-  // 3. Odeslání formuláře
+  // 3. AI GENERATOR (Robustní verze)
+  const handleAiGenerate = async () => {
+    if (!transcript) return;
+
+    setIsAiGenerating(true);
+    setFetchWarning(null);
+    setDebugLogs([]); // Reset logu pro čistý přehled AI akce
+    addLog('⚡ Inicializace AI modelu...');
+    addLog('📄 Odesílám přepis na server...');
+
+    try {
+      const res = await fetch('/api/ai/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ transcript }),
+      });
+
+      addLog(`📡 Server odpověděl: Status ${res.status}`);
+      const rawText = await res.text();
+      
+      let data;
+      try {
+          data = JSON.parse(rawText);
+      } catch (e) {
+          throw new Error('Server nevrátil platný JSON. Viz konzole.');
+      }
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Chyba při generování obsahu');
+      }
+
+      if (structuredContent && !confirm('Pole již obsahuje data. Chcete je přepsat výstupem z AI?')) {
+          addLog('⚠️ Operace zrušena uživatelem.');
+          return;
+      }
+
+      if (data.content) {
+        setStructuredContent(data.content);
+        addLog(`✅ Obsah v pořádku (${data.content.length} znaků). Vloženo.`);
+        setSuccess('AI obsah byl vygenerován.');
+      }
+
+    } catch (err: any) {
+      console.error(err);
+      addLog(`❌ Chyba: ${err.message}`);
+      setError(`Chyba AI: ${err.message}`);
+    } finally {
+      setIsAiGenerating(false);
+    }
+  };
+
+  // 4. Odeslání formuláře
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -155,7 +217,7 @@ export default function EditVideoPage() {
         body: JSON.stringify({
           title,
           summary,
-          transcript, // NOVÉ
+          transcript,
           structuredContent,
           collectionIds: selectedCollectionIds,
         }),
@@ -168,6 +230,7 @@ export default function EditVideoPage() {
       }
 
       setSuccess('Záznam byl úspěšně aktualizován!');
+      setDebugLogs([]);
       
       setTimeout(() => {
         router.push('/admin/manage');
@@ -189,7 +252,6 @@ export default function EditVideoPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Upravit video</h1>
         
-        {/* Tlačítko pro opětovné načtení dat */}
         <button
            type="button"
            onClick={handleFetchFromYoutube}
@@ -199,6 +261,16 @@ export default function EditVideoPage() {
            {isFetching ? 'Stahuji...' : '↻ Aktualizovat data z YouTube'}
         </button>
       </div>
+
+      {/* DIAGNOSTICKÝ LOG PANEL */}
+      {debugLogs.length > 0 && (
+        <div className="mb-6 p-3 bg-black border border-gray-700 rounded font-mono text-xs text-green-400 max-h-48 overflow-y-auto shadow-inner">
+            <strong className="block mb-1 text-gray-500 border-b border-gray-800 pb-1">SYSTEM LOG:</strong>
+            {debugLogs.map((log, i) => (
+                <div key={i} className="py-0.5 border-b border-gray-900 last:border-0">{log}</div>
+            ))}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
 
@@ -269,7 +341,7 @@ export default function EditVideoPage() {
           )}
         </div>
 
-        {/* NOVÉ POLE: Přepis videa */}
+        {/* Přepis videa */}
         <div>
           <label htmlFor="transcript" className="block text-sm font-medium text-gray-300">
             Přepis videa (Transcript)
@@ -279,7 +351,7 @@ export default function EditVideoPage() {
             rows={8}
             value={transcript}
             onChange={(e) => setTranscript(e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-white p-2 text-sm"
+            className="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-white p-2 text-sm font-mono bg-gray-900"
             placeholder="Zde se objeví stažený přepis titulků..."
           />
           <p className="mt-1 text-xs text-gray-500">
@@ -289,9 +361,33 @@ export default function EditVideoPage() {
 
         {/* Strukturovaný obsah */}
         <div>
-          <label htmlFor="structuredContent" className="block text-sm font-medium text-gray-300">
-            Strukturovaný Obsah (Kapitoly)
-          </label>
+            <div className="flex justify-between items-end mb-1">
+                <label htmlFor="structuredContent" className="block text-sm font-medium text-gray-300">
+                    Strukturovaný Obsah (Kapitoly)
+                </label>
+                
+                <button
+                    type="button"
+                    onClick={handleAiGenerate}
+                    disabled={!transcript || isAiGenerating}
+                    className={`text-xs font-bold py-1 px-3 rounded transition-colors flex items-center gap-2 ${
+                        !transcript 
+                        ? 'bg-gray-700 text-gray-400 cursor-not-allowed' 
+                        : 'bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-900/20'
+                    }`}
+                >
+                    {isAiGenerating ? (
+                    <>
+                        <span className="animate-spin">⚙️</span> Generuji...
+                    </>
+                    ) : (
+                    <>
+                        ✨ Vytvořit obsah pomocí AI
+                    </>
+                    )}
+                </button>
+            </div>
+
           <textarea
             id="structuredContent"
             rows={15}
