@@ -249,36 +249,15 @@ export async function GET(request: Request) {
                 ).join('\n');
                 strategyUsed = 'InnerTube (WEB)';
             }
-        } catch (e: any) { // OPRAVA: Přidáno : any
+        } catch (e: any) { 
             log(`Pokus 1 selhal: ${e.message}`); 
         }
     }
 
-    // POKUS 2: InnerTube ANDROID Client (Bypass)
-    if (!transcript) {
-        try {
-            log('Pokus 2: InnerTube (ANDROID Client)...');
-            const ytAndroid = await Innertube.create({ 
-                cache: new UniversalCache(false), generate_session_locally: true, 
-                lang: 'cs', location: 'CZ', client_type: 'ANDROID' 
-            });
-            const infoAndroid = await ytAndroid.getInfo(videoId);
-            const tData = await infoAndroid.getTranscript();
-            if (tData?.transcript?.content?.body?.initial_segments) {
-                transcript = tData.transcript.content.body.initial_segments.map((seg: any) => 
-                    `${formatTime(parseInt(seg.start_ms || '0', 10))} ${seg.snippet?.text || ''}`
-                ).join('\n');
-                strategyUsed = 'InnerTube (ANDROID)';
-            }
-        } catch (e: any) { // OPRAVA: Přidáno : any
-            log(`Pokus 2 selhal: ${e.message}`); 
-        }
-    }
-
-    // POKUS 3: InnerTube Caption Tracks (Raw Data)
+    // POKUS 2: InnerTube Caption Tracks (Raw Data)
     if (!transcript && ytInfo) {
         try {
-            log('Pokus 3: InnerTube Caption Tracks...');
+            log('Pokus 2: InnerTube Caption Tracks...');
             const captions = (ytInfo as any).captions?.caption_tracks;
             if (captions?.[0]?.base_url) {
                 const txt = await fetchManualTranscript(captions[0].base_url);
@@ -287,9 +266,9 @@ export async function GET(request: Request) {
         } catch (e) {}
     }
 
-    // POKUS 4: HTML Scraping (Deep Search & Dirty Regex)
+    // POKUS 3: HTML Scraping (Deep Search & Dirty Regex)
     if (!transcript) {
-        log('Pokus 4: HTML Scraping (Deep & Dirty)...');
+        log('Pokus 3: HTML Scraping (Deep & Dirty)...');
         const baseUrl = await scrapeTranscriptUrlFromHtml(videoId);
         if (baseUrl) {
             const txt = await fetchManualTranscript(baseUrl);
@@ -299,9 +278,9 @@ export async function GET(request: Request) {
         }
     }
 
-    // POKUS 5: Invidious Proxy (Poslední záchrana)
+    // POKUS 4: Invidious Proxy (Poslední záchrana)
     if (!transcript) {
-        log('Pokus 5: Invidious Proxy...');
+        log('Pokus 4: Invidious Proxy...');
         const txt = await fetchInvidiousTranscript(videoId);
         if (txt) { transcript = txt; strategyUsed = 'Invidious Proxy'; }
     }
