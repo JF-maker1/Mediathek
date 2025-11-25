@@ -206,7 +206,7 @@ export async function GET(request: Request) {
 
     log(`Start Ultimate Scraper pro ID: ${videoId}`);
 
-    // --- FÁZE A: METADATA (Zjednodušeno, vždy zkusíme InnerTube pak HTML) ---
+    // --- FÁZE A: METADATA ---
     let title = '';
     let description = '';
     
@@ -249,7 +249,9 @@ export async function GET(request: Request) {
                 ).join('\n');
                 strategyUsed = 'InnerTube (WEB)';
             }
-        } catch (e) { log(`Pokus 1 selhal: ${e.message}`); }
+        } catch (e: any) { // OPRAVA: Přidáno : any
+            log(`Pokus 1 selhal: ${e.message}`); 
+        }
     }
 
     // POKUS 2: InnerTube ANDROID Client (Bypass)
@@ -268,7 +270,9 @@ export async function GET(request: Request) {
                 ).join('\n');
                 strategyUsed = 'InnerTube (ANDROID)';
             }
-        } catch (e) { log(`Pokus 2 selhal: ${e.message}`); }
+        } catch (e: any) { // OPRAVA: Přidáno : any
+            log(`Pokus 2 selhal: ${e.message}`); 
+        }
     }
 
     // POKUS 3: InnerTube Caption Tracks (Raw Data)
