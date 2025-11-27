@@ -46,6 +46,12 @@ model Video {
   collections Collection[]
   // Relace 1:1 na přepis
   transcript  Transcript?
+
+  // --- NOVÁ SEO POLE (Fáze 12) ---
+  seoSummary     String?   @db.Text  // AI Abstrakt (kontext + řešení)
+  seoKeywords    String[]  // Klíčová slova (entity, látky, diagnózy)
+  practicalTips  String[]  // Konkrétní rady (Actionable items)
+  aiSuggestions  String[]  // Návrhy názvů sbírek
 }
 
 model Chapter {

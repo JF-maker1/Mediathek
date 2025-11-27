@@ -1,5 +1,5 @@
 JÁ_PROMPT:  
-V příloze je zadání pro tvorbu webové aplikace pro správu videí a obsahu videí [README_10_ZADANI]. Prosím ze zadání vytvořit konkrétní plán realizace (resp. jednotlivé příkazy, nastavení, instalace, ověření prostředí jak systémové, tak projektové a tak i podobně) včetně plánu testování která potvrdí úspěšné ukončení realizační fáze vycházející ze zadání této realizační fáze viz zadání pro tuto fázi realizace v příloze . Realizační fáze je ukončena testováním jak na lokálním prostředí tak i na produkčním prostředí. V příloze je rovněž snímek projektového adresáře po ukončení předchozí fáze realizace [README_09_03project_snapshot] který by měl poskytnout představu o podmínkách jednak vnitřních v projektu tak i podmínkách vnějších pro tento projekt tak i jeho potřebném detailu. Pokud bude některý soubor potřeba pro bližší specifikaci jednotlivých kroků implementace dle realizačního plánu budou tyto soubory dodány v průběhu právě implementace jednotlivých kroků tohoto realizačního plánu. Nyní pojdme vytvořit realiztační plán který se zaměří na API interface získávání informací z vnějšího prostředí aplikace - tentokrát z youtube - v další vývojové fázi bude možné API využít také pro získávání a zasílání dat např. na API AI pro zpracování nějakých materiálů - viz toto zadaní - z nyní získaného přepisu videa získání přes AI (např. Gemini či DeepSeek apod) strukturovaný obsah videa. Na tomto principu by měla pracovat tato vyvíjená aplikace kdy obsah videí bude v kontextu ostatních videí a uživatel si bude moci vytvářet tématické sbírky kde bude obsah jednotlivých videí kompilován do jednoho materiálu. Mohl by to být užitečný nástroj pro různé rešerže. Sdílením těchto rešerší by bylo možné získávat další uživatele této aplikace. Pojdme nyní do realizačního plánu tohoto vývojového cyklu - automatizované získávání info z youtube - nyní toto probíhá manuálně uživatelem. Tato implementace přispěje k uživatelskému konfortu aplikace. Pro info přikládám rovněž zprávu z realizační fáze předchozího vývojového cyklu. i pro dopřesní způsobu  administrace vývoje této aplikace. [README_09_02REALIZACE] Prosím pojdme tedy vytvořit realizační plán pro tuto fázi vývoje této webové aplikace. Díky ;-) Přepis videa z youtube vypadá např. takto [Einführung: Ayurveda & moderne Wissenschaft
+V příloze je zadání pro tvorbu webové aplikace pro správu videí a obsahu videí [README_11_ZADANI]. Prosím ze zadání vytvořit konkrétní plán realizace (resp. jednotlivé příkazy, nastavení, instalace, ověření prostředí jak systémové, tak projektové a tak i podobně) včetně plánu testování který potvrdí úspěšné ukončení realizační fáze vycházející ze zadání této realizační fáze viz zadání pro tuto fázi realizace v příloze . Realizační fáze je ukončena testováním jak na lokálním prostředí tak i na produkčním prostředí. V příloze je rovněž snímek projektového adresáře po ukončení předchozí fáze realizace [README_10_03project_snapshot] který by měl poskytnout zcela konkrétní představu o podmínkách jednak vnitřních v projektu tak i podmínkách vnějších pro tento projekt tak i jeho potřebném detailu. Pokud bude některý soubor potřeba pro bližší specifikaci jednotlivých kroků implementace dle realizačního plánu budou tyto soubory dodány v průběhu právě implementace jednotlivých kroků tohoto realizačního plánu. Nyní pojdme tedy vytvořit realiztační plán který se zaměří na API interface odesílání (prompt, přepis videa) a získávání informací (strukturovaný obsah) z vnějšího prostředí aplikace - tentokrát z AI asistenta - z nyní získaného přepisu videa získání přes AI (např. Gemini či DeepSeek apod) strukturovaný obsah videa. Na tomto principu by měla pracovat tato vyvíjená aplikace kdy obsah videí bude v kontextu ostatních videí a uživatel si bude moci vytvářet tématické sbírky kde bude obsah jednotlivých videí kompilován do jednoho materiálu. Mohl by to být užitečný nástroj pro různé rešerže. Sdílením těchto rešerší by bylo možné získávat další uživatele této aplikace.  Tato implementace přispěje k uživatelskému konfortu aplikace. Pro info přikládám rovněž zprávu z realizační fáze předchozího vývojového cyklu a i pro dopřesní způsobu  administrace vývoje této aplikace. [README_10_02REALIZACE] Prosím pojdme tedy vytvořit realizační plán pro tuto fázi vývoje této webové aplikace. Díky ;-) Přepis videa z youtube vypadá např. takto a je uložen v editačním poli přepis videa. [Einführung: Ayurveda & moderne Wissenschaft
 0:00
 Wussten Sie, dass viele jahrtausende
 0:03
@@ -15,137 +15,161 @@ zur idealen Zubettgehzeit?
 
 AI_RESPONZE:
 
-Rád pro vás vytvořím detailní Realizační plán pro Fázi 10.
+Ahoj! To je skvělý posun. Přechod od "sběru dat" (Fáze 10) k "tvorbě obsahu pomocí AI" (Fáze 11) je přesně tím momentem, kdy aplikace začíná šetřit hodiny lidské práce.
 
-Vycházím z vámi schváleného zadání (README_10_01ZADANI) a aktuálního stavu projektu (README_09_03project_snapshot).
+Na základě tvého zadání (README_11_01ZADANI) a aktuálního stavu kódu (README_10_03project_snapshot) jsem připravil detailní Realizační plán.
 
-Tento plán je koncipován jako kuchařka krok za krokem, abychom bezpečně přešli od manuálního vkládání k automatizaci.
+Tento plán je koncipován tak, abychom využili stávající architekturu (Next.js API routes) a knihovnu Google AI SDK. Zaměříme se na bezpečné volání API ze serveru a přehlednou zpětnou vazbu pro uživatele (logy).
 
-Zde je soubor s plánem:
-Realizační Plán Fáze 10
-18. 11. 22:14
+Zde je kompletní plán:
+Realizační Plán Fáze 11
+22. 11. 16:57
 
-Zkusit znovu bez nástroje Canvas
+Otevřít
 
-Tento plán obsahuje vše potřebné:
+Stručný souhrn změn v kódu (pro vaši orientaci)
+Backend (route.ts): Jednoduchý proxy endpoint. Důležité je, že GoogleGenerativeAI klient se inicializuje zde, ne na klientovi.
 
-Přípravu (instalace balíčků).
+Frontend (add/page.tsx):
 
-Backend (Databáze + API pro stahování).
+Využijeme existující debugLogs pole, kam budeme přidávat zprávy typu [AI] Startuji..., [AI] Hotovo.
 
-Frontend (Integrace do formulářů na přesně určené místo).
+Prompt je zatím "zadrátovaný" na backendu, což je pro testování bezpečnější a jednodušší.
 
-Testování.
-
-Jakmile potvrdíte, můžeme začít s Krokem 1: Databázová vrstva. Mám připravit příkazy?
+Pokud s plánem souhlasíte, můžeme se pustit do realizace. Kterým krokem chcete začít? (Doporučuji instalaci balíčku a vytvoření API endpointu).
 
 ------------------------------------------------------------------------
 
-Realizační Plán: Fáze 10 - Automatizace Získávání Dat z YouTubeDatum: 18. listopadu 2025Verze: 10.0 (Realizační Plán)Navazuje na: README_10_01ZADANI (Zadání Fáze 10)Výchozí stav: README_09_03project_snapshot (Konec Fáze 9)1. 🎯 Cíl RealizaceImplementovat automatizované stahování metadat (Název, Popis) a titulků (Transcript) z YouTube na základě vložené URL videa. Tím se nahradí manuální kopírování dat a připraví se datový základ pro budoucí AI zpracování (Fáze 11).2. 🛠️ Příprava Prostředí a ZávislostiNež začneme s kódem, musíme připravit projekt a nainstalovat potřebné balíčky pro scraping titulků.2.1. Terminál - Příkazy pro zahájeníOtevřete terminál v kořenovém adresáři projektu (web_app_Mediathek/) a spusťte:# 1. Ověření aktuální větve a stažení změn (volitelné)
+Realizační Plán: Fáze 11 - Integrace AI (Gemini) pro Strukturovaný ObsahDatum: 22. listopadu 2025Verze: 11.0 (Realizační)Navazuje na: Fáze 10 (Automatizace YouTube)Cíl: Implementovat tlačítko v administraci, které na základě přepisu videa (Transcript) vygeneruje pomocí Google Gemini API strukturovaný obsah (kapitoly) a vloží jej do editoru.1. 🛠️ Příprava ProstředíNež začneme psát kód, musíme připravit projekt na komunikaci s AI službami.1.1. Získání API KlíčePřejděte do Google AI Studio.Vytvořte nový API klíč (Create API Key) – viz návod v chatu.Zkopírujte tento klíč.1.2. Nastavení Proměnných Prostředí (.env.local)V kořenovém adresáři projektu otevřete soubor .env.local a přidejte na konec:# Google Gemini API Key pro Fázi 11
+GEMINI_API_KEY="vas_vygenerovany_klic_zde"
+Poznámka: Pokud používáte soubor .env, přidejte to tam. Nikdy tento klíč necommitujte do Gitu!1.3. Instalace Závislostí a Příprava GituOtevřete terminál v kořenovém adresáři projektu. Než začneme, ověříme čistotu prostředí a stáhneme aktuální verzi kódu.# 1. Ověření stavu repozitáře (zda nemáte neuložené změny)
+git status
+
+# 2. Přepnutí na hlavní větev a stažení změn z Githubu
 git checkout main
 git pull origin main
 
-# 2. Vytvoření nové vývojové větve pro Fázi 10
-git checkout -b feature/faze-10-youtube-automation
+# 3. Vytvoření nové vývojové větve pro Fázi 11
+git checkout -b feature/faze-11-ai-content
 
-# 3. Instalace nových závislostí
-# youtube-captions-scraper: Pro stahování titulků (neoficiální API)
-# he: Pro dekódování HTML entit v textu titulků (např. &amp; -> &)
-npm install youtube-captions-scraper he
+# 4. Instalace Google AI SDK
+npm install @google/generative-ai
+2. 🧠 Backend: Vytvoření API EndpointuVytvoříme "bezpečný tunel" mezi naší aplikací a Googlem, aby API klíč zůstal skrytý na serveru.2.1. Nový soubor app/api/ai/generate/route.tsVytvořte tento soubor. Bude obsahovat logiku pro volání AI.Implementační logika:Ověřit, zda je uživatel přihlášen (ADMIN).Přijmout transcript z těla požadavku.Inicializovat GoogleGenerativeAI s klíčem z env.Definovat model (gemini-1.5-flash).Sestavit prompt (viz zadání).Odeslat dotaz a vrátit textovou odpověď.Kód pro implementaci:import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-# 4. Instalace typů pro TypeScript (pokud existují, jinak použijeme deklaraci)
-npm install --save-dev @types/he
-Poznámka: Knihovna youtube-captions-scraper nemusí mít oficiální @types. Pokud TypeScript nahlásí chybu, vytvoříme soubor types/youtube-captions-scraper.d.ts (viz Krok 4).3. 🗄️ Krok 1: Databázová Vrstva (Prisma)Musíme rozšířit databázové schéma o tabulku pro ukládání přepisů. Dle zadání vytvoříme samostatný model Transcript v relaci 1:1 k Video.3.1. Úprava prisma/schema.prismaPřidejte/upravte následující modely:// ... existující modely ...
+// Inicializace klienta (mimo handler pro efektivitu)
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
-model Video {
-  id        String   @id @default(cuid())
-  // ... stávající pole ...
-  
-  // Relace na přepis (PŘIDAT TENTO ŘÁDEK)
-  transcript Transcript?
-}
-
-// NOVÝ MODEL
-model Transcript {
-  id          String   @id @default(cuid())
-  
-  // Relace 1:1 na Video
-  videoId     String   @unique
-  video       Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
-  
-  // Obsah
-  content     String   @db.Text      // Surový text titulků spojený do jednoho bloku
-  fullData    Json?                  // Kompletní JSON s časovými značkami (pro budoucí AI)
-  language    String   @default("cs") // Jazyk titulků
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-3.2. Aplikace změn (Migrace)Spusťte v terminálu:npx prisma migrate dev --name add_transcript_model
-# Následně přegenerujte klienta (obvykle se stane automaticky, ale pro jistotu):
-npx prisma generate
-4. ⚙️ Krok 2: Backend API (Data Fetching)Vytvoříme "mozkovnu" této fáze – endpoint, který přijme URL a vrátí data z YouTube.4.1. Pomocné typy (pokud chybí)Pokud youtube-captions-scraper hází chyby TypeScriptu, vytvořte soubor types.d.ts (nebo types/modules.d.ts):declare module 'youtube-captions-scraper' {
-  export function getSubtitles(options: { videoID: string, lang?: string }): Promise<any[]>;
-}
-4.2. Nový Endpoint app/api/youtube/fetch-data/route.tsTento soubor obstará logiku stahování.Logika implementace:Validace URL a extrakce youtubeId.Metadata: Stáhneme HTML stránku videa (pomocí fetch) a vytáhneme <title> a <meta name="description"> (nebo og:description). Toto je spolehlivější a levnější než Google API.Transcript: Zavoláme getSubtitles s prioritou 'cs' (čeština), fallback 'en' (angličtina).Zformátujeme data a vrátíme JSON.(Detailní kód bude dodán při implementaci, toto je plán logiky).5. 🖥️ Krok 3: Integrace do Admin Formulářů (Frontend)Upravíme stránky admin/add a admin/edit tak, aby využívaly nový API endpoint.5.1. Úpravy app/admin/add/page.tsx a app/admin/edit/[id]/page.tsxSeznam změn:State: Přidat transcript (string) do stavu formuláře.UI Elementy:Přidat tlačítko [ Načíst data z YouTube ] vedle pole pro URL.Přidat indikátor načítání (spinner/text "Načítám...").Přidat nové pole textarea pro "Přepis videa (Transcript)" mezi Sbírky a Kapitoly.Handler handleFetchData:Zavolá /api/youtube/fetch-data?url=....Při úspěchu:setTitle(data.title)setSummary(data.description) (pokud je pole prázdné nebo uživatel potvrdí přepsání).setTranscript(data.transcript) (text).Ukládání:Aktualizovat handleSubmit, aby posílal i transcript do hlavního ukládacího API (/api/videos).6. 💾 Krok 4: Úprava Ukládací Logiky (Backend API)Musíme zajistit, aby se odeslaný přepis skutečně uložil do DB.6.1. Úprava app/api/videos/route.ts (POST)Přijmout transcript z req.json().V rámci prisma.$transaction:Po vytvoření videa vytvořit i záznam Transcript:if (transcript) {
-  await tx.transcript.create({
-    data: {
-      videoId: video.id,
-      content: transcript,
-      // fullData zatím můžeme nechat null nebo uložit raw, pokud ho pošleme
+export async function POST(request: Request) {
+  try {
+    // 1. Bezpečnostní kontrola
+    const session = await getServerSession(authOptions);
+    if (!session || session.user?.role !== 'ADMIN') {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 403 });
     }
-  });
+
+    // 2. Získání dat
+    const body = await request.json();
+    const { transcript } = body;
+
+    if (!transcript || typeof transcript !== 'string') {
+      return NextResponse.json({ message: 'Chybí přepis videa (transcript).' }, { status: 400 });
+    }
+
+    // 3. Příprava Promptu (Dle zadání Fáze 11)
+    const systemPrompt = `
+Prosím z přiloženého přepisu videa v příloze vytvoř jednoduchý jednoúrovňový strukturovaný obsah tohoto videa, kde každá odrážka bude číslována svým pořadím ve formátu "X."
+    `.trim();
+
+    const fullPrompt = `${systemPrompt}\n\n--- PŘEPIS VIDEA ---\n${transcript}`;
+
+    // 4. Volání Gemini API
+    // Používáme model 'gemini-1.5-flash' (rychlý a efektivní pro text)
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+
+    const result = await model.generateContent(fullPrompt);
+    const response = await result.response;
+    const text = response.text();
+
+    // 5. Návrat výsledku
+    return NextResponse.json({ 
+      content: text,
+      message: 'Obsah úspěšně vygenerován.' 
+    });
+
+  } catch (error: any) {
+    console.error('AI_GENERATE_ERROR', error);
+    return NextResponse.json({ 
+      message: 'Chyba při komunikaci s AI: ' + (error.message || 'Unknown error') 
+    }, { status: 500 });
+  }
 }
-6.2. Úprava app/api/videos/[id]/route.ts (PUT)Přijmout transcript z req.json().V rámci transakce:Použít upsert (aktualizuj pokud existuje, vytvoř pokud ne) pro model Transcript spojený s videem.7. 🧪 Plán Testování (QA)Pro potvrzení úspěšného ukončení fáze provedeme následující testy.7.1. Testovací Scénáře (Lokální prostředí)IDScénářVstupní DataOčekávaný VýsledekTC1Načtení dat (CZ video)URL videa s českými titulkyTlačítko "Načíst" stáhne název, popis a český přepis. Formulář se vyplní.TC2Načtení dat (EN video)URL videa bez CZ, ale s EN titulkyStáhne se název, popis a anglický přepis (fallback).TC3Chybějící titulkyURL videa bez jakýchkoliv titulkůMetadata se stáhnou, pole Přepis zůstane prázdné, zobrazí se varování (ne chyba).TC4Uložení nového videaVyplněný formulář vč. přepisuVideo se vytvoří, v DB vznikne záznam Transcript spojený s videem.TC5Editace existujícíhoStarší video bez přepisuPo kliknutí "Načíst" se doplní přepis. Po uložení se vytvoří nový záznam v DB.7.2. Ověření v ProdukciPo nasazení na Vercel ověřit, zda IP adresa Vercelu není blokována YouTube (občas se stává u scrapingu). Pokud ano, máme záložní plán (použití proxy nebo oficiálního API), ale pro tuto fázi předpokládáme funkčnost knihovny.8. 🏁 Kritéria pro ukončení fázeDatabáze obsahuje tabulku Transcript.Formuláře add i edit mají funkční tlačítko pro načítání dat.Pole pro přepis je umístěno přesně mezi Sbírkami a Kapitoly.Data se úspěšně ukládají do databáze.
+3. 🖥️ Frontend: Integrace do FormulářůNyní přidáme tlačítko a logiku do administračních stránek. Využijeme existující systém debugLogs, který jsme zavedli ve Fázi 10, a rozšíříme ho.3.1. Úprava app/admin/add/page.tsxMusíme přidat stav pro "generování" a funkci handleAiGenerate.Kroky implementace:Přidat stav:const [isAiGenerating, setIsAiGenerating] = useState(false);
+Vytvořit funkci handleAiGenerate:Vyčistí/přidá logy: "Inicializace AI modelu...".Zavolá /api/ai/generate metodou POST.Pošle transcript.Při úspěchu vloží výsledek do structuredContent (pomocí setStructuredContent).Aktualizuje logy o výsledek.Přidat Tlačítko do JSX:Umístění: Nad <textarea id="structuredContent" ...>.Podmínka disabled: !transcript || isAiGenerating.Vzhled: Odlišná barva (např. fialová/purple), aby se lišilo od YouTube tlačítka.Snippet pro vložení (nad label Structured Content):{/* ... uvnitř formuláře, před Structured Content ... */}
+
+<div className="flex justify-between items-end mb-2">
+  <label htmlFor="structuredContent" className="block text-sm font-medium text-gray-300">
+    Strukturovaný Obsah (Kapitoly)
+  </label>
+  
+  <button
+    type="button"
+    onClick={handleAiGenerate}
+    disabled={!transcript || isAiGenerating}
+    className="bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold py-1 px-3 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+  >
+    {isAiGenerating ? (
+      <>
+        <span className="animate-spin">⚙️</span> Generuji pomocí AI...
+      </>
+    ) : (
+      <>
+        ✨ Vytvořit obsah pomocí AI
+      </>
+    )}
+  </button>
+</div>
+
+{/* Zde následuje textarea structuredContent ... */}
+3.2. Úprava app/admin/edit/[id]/page.tsxPostup je identický jako u add/page.tsx.Zkopírovat logiku handleAiGenerate.Zkopírovat tlačítko nad pole structuredContent.Ujistit se, že debugLogs (pokud v Edit stránce nejsou, je třeba je přidat podobně jako v Add stránce) jsou zobrazovány. Poznámka: V Edit stránce v předchozím snapshotu logy pro YouTube chyběly, doporučuji je přidat i sem pro konzistenci.4. 🧪 Plán Testování (QA)Ověříme funkčnost na základě těchto scénářů:IDScénářVstupní podmínkyOčekávaný výsledekTC1Tlačítko DisabledPole "Přepis videa" je prázdné.Tlačítko "Vytvořit obsah pomocí AI" je šedé a nelze na něj kliknout.TC2Aktivace TlačítkaDo pole "Přepis" vložím text (např. ručně nebo z YouTube).Tlačítko se aktivuje (zbarví do fialova).TC3Generování (Success)Kliknutí na tlačítko s platným přepisem.1. Tlačítko změní stav na "Generuji...".2. V logu se objeví "Odesílám prompt...".3. Po cca 2-5s se do pole "Strukturovaný obsah" vloží text (seznam 1., 2., 3...).4. Log zahlásí úspěch.TC4Chybový stavOdpojený internet nebo špatný API klíč.Do logu (nebo error state) se vypíše chybová hláška. Aplikace nespadne.TC5Přepis obsahuPole "Strukturovaný obsah" už něco málo obsahuje.Po generování se původní obsah nahradí novým výstupem z AI.5. 🚀 Postup Realizace (Checklist)[ ] Git: git checkout main -> git pull -> git checkout -b feature/faze-11-ai-content[ ] Env: Přidat GEMINI_API_KEY do .env.local.[ ] NPM: npm install @google/generative-ai.[ ] Backend: Vytvořit app/api/ai/generate/route.ts.[ ] Frontend Add: Implementovat logiku a tlačítko do admin/add/page.tsx.[ ] Frontend Edit: Implementovat logiku a tlačítko do admin/edit/[id]/page.tsx.[ ] Test: Provést TC1 až TC5.[ ] Build: Ověřit npm run build.[ ] Merge: Sloučit do main a nasadit.
 
 ------------------------------------------------------------------------
 
 
 JÁ_PROMPT:  
-Tentokrát na produkci tři zásahy ze třech ;-) ... log píše toto [Diagnostický Log:
-[8:58:32 PM] Start request for URL: https://www.youtube.com/watch?v=R9kyDqZatHU
-[8:58:32 PM] Extracted Video ID: R9kyDqZatHU
-[8:58:32 PM] Inicializuji youtubei.js (InnerTube)...
-[8:58:35 PM] Získávám Info o videu (GetInfo)...
-[8:58:36 PM] Basic info prázdné. Zkouším RAW...
-[8:58:36 PM] Fallback (HTML/Googlebot): Stahuji stránku...
-[8:58:36 PM] HTML Scraping úspěšný! Title: "Diese Bekannten Lebe..."
-[8:58:36 PM] HTML Description nalezen (160 znaků).
-[8:58:36 PM] Finální Metadata - Title: "Diese Bekannten Lebe..."
-[8:58:36 PM] Popis získán (160 znaků).
-[8:58:36 PM] Pokus 1: info.getTranscript()...
-[8:58:36 PM] Úspěch! Nalezeno 305 segmentů.
-[8:58:36 PM] Přepis zformátován (s časovými značkami).] ... díky !!! ... rovněž jsem otestoval uložení do databáze a ok .i update existujících záznamů také ok .. testování bych tímto měl za splněné  
+Děkuji - pojdme nyní vytvořit/zaktulizovat-pokud již taková zpráva proběhla zprávu z realizace této realizační fáze - test na produkci proběhl ok a nyní jsou získávány nadpisy i popisy videí a tato verze se zdá být stabilní. Do zprávy prosím rovněž významné podrobnosti z této realizace kromě popisu realizace a způsobu realizace hlavního tématu tohoto vývojového cyklu.
 
 AI_RESPONZE:
 
-Závěrečná Zpráva: Fáze 10 - Automatizace YouTube (The "InnerTube" Update)Datum: 20. listopadu 2025Verze: 10.0 (Final Complete)Status: ✅ Úspěšně dokončeno a nasazeno na produkciNavazuje na: Fáze 9 (UX a Smart Player)1. 🎯 Cíl FázeCílem bylo automatizovat proces vkládání videí. Místo manuálního kopírování názvů, popisů a hledání přepisů měla aplikace automaticky stáhnout všechna data z YouTube na základě vložené URL.Klíčovým požadavkem bylo získání přepisu s časovými značkami, který bude sloužit jako vstup pro AI zpracování v další fázi.2. 🛠️ Architektura Řešení2.1. Backend (app/api/youtube/fetch-data/route.ts)Jádrem řešení je nový API endpoint, který implementuje vícevrstvou strategii ("Defense in Depth") pro získávání dat. Protože YouTube aktivně blokuje cloudové servery (Vercel), museli jsme vyvinout systém, který se nevzdává při prvním neúspěchu.Strategie pro Metadata (Název, Popis) - "5-stupňová raketa"InnerTube API (youtubei.js): Simulace Android klienta. (Nejrychlejší, ale na Vercelu často vrací prázdná metadata).RAW Player Response: Pokus o čtení surových JSON dat z interní odpovědi.HTML Scraping (Googlebot): Stažení HTML stránky s maskováním za Googlebota a vytažení <meta> tagů. (Velmi spolehlivé pro popis).Invidious API: Dotaz na veřejné instance Invidious (proxy), pokud vše ostatní selže.oEmbed API: Oficiální endpoint pro náhledy (100% spolehlivost pro Název, ale neumí popis).Strategie pro Přepis (Transcript) - "InnerTube + XML Fallback"InnerTube API (getTranscript): Primární metoda. Volá interní API YouTube. Pokud projde, vrací přesný JSON se segmenty.XML Fallback (Ruční stažení): Pokud moderní API selže (400 Bad Request), kód vytáhne z metadat starou baseUrl a ručně stáhne XML soubor s titulky, který následně parsuje regexem.2.2. Databáze (Prisma)Došlo k rozšíření datového modelu o tabulku Transcript.Vztah: 1:1 k modelu Video.Obsah: Ukládá se kompletní textový přepis včetně časových značek (formát [MM:SS] Text).Logika: Při uložení videa se data ukládají v jedné atomické transakci.2.3. Frontend (admin/add, admin/edit)Přidáno tlačítko "Načíst data z YouTube".Přidáno pole "Přepis videa" (textarea).Implementován Diagnostický Log, který v reálném čase ukazuje uživateli, jakou strategii backend právě zkouší (klíčové pro ladění na produkci).3. 🧗‍♂️ Průběh Realizace a Technické VýzvyTato fáze byla technicky nejnáročnější v historii projektu kvůli aktivním ochranám YouTube.Výzva 1: Consent Wall (GDPR): YouTube vracel serveru místo dat stránku se souhlasem cookies.Řešení: Implementace cookies (SOCS=CAI) a simulace Googlebota.Výzva 2: Soft-Block (Status 200, Length 0): YouTube detekoval nesoulad mezi cookies a podpisem URL a vracel prázdná data.Řešení: Přechod z ručního scrapingu na knihovnu youtubei.js a sjednocení hlaviček.Výzva 3: Vercel vs. Lokál: Na lokálním PC (domácí IP) vše fungovalo, na Vercelu (cloud IP) YouTube blokoval metadata.Řešení: Implementace oEmbed a Invidious API jako záložních zdrojů.4. ✅ Výsledek Testování (TC1 - TC5)TestScénářVýsledekTC1Načtení dat (CZ/DE video)ÚSPĚCH (Načten Název, Popis i Přepis)TC2Načtení dat na VerceluÚSPĚCH (Díky fallbackům oEmbed a HTML scrapingu)TC3Formát přepisuÚSPĚCH (Obsahuje časové značky [MM:SS])TC4Uložení do DBÚSPĚCH (Transakce proběhla, data jsou persistentní)TC5Update existujícíhoÚSPĚCH (Přepis se doplní k již existujícímu videu)5. 🏁 ZávěrAplikace nyní disponuje profesionálním a vysoce odolným systémem pro získávání dat z YouTube. Tento systém je připraven na budoucí Fázi 11, kde bude získaný textový přepis (s časovými značkami) předán umělé inteligenci k analýze a generování strukturovaného obsahu.Doporučení pro příště:Při nasazování AI funkcí budeme moci využít stejný princip "Diagnostického Logu", který se zde nesmírně osvědčil pro ladění cloudových chyb.
+Závěrečná Zpráva z Realizace: Fáze 11 - Integrace AI (Gemini) a Stabilizace YouTube ScrapinguDatum: 25. listopadu 2025Verze: 11.0 (Final)Status: ✅ Úspěšně nasazeno na produkci (Vercel)Navazuje na: Fáze 10 (Automatizace YouTube)1. 🎯 Cíl Fáze a Výsledný StavCílem této fáze bylo posunout aplikaci z "chytrého přehrávače" na "inteligentního kurátora". Hlavním úkolem byla integrace umělé inteligence (Google Gemini) pro automatickou tvorbu strukturovaného obsahu z videí a stabilizace stahování dat z YouTube, které na produkčním prostředí (Vercel) vykazovalo nestabilitu.Výsledek:Aplikace nyní disponuje tlačítkem "✨ Vytvořit obsah pomocí AI", které na jedno kliknutí:Analyzuje přepis videa.Vytvoří detailní hierarchickou osnovu (až do 4. úrovně).Přiřadí k bodům přesné časové značky na konci řádků (MM:SS-MM:SS).Vše probíhá s vizuální zpětnou vazbou pro uživatele (logy).Zároveň byl vyvinut "Ultimate Scraper", který zajišťuje spolehlivé stahování metadat a titulků i v nepřátelském prostředí cloudových serverů.2. 🧠 Implementace AI (Gemini)Jádrem inovace je využití modelu Gemini 2.0 Flash, který se ukázal jako ideální volba pro svou rychlost a schopnost precizně dodržovat složité formátovací instrukce.2.1. Backend (api/ai/generate)Model: gemini-2.0-flash (vybrán na základě diagnostiky dostupnosti API klíče).Konfigurace: temperature: 0.1 – extrémně nízká hodnota pro minimalizaci "halucinací" a striktní dodržení formátu.Prompt Engineering: Byl vyvinut komplexní systémový prompt, který AI instruuje k:Tvorbě hierarchického stromu (číslování 1., 1.1., 1.1.1.).Zákazu Markdown formátování (žádné tučné písmo).Kritické pravidlo: Umístění časových značek striktně na konec řádku, což je nezbytné pro parser přehrávače.2.2. Frontend (UI)Implementován "Debug Mode" logování přímo v UI, který administrátorovi ukazuje stav procesu ("Inicializace...", "Odesílám...", "Hotovo").Ošetřeny stavy, kdy server nevrátí platný JSON (např. při timeoutu), s jasnou chybovou hláškou pro uživatele.3. 🛡️ Stabilizace YouTube Scrapingu ("Ultimate Scraper")Během testování na produkci (Vercel) se ukázalo, že YouTube agresivně blokuje požadavky z datových center, což vedlo k selhání standardních knihoven (youtubei.js).Byl vyvinut robustní systém vícevrstvé obrany, který kombinuje několik strategií:3.1. Získávání Metadat (Název, Popis)Strategie: Návrat k osvědčené metodě "Googlebot Masquerade".Princip: Scraper se v HTTP hlavičkách vydává za robota Googlebota (User-Agent: Googlebot/2.1). YouTube těmto robotům servíruje čisté HTML s meta tagy (pro SEO), které nejsou blokovány Consent Wallem.Výsledek: 100% úspěšnost získání názvu a popisu na Vercelu.3.2. Získávání Titulků (Transkriptu)Byla implementována kaskáda 5 metod, které se zkouší v tomto pořadí:InnerTube (Web Client): Standardní metoda (rychlá, funguje na lokále).InnerTube (Raw XML): Pokud selže parsování, zkusí se vytáhnout surové XML z odpovědi.Deep HTML Search: Hledání skrytého JSON objektu ytInitialPlayerResponse v HTML kódu stránky.Dirty Regex (The "Brute Force"): Hledání textového řetězce baseUrl titulků přímo v surovém HTML pomocí regulárního výrazu. Tato metoda se ukázala jako klíčová pro Vercel, kde YouTube posílá "ořezané" HTML.Invidious Proxy: Poslední záchrana – dotaz na externí instance (proxy servery), pokud vše ostatní selže.4. 🧪 Testování a QATestování probíhalo ve dvou rovinách:4.1. Testovací scénáře (AI)Formátování: Ověřeno, že AI generuje čistý text bez Markdownu (**bold**).Časové značky: Ověřeno, že značky (MM:SS-MM:SS) jsou vždy na konci řádku.Jazyk: Ověřena podpora češtiny i pro cizojazyčná videa (přepis v DE -> výstup v CS).4.2. Testování na Produkci (Vercel)Slovenské video: Byl vyřešen problém s nedostupností titulků na Vercelu pomocí implementace "Dirty Regex" metody.Německé video: Ověřena funkčnost pro populární videa.Stabilita: Potvrzeno, že kombinace "Googlebot" pro metadata a "Ultimate Scraper" pro titulky je stabilní řešení.5. 💡 Doporučení pro další vývojMonitoring: Sledovat logy na Vercelu. YouTube neustále mění své anti-bot ochrany, "Ultimate Scraper" může vyžadovat údržbu.Cache AI: Zvážit ukládání vygenerovaného obsahu do mezipaměti, aby se šetřily tokeny Gemini API při opakovaném generování stejného videa (pokud by to bylo relevantní).Editace Promptu: Do budoucna umožnit "jemné doladění" promptu přímo z administrace (např. změna jazyka výstupu nebo hloubky detailu).Závěr: Aplikace je nyní plně připravena na automatizovaný provoz. Kurátor pouze vloží URL, klikne na dvě tlačítka ("Načíst z YouTube" a "Vytvořit obsah AI") a během několika sekund má připravený profesionální, strukturovaný záznam.
 
 JÁ_PROMPT:
 Díky moc. ;-) Nyní bych poprosil ještě zcela závěrem jako obvykle zrevidovat důležitý projektový snímkovač projektového adresáře vzhledem k nyní proběhlé relalizační fázi na projektu. V příloze je aktuální skript na snímkování projektového adresáře a nastavení jeho vnitřních a vnějších podmínek projektu. Prosím o jeho revizi vzhledem k nyní proběhlé realizační fázi, tak aby nový výsledný snímkovač pokrýval co neefektivněji a optimálně celý dosavadní projekt včetně nových funkcionalit. Takovýto snímkovač projektu pak bud využit v další fázi projektu k předání podmínek celého projektu pro implementaci nových funkcionalit resp. předat takto potřebné nezbytné nastavení a realizaci vlastností této aplikace tak nastavení jejích vnitřních a vnějších podmínek.
 
 [project_snapshot.py]
 
-
-
 AI_RESPONZE:
-To je velmi prozíravý krok. Aktualizace snímkovače na konci každé fáze je přesně to, co udržuje vývoj "na kolejích", protože v příští fázi (Fáze 11 - AI) budeme potřebovat, aby AI přesně věděla, jak získáváme data a jak vypadá jejich struktura v databázi.
+Rád zreviduji a aktualizuji snímkovací skript.
 
-Připravil jsem revidovanou verzi 13.0 vašeho skriptu project_snapshot.py.
+Vzhledem k tomu, že jsme právě dokončili významnou fázi implementace (AI + stabilizace YouTube), je klíčové, aby nový snímek obsahoval nejen logiku, kterou jsme přidali (route.ts), ale i kontextové soubory, které definují "vnější podmínky" aplikace (např. konfigurace Next.js, poskytovatelé kontextu).
 
-Co je nového ve verzi 13.0:
+Připravil jsem verzi 14.0, která oproti předchozí:
 
-Sledování nového "mozku": Přidal jsem do seznamu sledovaných souborů app/api/youtube/fetch-data/route.ts, což je nyní nejdůležitější soubor pro získávání dat.
+Přidává do sledování next.config.ts (důležité pro nastavení domén obrázků a experimentálních funkcí).
 
-Nové závislosti: Skript nyní rozpozná a popíše knihovny youtubei.js (InnerTube) a he, které jsme přidali.
+Přidává chybějící komponenty Providers.tsx a DeleteButton.tsx pro kompletní obraz UI.
 
-Důraz na data: Ve výpisu souborů jsem zvýraznil prisma/schema.prisma, protože tam přibyla tabulka Transcript, která bude klíčová pro příští fázi.
+Aktualizuje seznam klíčových knihoven v analýze package.json o nové AI balíčky.
 
-Zde je aktualizovaný skript:
+Tento skript vygeneruje soubor README_11_03project_snapshot, který bude sloužit jako dokonalý startovní bod pro Fázi 12 (Interaktivní přehrávač).
+
+Spusťte tento skript (python3 project_snapshot.py) a výsledný soubor README_11_03project_snapshot bude obsahovat vše potřebné pro plynulý přechod do další vývojové etapy. Skvělá práce!
 
 
 ID_chatu: 
-https://gemini.google.com/u/1/app/10732d3d26a770f4
+https://gemini.google.com/u/1/app/b4ad88803ddaacfb?pli=1
 
 
 

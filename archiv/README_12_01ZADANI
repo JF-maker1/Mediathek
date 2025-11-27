@@ -1,0 +1,597 @@
+JÁ_PROMPT:
+Mohu poprosit rovněž o jakousi zprávu o vývoji tohoto zadání resp. do dokumentu README_12_01ZADANI vložím jednak výsledné zadání ale i zprávu o tom jak toto zadání bylo vyvíjeno resp. aby tato zpráva obsahovala shrnutí tohoto chatu s klasickými náležitostmi vývoje úvah v chatu, myšlenky zaznělé v chatu, obraty v názoru na toto zadání apod. resp. aby zpráva obsahovala myšlenkový kvas jak toto zadání 12 vznikalo. Bude to i odpovídat zprávě z realizační fáze. díky ... je to novinky pro dokumentu o zadání a myslím že dost dobrý ;-)
+
+AI_RESPONZE:
+
+To je skvělý nápad. Dokumentace "proč jsme se rozhodli tak, jak jsme se rozhodli" je v softwarovém inženýrství často cennější než samotný kód, protože zachycuje kontext a myšlenkový vývoj.
+
+Zde je text zprávy "Geneze zadání", který můžete vložit na začátek dokumentu README_12_01ZADANI (před samotnou technickou specifikaci). Shrnuje náš dialog, slepé uličky i finální "aha momenty".
+
+📜 Zpráva o genezi zadání (Development Report)
+Téma: Fáze 12 – Vytváření sémantických metadat a SEO obsahu Účastníci: Product Owner (User) & AI Architect (Gemini) Kontext: Přechod od navigace uvnitř videa (kapitoly) k navigaci mezi videi (sbírky a průvodci).
+
+1. Výchozí bod: Hledání "tmelu" pro sbírky
+Diskuze začala potřebou posunout aplikaci k vizi "Průvodce knihovnou".
+
+Problém: Kurátor má sbírky (Fáze 7) a detailní kapitoly (Fáze 11), ale chybí "inteligentní vrstva", která by pomáhala videa propojovat a navrhovat nové sbírky (např. "najdi vše o magnesiu").
+
+První nápad: Vytvořit "SEO obsah" jako nápovědu pro kurátora.
+
+2. První iterace: "Marketingový" sumář (Slepá ulička)
+První návrh AI promptu generoval klasické marketingové shrnutí ("Objevte sílu přírody...") a obecná klíčová slova.
+
+Kritika (Product Owner): Takový obsah je pro vzdělávací aplikaci bezcenný. Uživatel nepotřebuje vágní lákadla, ale konkrétní fakta. Pokud video nemá konkrétní doporučení, je jeho hodnota sporná.
+
+Posun: Zadání se muselo změnit z "popisování obsahu" na "extrakci doporučení".
+
+3. Druhá iterace: Filtr praktičnosti (Zásadní obrat)
+Vznikla myšlenka hodnotit obsah videa na škále Teorie (0) <-> Praxe (10).
+
+Koncept: AI měla za úkol extrahovat pouze rady s vysokým skóre (7-10), tedy "Actionable items" (např. recepty, dávkování).
+
+Výsledek: Test na videu o kurkumě dopadl výborně. Místo "video je o zdraví" jsme dostali "užívejte 3g kurkumy s tukem".
+
+4. Třetí iterace: "Edge Case" teoretických videí (Validace)
+Product Owner přinesl do diskuze důležitý testovací případ: Teoretické, ale hodnotné video (o mechanismu stárnutí jako "domino efektu"), které neobsahuje přímé recepty.
+
+Riziko: Striktní filtr "skóre 7-10" by toto video vyhodnotil jako prázdné/bezcenné, což by byla chyba.
+
+Řešení (Adaptivní Prompt): Byla navržena a otestována "Fallback logika".
+
+Hledej recepty (Priorita A).
+
+Pokud nejsou, hledej strategické rady (Priorita B).
+
+Pokud nejsou, hledej klíčové principy (Priorita C).
+
+Výsledek testu: AI u teoretického videa správně přepnula do režimu B a vytvořila kvalitní metadata o "strategii stabilizace nadledvinek", místo aby mlčela.
+
+5. Závěr a dopad na architekturu
+Zadání Fáze 12 se tímto procesem proměnilo z jednoduchého "generátoru popisků" na sofistikovaný nástroj pro dolování znalostí.
+
+Do databáze přidáváme nejen summary, ale specifické pole practicalTips (pole řetězců), které bude v budoucnu sloužit jako "checklist" pro uživatele.
+
+Prompt engineering se stal klíčovou součástí technického řešení (nikoliv jen doplňkem).
+
+(Konec zprávy o genezi)
+
+A zde je kompletní soubor README_12_01ZADANI, který obsahuje jak tuto zprávu, tak finální technickou specifikaci.
+
+Markdown
+
+# README_12_01ZADANI
+
+## 📜 Zpráva o genezi zadání (Development Report)
+
+**Téma:** Fáze 12 – Vytváření sémantických metadat a SEO obsahu
+**Kontext:** Přechod od navigace *uvnitř* videa (kapitoly) k navigaci *mezi* videi (sbírky a průvodci).
+
+### 1. Výchozí bod: Hledání "tmelu" pro sbírky
+Diskuze začala potřebou posunout aplikaci k vizi **"Průvodce knihovnou"**.
+* **Problém:** Kurátor má sbírky (Fáze 7) a detailní kapitoly (Fáze 11), ale chybí "inteligentní vrstva", která by pomáhala videa propojovat a navrhovat nové sbírky.
+* **První nápad:** Vytvořit "SEO obsah" jako nápovědu pro kurátora.
+
+### 2. První iterace: "Marketingový" sumář (Slepá ulička)
+První návrh AI promptu generoval klasické marketingové shrnutí (*"Objevte sílu přírody..."*) a obecná klíčová slova.
+* **Kritika:** Takový obsah je pro vzdělávací aplikaci bezcenný. Uživatel nepotřebuje vágní lákadla, ale **konkrétní fakta**.
+* **Posun:** Zadání se změnilo z "popisování obsahu" na **"extrakci doporučení"**.
+
+### 3. Druhá iterace: Filtr praktičnosti (Zásadní obrat)
+Vznikla myšlenka hodnotit obsah videa na škále **Teorie (0) <-> Praxe (10)**.
+* **Koncept:** AI měla za úkol extrahovat pouze rady s vysokým skóre (7-10), tedy "Actionable items".
+* **Výsledek:** Test na videu o kurkumě dopadl výborně. Místo "video je o zdraví" jsme dostali "užívejte 3g kurkumy s tukem".
+
+### 4. Třetí iterace: "Edge Case" teoretických videí (Validace)
+Byl testován případ **teoretického, ale hodnotného videa** (mechanismus stárnutí), které neobsahuje přímé recepty.
+* **Riziko:** Striktní filtr "skóre 7-10" by toto video vyhodnotil jako prázdné.
+* **Řešení (Adaptivní Prompt):** Byla navržena **"Fallback logika"**:
+    1. Hledej recepty (Priorita A).
+    2. Pokud nejsou, hledej strategické rady (Priorita B).
+    3. Pokud nejsou, hledej klíčové principy (Priorita C).
+* **Výsledek testu:** AI u teoretického videa správně přepnula do režimu B a vytvořila kvalitní metadata.
+
+---
+
+## 📄 Zadání projektu: Webová aplikace Mediathek (Fáze 12 - SEO a Sémantická Metadata)
+
+**Datum:** 26. listopadu 2025
+**Verze:** 12.0
+**Navazuje na:** Fáze 11 (Strukturovaný obsah), Fáze 7 (Sbírky)
+
+### 1. Název projektu
+Mediathek
+
+### 2. 🎯 Cíl Fáze
+Cílem této fáze je implementovat inteligentní generování **SEO obsahu a praktických metadat** pomocí AI.
+
+Tato metadata (Abstrakt, Klíčová slova, Praktické tipy, Návrhy sbírek) budou sloužit dvěma účelům:
+1.  **Kurátorská podpora:** Pomohou administrátorovi/kurátorovi efektivně zařazovat videa do tématických sbírek (našeptávání).
+2.  **Budoucí vyhledávání a Průvodce:** Vytváří sémantickou síť pojmů, která v budoucnu umožní propojovat videa do "kompilovaných průvodců" a vyhledávat podle obsahu (nejen názvu).
+
+Výstupem musí být obsah, který balancuje mezi **teoretickým kontextem** (o čem video je) a **praktickou aplikací** (co dělat), zajištěný pomocí adaptivního AI promptu.
+
+### 3. Rozsah pro Fázi 12
+
+* **Databáze (Prisma):** Rozšíření modelu `Video` o 4 nová pole pro uchování vygenerovaných dat.
+* **Admin UI:** Rozšíření stránky `/admin/edit/[id]` o sekci "SEO a Kontext" s tlačítkem pro generování a formuláři pro úpravu výsledků.
+* **Backend (AI):** Implementace API endpointu, který využívá **Adaptivní Prompt** pro analýzu přepisu videa.
+* **Logika:** Implementace fallback logiky – pokud video nemá přepis, generování nelze spustit.
+
+**Mimo rozsah:** Automatické vytváření sbírek (pouze návrhy textem), veřejné zobrazování těchto metadat (zatím jen pro admina/kurátora).
+
+### 4. 🏛️ Návrh Řešení a Architektura
+
+#### 4.1. Databázový Model (Prisma)
+Soubor `prisma/schema.prisma` bude rozšířen o model `Video`.
+
+```prisma
+model Video {
+  // ... existující pole
+
+  // --- NOVÁ SEO POLE (Fáze 12) ---
+  seoSummary     String?   @db.Text  // AI Abstrakt (kontext + řešení)
+  seoKeywords    String[]  // Klíčová slova (entity, látky, diagnózy)
+  practicalTips  String[]  // Konkrétní rady (Actionable items)
+  aiSuggestions  String[]  // Návrhy názvů sbírek
+}
+4.2. Definice Promptu (Adaptivní logika)
+Backend použije tento systémový prompt pro volání OpenAI API.
+
+System Prompt:
+
+"Jsi expertní analytik vzdělávacího obsahu a kurátor. Tvým úkolem je vytvořit strukturovaná metadata z přepisu videa.
+
+INSTRUKCE PRO ANALÝZU:
+
+Zoom Out (Kontext): Pochop hlavní myšlenku a teoretický rámec videa.
+
+Zoom In (Entity): Identifikuj konkrétní látky, metody a termíny.
+
+Filtr Praktičnosti (Prioritizace - Adaptivní logika):
+
+Priorita A (Taktické / Skóre 8-10): Hledej explicitní instrukce (dávkování, recepty, cvičení).
+
+Priorita B (Strategické / Skóre 5-7): Pokud chybí A, hledej strategická doporučení (např. 'zaměřte se na spánek').
+
+Priorita C (Konceptuální / Skóre 1-4): Pokud chybí i B, extrahuj klíčové principy k pochopení.
+
+POŽADOVANÝ VÝSTUP (JSON): { "summary": "Bohatý odstavec (2-3 věty), který spojuje teoretický kontext videa s navrhovaným řešením. Musí být atraktivní pro čtenáře.", "keywords": ["Pole", "5-10", "nejdůležitějších", "pojmů"], "practical_tips": ["Pole 3-6 bodů. Vždy preferuj Prioritu A. Pokud chybí, použij B nebo C."], "suggestions": ["Pole 3-5 návrhů názvů sbírek, kam video zapadá."] }"
+
+4.3. Backend API (/api/ai/generate-seo)
+Vstup: transcript (string).
+
+Proces: Volání OpenAI (gpt-4o nebo gpt-4o-mini).
+
+Validace: Ověření, že výstup je validní JSON.
+
+Výstup: JSON objekt pro frontend.
+
+4.4. Uživatelské Rozhraní (Admin Edit)
+Na stránce /admin/edit/[id]:
+
+Nová sekce "SEO a Sémantika".
+
+Tlačítko: ✨ Vygenerovat SEO metadata.
+
+Formulář:
+
+Abstrakt (Textarea).
+
+Klíčová slova (Input pro tagy).
+
+Praktické tipy (Dynamický seznam inputů - přidat/smazat/upravit).
+
+Návrhy sbírek (Read-only text).
+
+5. 🚦 Funkční Požadavky (FR)
+FR1 (Adaptivita): AI musí vygenerovat smysluplný obsah jak pro čistě praktická videa, tak pro teoretická videa (dle logiky Priorita A/B/C).
+
+FR2 (Struktura): Výstup praktických tipů musí být pole řetězců.
+
+FR3 (Editovatelnost): Kurátor musí mít možnost AI výstup upravit před uložením.
+
+FR4 (Persistence): Data se ukládají do nových sloupců DB.
+
+6. 🔒 Nefunkční Požadavky (NFR)
+NFR1 (Jazyk): Výstup musí být vždy v češtině (zajištěno v promptu).
+
+NFR2 (Konzistence): Formát JSON musí být striktně dodržen.
+
+NFR3 (Oddělení): Generování SEO obsahu nesmí přepsat existující "Strukturovaný obsah" (kapitoly).
+
+7. ✅ Akceptační Kriteria (Definice "Hotovo")
+Admin může vygenerovat SEO metadata pro video s přepisem.
+
+U videa s receptem (např. kurkuma) se vygenerují konkrétní dávkování.
+
+U teoretického videa (např. stárnutí) se vygenerují strategické rady.
+
+Data lze upravit a uložit.
+
+Uložená data jsou viditelná v databázi (nové sloupce).
+
+------------------------------------------------------------------------
+
+JÁ_PROMPT:
+Zde je výsledek testu pro původní prompt se skore 7-10 a pro upravený prompt pro teoričtější videa na příkladu [[0:00
+Altern selten ein gleichmäßiger
+0:02
+friedlicher Prozess, bei dem der ganze
+0:04
+Körper sanft und synchron abbaut. In
+0:06
+Wahrheit ist es eher wie ein Kartenhaus,
+0:08
+bei dem einzelnes instabiles Teil das
+0:11
+ganze System ins Wanken bringt. Eine Art
+0:13
+biologischer Dominoeffekt. Und oft ist
+0:16
+es nicht das Organ, von dem man es
+0:17
+erwartet, nicht das Herz, nicht das
+0:21
+Gehirn, sondern manchmal ganz
+0:22
+unscheinbare Player wie die Nebenniieren
+0:24
+oder die Gefäße, die still und leise als
+0:27
+erste kippen und alles andere mit sich
+0:29
+reißen. Nehmen wir die Nebenniieren.
+0:32
+Diese kleinen Drüsen, die wie müde
+0:34
+Kaffeebohnen über den Nieren sitzen,
+0:36
+werden oft übersehen. Dabei sind sie das
+0:38
+hormonelle Taktzentrum unseres
+0:40
+Stresssystems. Kortisol, Adrenalin,
+0:43
+DHEA. Alles läuft hier zusammen. Wenn
+0:46
+diese Drüsen überlastet oder chronisch
+0:48
+stimuliert sind, etwa durch Dauerstress,
+0:50
+schlechte Schlafqualität oder
+0:52
+entzündliche Prozesse, kommt es zu einem
+0:54
+hormonellen Ungleichgewicht, das weit
+0:56
+über Stress hinausgeht. Plötzlich sinkt
+0:58
+die Schilddrüsenaktivität.
+1:00
+Die Insulinsensitivität lässt nach. Das
+1:03
+Immunsystem wird träge oder überaktiv.
+1:06
+Der Schlaf verschlechtert sich. Der Darm
+1:09
+reagiert empfindlicher. Kognitive
+1:12
+Funktionen lassen nach. Und was als
+1:14
+lokale Erschöpfung begann, wird zur
+1:16
+systemischen Krise. Ähnlich verhält es
+1:19
+sich mit dem Gefäßsystem. Wenn Arterien
+1:22
+versteifen, Mikroentzündungen entstehen
+1:24
+und die Endotellfunktion abnimmt, leidet
+1:26
+nicht nur das Herzkreislaufsystem.
+1:28
+Die schlechtere Durchblutung trifft
+1:30
+zuerst das Gehirn. Denkprozesse werden
+1:32
+langsamer, Aufmerksamkeitsspannend
+1:34
+kürzer. Gleichzeitig bekommen Organe wie
+1:37
+Leber, Nieren oder Verdauungssystem
+1:39
+weniger Sauerstoff und Nährstoffe. Der
+1:42
+Darm beginnt durchlässiger zu werden.
+1:44
+Das Mikrobiom kippt, Immunreaktionen
+1:46
+entgleisen. Selbst die Haut, so
+1:48
+durchblutungsabhängig wie sie ist,
+1:50
+altert schneller, trockener, dünner,
+1:52
+anfälliger. Alles hängt zusammen, aber
+1:55
+nicht gleich stark.
+1:57
+Was dabei besonders tückisch ist, man
+1:59
+merkt es oft nicht sofort. Der Körper
+2:02
+ist ein Meister der Kompensation.
+2:04
+Solange ein Organ schwächelt, springen
+2:06
+andere ein, bis sie selbst erschöpft
+2:08
+sind. Und so läuft man jahrelang in
+2:11
+einem Zustand biologischer Kompromisse,
+2:13
+ohne zu begreifen, dass der eigentliche
+2:15
+Verfall längst begonnen hat. Erst wenn
+2:17
+mehrere Systeme gleichzeitig schwächeln,
+2:19
+Schlaf, Verdauung, Konzentration,
+2:22
+Stimmung dämmert einem. Hier geht gerade
+2:24
+mehr kaputt als nur ein bisschen
+2:25
+Energie.
+2:27
+Aber genau hier liegt auch die Chance,
+2:29
+denn der Alterungsprozess ist zwar
+2:31
+vernetzt, aber auch umkehrbar. Wer früh
+2:34
+erkennt, welches System zuerst
+2:36
+schwächelt, kann die Kaskade aufhalten.
+2:38
+Wenn du z.B. die Nebenniieren
+2:40
+stabilisierst durch gezielten
+2:42
+Stressabbau, Schlafsanierung, adaptogene
+2:44
+Pflanzenstoffe wie Rodiola oder
+2:46
+Aschwagta, beruhigt sich oft auch der
+2:48
+Zuckerstoffwechsel. Das Immunsystem
+2:50
+reguliert sich, der Schlaf wird tiefer,
+2:52
+die Stimmung stabiler. Ebenso beim
+2:54
+Gefäßsystem, wer durch Bewegung Omega3
+2:57
+Fettsäuren, antioxidative Ernährung und
+3:00
+Blutdruckregulation für bessere
+3:01
+Gefäßgesundheit sorgt, schützt damit
+3:03
+gleichzeitig Hirnleistung,
+3:04
+Organdurchblutung, Haut und Immunabwehr.
+3:08
+Alterno, kein alles wird schlechter
+3:10
+Phänomen, sondern ein wo bricht es
+3:12
+zuerst Problem. Und wer dieses wo
+3:15
+identifiziert, kann den Rest des Systems
+3:17
+mit erstaunlich wenig Aufwand stabil
+3:19
+halten. Es ist ein bisschen wie beim
+3:21
+ersten Stein im Domino. Er entscheidet,
+3:24
+ob alles fällt oder stehen bleibt und du
+3:26
+entscheidest, ob du nur zuschaust oder
+3:29
+den Finger rechtzeitig dazwischen legst.
+3:31
+Yeah.
+
+]] ... zde je výsledek prvního a druhého ... který je pro naše účely vhodnější ? kdy chcdeme co nejkonkrétněji zaměřený SEO ale i pro teoreticky teoričtější videa ... přijde mi že výsledek dvě je vhodnější - tedy upravený prompt [{
+"summary": "Video identifikuje nadledviny a cévní systém jako primární spouštěče stárnutí a doporučuje konkrétní protokol stabilizace pomocí adaptogenů (Rhodiola, Ašvaganda) a suplementace Omega-3 mastných kyselin.",
+"keywords": [
+"Rhodiola",
+"Ašvaganda",
+"Omega-3 mastné kyseliny",
+"nadledviny",
+"endoteliální funkce",
+"kortizol",
+"stárnutí cév"
+],
+"practical_tips": [
+"Zařaď do suplementace adaptogeny Rhodiola a Ašvaganda pro stabilizaci funkce nadledvin.",
+"Zvyš příjem Omega-3 mastných kyselin pro zachování pružnosti cév a endoteliální funkce.",
+"Implementuj antioxidační stravu a cílenou 'sanaci spánku' jako prevenci systémového zánětu."
+],
+"suggestions": "Protokoly pro hormonální a cévní dlouhověkost"
+}
+
+------------------------------------------------------------------------
+
+{
+  "summary": "Video vysvětluje proces stárnutí nikoliv jako rovnoměrný úpadek celého těla, ale jako 'biologický domino efekt', kde selhání jednoho systému (často nenápadného, jako jsou nadledvinky nebo cévní systém) strhne ostatní. Autor popisuje mechanismus kompenzace, kdy tělo dlouho maskuje problémy, dokud nedojde k systémové krizi. Obsah nabízí konkrétní řešení pro stabilizaci těchto klíčových bodů pomocí adaptogenů, výživy a úpravy životního stylu, čímž lze proces stárnutí zpomalit či zvrátit.",
+  "keywords": [
+    "Stárnutí",
+    "Nadledvinky",
+    "Kortisol",
+    "Cévní systém",
+    "Adaptogeny",
+    "Rhodiola",
+    "Ashwagandha",
+    "Omega-3",
+    "Endoteliální funkce",
+    "Prevence"
+  ],
+  "practical_tips": [
+    "Stabilizujte funkci nadledvinek užíváním adaptogenních bylin, jako je Rhodiola nebo Ashwagandha.",
+    "Podpořte pružnost cév a průtok krve zvýšeným příjmem Omega-3 mastných kyselin a stravou bohatou na antioxidanty.",
+    "Zaveďte režim 'sanace spánku' a cíleného odbourávání stresu pro regulaci hormonální osy (kortisol, DHEA).",
+    "Zařaďte pravidelný pohyb pro udržení endoteliální funkce a prokrvení orgánů včetně mozku.",
+    "Identifikujte a řešte svůj 'první domino kámen' (nejslabší orgánový systém) dříve, než strhne ostatní systémy."
+  ],
+  "suggestions": [
+    "Biohacking a dlouhověkost",
+    "Hormonální rovnováha a stres",
+    "Zdraví kardiovaskulárního systému",
+    "Prevence civilizačních chorob"
+  ]
+}]
+
+AI_RESPONZE:
+
+Naprosto s vámi souhlasím. **Výsledek č. 2 (ten z "adaptivního" promptu) je výrazně kvalitnější** a pro účely vaší aplikace vhodnější.
+
+Proč je varianta č. 2 vítěz:
+
+1.  **Kontext:** Neříká jen "berte Rhodiolu" (jako var. 1), ale vysvětluje **proč** (protože stárnutí je domino efekt a nadledvinky jsou první kostka). To je pro vzdělávací aplikaci klíčové.
+2.  **Bohatší SEO:** Summary obsahuje více sémantických vazeb ("biologický domino efekt", "systémová krize"), což umožní vyhledávání najít video i na dotazy typu "proč stárneme" nebo "únava nadledvin", nejen na názvy bylin.
+3.  **Šíře doporučení:** Obsahuje 5 tipů místo 3, a zahrnuje i "soft" doporučení (identifikace problému), která jsou u komplexních témat nezbytná.
+
+Tímto jsme úspěšně ověřili, že **Adaptivní Prompt (s logikou A/B/C priorit)** funguje nejlépe. Dokáže vytáhnout konkrétní byliny, když tam jsou, ale neztratí teoretický rámec.
+
+Zde je tedy kompletní zadání pro Fázi 12, postavené na tomto ověřeném řešení.
+
+-----
+
+### 📄 Zadání projektu: Webová aplikace Mediathek (Fáze 12 - SEO a Sémantická Metadata)
+
+**Datum:** 26. listopadu 2025
+**Verze:** 12.0
+**Navazuje na:** Fáze 11 (Strukturovaný obsah), Fáze 7 (Sbírky)
+
+### 1\. Název projektu
+
+Mediathek
+
+### 2\. 🎯 Cíl Fáze
+
+Cílem této fáze je implementovat inteligentní generování **SEO obsahu a praktických metadat** pomocí AI.
+
+Tato metadata (Abstrakt, Klíčová slova, Praktické tipy, Návrhy sbírek) budou sloužit dvěma účelům:
+
+1.  **Kurátorská podpora:** Pomohou administrátorovi/kurátorovi efektivně zařazovat videa do tématických sbírek (našeptávání).
+2.  **Budoucí vyhledávání a Průvodce:** Vytváří sémantickou síť pojmů, která v budoucnu umožní propojovat videa do "kompilovaných průvodců" a vyhledávat podle obsahu (nejen názvu).
+
+Výstupem musí být obsah, který balancuje mezi **teoretickým kontextem** (o čem video je) a **praktickou aplikací** (co dělat).
+
+### 3\. Rozsah pro Fázi 12
+
+  * **Databáze (Prisma):** Rozšíření modelu `Video` o 4 nová pole pro uchování vygenerovaných dat.
+  * **Admin UI:** Rozšíření stránky `/admin/edit/[id]` o sekci "SEO a Kontext" s tlačítkem pro generování a formuláři pro úpravu výsledků.
+  * **Backend (AI):** Implementace API endpointu, který využívá **Adaptivní Prompt** (otestovaný v přípravné fázi) pro analýzu přepisu videa.
+  * **Logika:** Implementace fallback logiky – pokud video nemá přepis, generování nelze spustit (UI to musí indikovat).
+
+**Mimo rozsah:** Automatické vytváření sbírek (pouze návrhy textem), veřejné zobrazování těchto metadat (zatím jen pro admina/kurátora).
+
+-----
+
+### 4\. 🏛️ Návrh Řešení a Architektura
+
+#### 4.1. Databázový Model (Prisma)
+
+Soubor `prisma/schema.prisma` bude rozšířen o model `Video`.
+
+```prisma
+model Video {
+  // ... existující pole (id, title, summary, chapters...)
+
+  // --- NOVÁ SEO POLE (Fáze 12) ---
+  seoSummary     String?   @db.Text  // AI Abstrakt (kontext + řešení)
+  seoKeywords    String[]  // Klíčová slova (entity, látky, diagnózy)
+  practicalTips  String[]  // Konkrétní rady (Actionable items)
+  aiSuggestions  String[]  // Návrhy názvů sbírek
+}
+```
+
+#### 4.2. Definice Promptu (Adaptivní logika)
+
+Toto je jádro fáze. Backend použije tento systémový prompt pro volání OpenAI API.
+
+**System Prompt:**
+
+> "Jsi expertní analytik vzdělávacího obsahu a kurátor. Tvým úkolem je vytvořit strukturovaná metadata z přepisu videa.
+>
+> **INSTRUKCE PRO ANALÝZU:**
+>
+> 1.  **Zoom Out (Kontext):** Pochop hlavní myšlenku a teoretický rámec videa.
+> 2.  **Zoom In (Entity):** Identifikuj konkrétní látky, metody a termíny.
+> 3.  **Filtr Praktičnosti (Prioritizace):**
+>       * Hledej primárně **explicitní instrukce** (dávkování, konkrétní postupy).
+>       * Pokud chybí, hledej **strategická doporučení** (např. 'zaměřte se na spánek').
+>       * Pokud je video čistě teoretické, extrahuj **klíčové principy k pochopení**.
+>
+> **POŽADOVANÝ VÝSTUP (JSON):**
+> {
+> "summary": "Bohatý odstavec (2-3 věty), který spojuje teoretický kontext videa s navrhovaným řešením. Musí být atraktivní pro čtenáře (SEO description).",
+> "keywords": ["Pole", "5-10", "nejdůležitějších", "pojmů"],
+> "practical\_tips": ["Pole 3-6 konkrétních bodů. Seřaď je od nejpraktičtějších (recepty) po strategické (principy)."],
+> "suggestions": ["Pole 3-5 návrhů názvů sbírek, kam video zapadá."]
+> }"
+
+#### 4.3. Backend API (`/api/ai/generate-seo`)
+
+  * **Vstup:** `transcript` (string).
+  * **Proces:** Volání OpenAI (gpt-4o nebo gpt-4o-mini) s výše uvedeným promptem.
+  * **Validace:** Ověření, že výstup je validní JSON obsahující všechna 4 pole.
+  * **Výstup:** JSON objekt pro frontend.
+
+#### 4.4. Uživatelské Rozhraní (Admin Edit)
+
+Na stránce `/admin/edit/[id]`:
+
+1.  Pod sekcí "Strukturovaný obsah" (kapitoly) přibude sekce **"SEO a Sémantika"**.
+2.  **Tlačítko:** `✨ Vygenerovat SEO metadata` (aktivní pouze pokud má video přepis).
+3.  **Formulář:**
+      * `Abstrakt` (Textarea, editovatelné).
+      * `Klíčová slova` (Input pro tagy - např. oddělené čárkou nebo "chips" komponenta).
+      * `Praktické tipy` (Dynamický seznam inputů - admin může řádky mazat/přidávat/měnit pořadí).
+      * `Návrhy sbírek` (Pouze textový výpis/readonly - slouží jako inspirace pro vedlejší widget "Zařazení do sbírek").
+
+-----
+
+### 5\. 🚦 Funkční Požadavky (FR)
+
+  * **FR1 (Adaptivita):** AI musí vygenerovat smysluplný obsah jak pro čistě praktická videa ("recept na kurkumu"), tak pro teoretická videa ("mechanismus stárnutí").
+  * **FR2 (Struktura):** Výstup praktických tipů musí být pole řetězců, aby se daly v budoucnu zobrazovat jako "odrážky" nebo "checklist".
+  * **FR3 (Editovatelnost):** Kurátor musí mít možnost AI výstup upravit (např. opravit chybu v názvu byliny) před uložením do DB.
+  * **FR4 (Persistence):** Uložená metadata se musí načíst při příští návštěvě editace.
+
+### 6\. 🔒 Nefunkční Požadavky (NFR)
+
+  * **NFR1 (Jazyk):** Výstup musí být vždy v češtině, i když je přepis videa v němčině nebo angličtině (zajištěno v promptu).
+  * **NFR2 (Konzistence):** Formát JSON musí být striktně dodržen, aby nedošlo k pádu aplikace při parsování odpovědi od AI.
+  * **NFR3 (Oddělení):** Generování SEO obsahu nesmí přepsat již existující "Strukturovaný obsah" (časové značky).
+
+-----
+
+### 7\. ✅ Akceptační Kriteria (Definice "Hotovo")
+
+1.  Admin otevře video s německým přepisem o "domino efektu stárnutí".
+2.  Klikne na "Vygenerovat SEO".
+3.  Do formuláře se načte:
+      * **Abstrakt:** Vysvětlující teorii domina a zmiňující adaptogeny.
+      * **Klíčová slova:** Obsahující "Nadledvinky", "Rhodiola", "Omega-3".
+      * **Tipy:** Obsahující věty jako "Stabilizujte funkci nadledvinek...", "Zvyšte příjem Omega-3...".
+4.  Admin může jeden tip smazat nebo upravit text.
+5.  Po kliknutí na "Uložit video" se data propíší do databáze (sloupce `seoSummary`, `seoKeywords`, `practicalTips`, `aiSuggestions`).
+
+
+id_chat: 
+https://gemini.google.com/u/1/app/11c9c951c8163911

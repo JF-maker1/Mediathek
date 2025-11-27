@@ -1,10 +1,13 @@
 # Snímek Projektu: Mediathek
 
-*Vygenerováno: 2025-11-24 18:17:57*
+*Vygenerováno: 2025-11-25 20:07:24*
 
 ## 1. Souhrn Projektu
 
-Jedná se o projekt **web_app_mediathek**, postavený na následujícím technologickém stacku: **Next.js, React, TypeScript, Tailwind CSS, Prisma, NextAuth.js, YouTube.js (InnerTube), Google Gemini AI**.
+Jedná se o projekt **web_app_mediathek**.
+**Fáze vývoje:** Dokončena Fáze 11 (AI Integrace & YouTube Scraping Stabilization).
+**Hlavní stack:** Next.js, React, TypeScript, Prisma (PostgreSQL), Tailwind CSS.
+**Klíčové integrace:** YouTube (InnerTube/Scraping), Google Gemini AI, NextAuth.
 
 ## 2. Analýza Projektu (package.json)
 
@@ -27,16 +30,16 @@ Jedná se o projekt **web_app_mediathek**, postavený na následujícím technol
 | `next` | `16.0.1` | Full-stack React framework |
 | `react` | `19.2.0` | Knihovna pro tvorbu UI |
 | `prisma` | `^6.18.0` | ORM a nástroj pro databázi |
-| `@prisma/client` | `^6.18.0` | ORM a nástroj pro databázi |
-| `next-auth` | `^4.24.13` | Knihovna pro autentizaci |
-| `bcrypt` | `^6.0.0` | Knihovna pro hashování hesel |
-| `react-youtube` | `^10.1.0` | Knihovna pro vložení YouTube přehrávače |
-| `youtubei.js` | `^16.0.1` | YouTube API klient (InnerTube) - Fáze 10 |
-| `@google/generative-ai` | `^0.24.1` | Google Gemini AI SDK - Fáze 11 |
-| `he` | `^1.2.0` | HTML Entity Decoder (pro text titulků) |
-| `tailwindcss` | `^4` | Utility-first CSS framework |
-| `typescript` | `^5` | Typový systém pro JavaScript |
-| `eslint` | `^9` | Linter pro kvalitu kódu |
+| `@prisma/client` | `^6.18.0` | ORM klient |
+| `next-auth` | `^4.24.13` | Autentizace |
+| `bcrypt` | `^6.0.0` | Hashování hesel |
+| `react-youtube` | `^10.1.0` | YouTube Player komponenta |
+| `youtubei.js` | `^16.0.1` | InnerTube Client (Scraping) |
+| `@google/generative-ai` | `^0.24.1` | Google Gemini SDK (AI) |
+| `he` | `^1.2.0` | HTML Entity Decoder |
+| `tailwindcss` | `^4` | CSS Framework |
+| `typescript` | `^5` | Jazyk |
+| `eslint` | `^9` | Linter |
 | `dotenv` | `^17.2.3` | N/A |
 | `react-dom` | `19.2.0` | N/A |
 | `@tailwindcss/postcss` | `^4` | N/A |
@@ -92,16 +95,8 @@ Systém:        Linux rpi5 6.12.47+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.12.47-
 ## 5. Stav Git Repozitáře
 
 ```
-On branch feature/faze-11-ai-content
-M app/admin/add/page.tsx
- M app/admin/edit/[id]/page.tsx
- M archiv/README_10_02REALIZACE
- M package-lock.json
- M package.json
-?? app/api/ai/
-?? archiv/README_10_03project_snapshot
-?? archiv/README_11_01ZADANI
-?? archiv/README_11_02REALIZACE
+On branch main
+nothing to commit, working tree clean
 ```
 
 ## 6. Struktura Projektového Adresáře
@@ -310,6 +305,19 @@ M app/admin/add/page.tsx
         '/admin/:path*',    // Nová chráněná trasa pro adminy
       ],
     };
+```
+
+### `next.config.ts`
+
+```typescript
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  /* config options here */
+};
+
+export default nextConfig;
+
 ```
 
 ### `prisma/schema.prisma`
@@ -638,6 +646,17 @@ export default function Navbar() {
 }
 ```
 
+### `components/Providers.tsx`
+
+```typescript
+"use client";
+import { SessionProvider } from "next-auth/react";
+
+export default function Providers({ children }: { children: React.ReactNode }) {
+  return <SessionProvider>{children}</SessionProvider>;
+}
+```
+
 ### `components/VideoDetailClientWrapper.tsx`
 
 ```typescript
@@ -914,6 +933,92 @@ export default function VideoGrid({ videos, baseHref = '/admin/video', showEditB
     </div>
   );
 }
+```
+
+### `components/DeleteButton.tsx`
+
+```typescript
+"use client";
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+interface DeleteButtonProps {
+  videoId: string;
+}
+
+export default function DeleteButton({ videoId }: DeleteButtonProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const router = useRouter();
+
+  const handleDelete = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch(`/api/videos/${videoId}`, {
+        method: 'DELETE',
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || 'Smazání se nezdařilo');
+      }
+
+      setShowModal(false);
+      // FR7: Přesměrování zpět (nebo refresh)
+      // `push` je lepší pro zajištění čerstvých dat ze serveru (RSC)
+      router.push('/admin/manage');
+      router.refresh(); // Zajistí re-fetch dat na /admin/manage
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <button
+        onClick={() => setShowModal(true)}
+        className="text-red-500 hover:text-red-700 hover:underline"
+        disabled={isLoading}
+      >
+        Smazat
+      </button>
+
+      {/* --- Modální okno pro potvrzení --- */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-sm w-full">
+            <h3 className="text-lg font-bold mb-4">Potvrdit smazání</h3>
+            <p className="mb-6">Opravdu si přejete trvale smazat toto video a všechny jeho kapitoly?</p>
+            {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={() => setShowModal(false)}
+                className="py-2 px-4 rounded-md bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500"
+                disabled={isLoading}
+              >
+                Zrušit
+              </button>
+              <button
+                onClick={handleDelete}
+                className="py-2 px-4 rounded-md bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Mazání...' : 'Potvrdit smazání'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 ```
 
 ### `app/admin/dashboard/page.tsx`
@@ -2556,7 +2661,6 @@ function extractYouTubeId(url: string): string | null {
   return match ? match[1] : null;
 }
 
-// Pomocná funkce pro formátování času (ms -> MM:SS)
 function formatTime(ms: number): string {
     const totalSeconds = Math.floor(ms / 1000);
     const minutes = Math.floor(totalSeconds / 60);
@@ -2564,39 +2668,69 @@ function formatTime(ms: number): string {
     return `[${minutes}:${seconds.toString().padStart(2, '0')}]`;
 }
 
-// Pomocná funkce pro ruční stažení obsahu
-async function fetchContent(url: string): Promise<string> {
-    const res = await fetch(url, {
+// Pomocná funkce pro stažení obsahu s hlavičkami prohlížeče (pro titulky)
+async function fetchWithBrowserHeaders(url: string) {
+    return fetch(url, {
         headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Accept-Language': 'en-US,en;q=0.9',
-            'Cookie': 'SOCS=CAI'
+            'Accept-Language': 'cs-CZ,cs;q=0.9,en;q=0.8', 
+            'Cookie': 'SOCS=CAI; CONSENT=YES+cb.20210328-17-p0.en+FX+417'
         }
     });
-    if (!res.ok) throw new Error(`Status ${res.status}`);
-    return res.text();
 }
 
-// Fallback 1: HTML Scraping (Vylepšený - Googlebot Style)
+// VTT Parser
+function parseVttToPlain(vtt: string): string {
+    const lines = vtt.split('\n');
+    const result = [];
+    for(let i=0; i<lines.length; i++) {
+        const line = lines[i].trim();
+        if(line.includes('-->')) {
+            const startTime = line.split('-->')[0].trim();
+            let text = '';
+            let j = i + 1;
+            while(j < lines.length && lines[j].trim() !== '' && !lines[j].includes('-->')) {
+                text += lines[j].trim() + ' ';
+                j++;
+            }
+            const timeParts = startTime.split(':');
+            let timeStr = '';
+            if(timeParts.length === 3) {
+                const h = parseInt(timeParts[0]);
+                const m = parseInt(timeParts[1]);
+                const s = parseInt(timeParts[2].split('.')[0]);
+                if(h > 0) timeStr = `[${h}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}]`;
+                else timeStr = `[${m}:${s.toString().padStart(2,'0')}]`;
+            }
+            if(text) {
+                const cleanText = text.replace(/<[^>]*>/g, '');
+                result.push(`${timeStr} ${he.decode(cleanText).trim()}`);
+            }
+            i = j - 1;
+        }
+    }
+    return result.join('\n');
+}
+
+// --- FALLBACKS (Metody pro získání dat) ---
+
+// 1. HTML Scraping jako GOOGLEBOT (Klíčové pro Metadata na Vercelu)
 async function scrapeMetadataFromHtml(videoId: string) {
     try {
         log('Fallback (HTML/Googlebot): Stahuji stránku...');
         const url = `https://www.youtube.com/watch?v=${videoId}`;
         
-        // Tváříme se jako Googlebot - YouTube mu servíruje statická metadata bez JS/Cookies
+        // Googlebot hlavička - YouTube mu servíruje čisté meta tagy
         const res = await fetch(url, {
             headers: {
                 'User-Agent': 'Googlebot/2.1 (+http://www.google.com/bot.html)',
                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                'Accept-Language': 'en-US,en;q=0.5'
-                // Žádné cookies!
             }
         });
         
         if (!res.ok) throw new Error(`HTML fetch status ${res.status}`);
         const html = await res.text();
         
-        // Hledáme standardní OpenGraph tagy
         const titleMatch = html.match(/<meta property="og:title" content="(.*?)"/);
         const descMatch = html.match(/<meta property="og:description" content="(.*?)"/);
         
@@ -2604,7 +2738,6 @@ async function scrapeMetadataFromHtml(videoId: string) {
         const description = descMatch ? he.decode(descMatch[1]) : '';
         
         if (title) log(`HTML Scraping úspěšný! Title: "${title.substring(0, 20)}..."`);
-        if (description) log(`HTML Description nalezen (${description.length} znaků).`);
         
         return { title, description };
     } catch (e: any) {
@@ -2613,18 +2746,14 @@ async function scrapeMetadataFromHtml(videoId: string) {
     }
 }
 
-// Fallback 2: oEmbed API (Záloha pro Title)
 async function fetchOEmbedMetadata(videoId: string) {
     try {
         log('Fallback (oEmbed): Volám oficiální API...');
-        const url = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`;
-        const res = await fetch(url, {
+        const res = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`, {
              headers: { 'User-Agent': 'Googlebot/2.1 (+http://www.google.com/bot.html)' }
         });
-        
         if (!res.ok) throw new Error(`Status ${res.status}`);
         const json = await res.json();
-        
         log(`oEmbed úspěšný! Title: "${json.title}"`);
         return { title: json.title || '', description: '' };
     } catch (e: any) {
@@ -2633,216 +2762,261 @@ async function fetchOEmbedMetadata(videoId: string) {
     }
 }
 
-// Fallback 3: Invidious API (Poslední instance)
 async function fetchInvidiousMetadata(videoId: string) {
-    const instances = [
-        'https://inv.tux.pizza',
-        'https://vid.puffyan.us',
-        'https://invidious.drgns.space'
-    ];
-
+    const instances = ['https://inv.tux.pizza', 'https://vid.puffyan.us'];
     for (const instance of instances) {
         try {
-            log(`Fallback (Invidious): Zkouším ${instance}...`);
-            // Krátký timeout, ať nezdržujeme
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 3000);
-            
+            setTimeout(() => controller.abort(), 3000);
             const res = await fetch(`${instance}/api/v1/videos/${videoId}`, {
                  headers: { 'User-Agent': 'Mozilla/5.0' },
                  signal: controller.signal
             });
-            clearTimeout(timeoutId);
-            
             if (res.ok) {
                 const json = await res.json();
-                const title = json.title || '';
-                const description = json.description || '';
-                log(`Invidious úspěšný!`);
-                return { title, description };
+                return { title: json.title || '', description: json.description || '' };
             }
-        } catch (e) {
-            log(`Instance ${instance} selhala/timeout.`);
-        }
+        } catch (e) {}
     }
     return { title: '', description: '' };
 }
 
-// Pomocná funkce pro ruční stažení XML titulků z baseUrl
+async function fetchInvidiousTranscript(videoId: string): Promise<string | null> {
+    const instances = [
+        'https://inv.tux.pizza',
+        'https://vid.puffyan.us',
+        'https://invidious.drgns.space',
+        'https://invidious.fdn.fr',
+        'https://yt.artemislena.eu'
+    ];
+    for (const instance of instances) {
+        try {
+            log(`Zkouším Invidious: ${instance}...`);
+            const res = await fetch(`${instance}/api/v1/videos/${videoId}`, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+            if (res.ok) {
+                const json = await res.json();
+                const captions = json.captions;
+                if (Array.isArray(captions) && captions.length > 0) {
+                    let track = captions.find((t: any) => t.languageCode === 'sk' || t.languageCode === 'cs');
+                    if (!track) track = captions.find((t: any) => t.languageCode === 'en');
+                    if (!track) track = captions[0]; 
+                    const capRes = await fetch(instance + track.url);
+                    if (capRes.ok) {
+                        const vttText = await capRes.text();
+                        return parseVttToPlain(vttText);
+                    }
+                }
+            }
+        } catch (e) {}
+    }
+    return null;
+}
+
 async function fetchManualTranscript(baseUrl: string): Promise<string | null> {
     try {
-        const res = await fetch(baseUrl, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            }
-        });
+        const res = await fetchWithBrowserHeaders(baseUrl);
         const xml = await res.text();
-        
         const regex = /<text[^>]*start="([\d.]+)"[^>]*>([\s\S]*?)<\/text>/g;
         let match;
         const parts = [];
-        
         while ((match = regex.exec(xml)) !== null) {
             const startSec = parseFloat(match[1]);
             const content = he.decode(match[2].replace(/<[^>]*>/g, '')); 
             if (content.trim()) {
-                const timeStr = formatTime(startSec * 1000);
-                parts.push(`${timeStr} ${content}`);
+                parts.push(`${formatTime(startSec * 1000)} ${content}`);
             }
         }
-        
-        if (parts.length > 0) {
-            return parts.join('\n');
-        }
-        
+        if (parts.length > 0) return parts.join('\n');
     } catch (e) {
         console.error('Manual fetch error:', e);
     }
     return null;
 }
 
+async function scrapeTranscriptUrlFromHtml(videoId: string): Promise<string | null> {
+    try {
+        log('Scraping HTML pro titulky...');
+        const res = await fetchWithBrowserHeaders(`https://www.youtube.com/watch?v=${videoId}`);
+        const html = await res.text();
+
+        const playerResponseRegex = /var\s+ytInitialPlayerResponse\s*=\s*({.+?});/;
+        const playerMatch = html.match(playerResponseRegex);
+        let tracks = null;
+
+        if (playerMatch && playerMatch[1]) {
+            try {
+                const playerResponse = JSON.parse(playerMatch[1]);
+                tracks = playerResponse?.captions?.playerCaptionsTracklistRenderer?.captionTracks;
+            } catch (e) {}
+        }
+
+        if (!tracks) {
+            const directRegex = /(?:\"|\\")captionTracks(?:\"|\\")\s*:\s*(\[.*?\])/;
+            const directMatch = html.match(directRegex);
+            if (directMatch && directMatch[1]) {
+                try {
+                    const cleanJson = directMatch[1].replace(/\\"/g, '"');
+                    tracks = JSON.parse(cleanJson);
+                } catch (e) {}
+            }
+        }
+
+        if (Array.isArray(tracks) && tracks.length > 0) {
+            log('Nalezeny stopy titulků v HTML (JSON/Regex).');
+            let track = tracks.find((t: any) => t.languageCode === 'sk' || t.languageCode === 'cs');
+            if (!track) track = tracks.find((t: any) => t.languageCode === 'en');
+            if (!track) track = tracks[0];
+            if (track && track.baseUrl) return track.baseUrl;
+        }
+
+        const dirtyRegex = /"baseUrl":"(https:\/\/www\.youtube\.com\/api\/timedtext[^"]*)"/g;
+        let dirtyMatch;
+        let bestUrl = null;
+        let enUrl = null;
+        let anyUrl = null;
+
+        while ((dirtyMatch = dirtyRegex.exec(html)) !== null) {
+            let url = dirtyMatch[1].replace(/\\u0026/g, '&').replace(/\\/g, '');
+            if (url.includes('lang=cs') || url.includes('lang=sk')) { bestUrl = url; break; }
+            if (url.includes('lang=en')) enUrl = url;
+            if (!anyUrl) anyUrl = url;
+        }
+
+        if (bestUrl || enUrl || anyUrl) {
+            log('Nalezeno URL titulků přes Dirty Regex.');
+            return bestUrl || enUrl || anyUrl;
+        }
+        
+    } catch (e) {}
+    return null;
+}
+
+// --- HLAVNÍ HANDLER ---
+
 export async function GET(request: Request) {
   debugLogs = [];
   
   try {
-    // 1. Auth
     const session = await getServerSession(authOptions);
     if (!session || session.user?.role !== 'ADMIN') {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    // 2. URL
     const { searchParams } = new URL(request.url);
     const url = searchParams.get('url');
-    log(`Start request for URL: ${url}`);
-
     if (!url) return NextResponse.json({ message: 'Missing URL' }, { status: 400 });
 
     const videoId = extractYouTubeId(url);
-    log(`Extracted Video ID: ${videoId}`);
-    
     if (!videoId) return NextResponse.json({ message: 'Invalid ID' }, { status: 400 });
 
-    // 3. Inicializace InnerTube
-    log('Inicializuji youtubei.js (InnerTube)...');
-    const yt = await Innertube.create({
-        cache: new UniversalCache(false),
-        generate_session_locally: true,
-        lang: 'en',
-        location: 'US' 
-    });
+    log(`Start Ultimate Scraper pro ID: ${videoId}`);
 
-    log('Získávám Info o videu (GetInfo)...');
-    const info = await yt.getInfo(videoId);
+    // --- FÁZE A: METADATA ---
+    let title = '';
+    let description = '';
     
-    // --- ZÍSKÁNÍ METADAT (Vícevrstvá strategie) ---
-    let title = info.basic_info.title || '';
-    let description = info.basic_info.short_description || '';
+    // 1. InnerTube WEB (Metadata)
+    let yt = null;
+    let ytInfo = null;
+    try {
+        // Používáme výchozí nastavení z původního stabilního kódu (US/en), protože na metadata to může být spolehlivější
+        // Ale ponecháme cache vypnutou
+        yt = await Innertube.create({ cache: new UniversalCache(false), generate_session_locally: true, lang: 'en', location: 'US' });
+        ytInfo = await yt.getInfo(videoId);
+        title = ytInfo?.basic_info?.title || '';
+        description = ytInfo?.basic_info?.short_description || '';
+    } catch (e) {}
 
-    // Stupeň 2: RAW data z API
-    if (!title) {
-        log('Basic info prázdné. Zkouším RAW...');
-        try {
-            // @ts-ignore
-            const videoDetails = info.player_response?.videoDetails;
-            if (videoDetails) {
-                title = videoDetails.title || '';
-                description = videoDetails.shortDescription || '';
-                log(`RAW metadata OK.`);
-            }
-        } catch (e) {}
-    }
-
-    // Stupeň 3: HTML Scraping (Googlebot - nejlepší pro Description)
+    // 2. HTML Scraping (Googlebot Fallback - NÁVRAT KE STABILNÍMU KÓDU)
+    // Pokud InnerTube nezískal metadata, nasadíme Googlebota
     if (!title || !description) {
         const htmlData = await scrapeMetadataFromHtml(videoId);
         if (!title && htmlData.title) title = htmlData.title;
         if (!description && htmlData.description) description = htmlData.description;
     }
 
-    // Stupeň 4: Invidious API (Kdyby Googlebot selhal)
+    // 3. Další fallbacky (Invidious, oEmbed)
     if (!description) {
-        log('Popis stále chybí. Volám Invidious API...');
         const invData = await fetchInvidiousMetadata(videoId);
         if (invData.description) description = invData.description;
         if (!title && invData.title) title = invData.title;
     }
 
-    // Stupeň 5: oEmbed (Poslední záchrana pro Title)
     if (!title) {
         const oembedData = await fetchOEmbedMetadata(videoId);
         if (oembedData.title) title = oembedData.title;
     }
-    // -------------------------------------------
 
-    log(`Finální Metadata - Title: "${title.substring(0, 20)}..."`);
-    if (description) log(`Popis získán (${description.length} znaků).`);
-    else log(`! Popis se nepodařilo získat.`);
+    log(`Metadata - Title: "${title.substring(0, 20)}..."`);
 
-    // 4. Získání přepisu (Transcript)
+    // --- FÁZE B: TITULKY (Ultimate Sequence) ---
     let transcript = '';
-    let warning = null;
+    let strategyUsed = '';
 
-    try {
-        log('Pokus 1: info.getTranscript()...');
-        const transcriptData = await info.getTranscript();
-        
-        if (transcriptData?.transcript?.content?.body?.initial_segments) {
-            const segments = transcriptData.transcript.content.body.initial_segments;
-            log(`Úspěch! Nalezeno ${segments.length} segmentů.`);
-            
-            transcript = segments.map((seg: any) => {
-                const text = seg.snippet?.text || '';
-                const startMs = parseInt(seg.start_ms || '0', 10);
-                const timeStr = formatTime(startMs);
-                return `${timeStr} ${text}`;
-            }).join('\n');
-
-            log(`Přepis zformátován (s časovými značkami).`);
-        }
-    } catch (e: any) {
-        log(`Pokus 1 selhal: ${e.message}.`);
-        
-        // Fallback pro přepis (XML)
-        log('Pokus 2: Hledám caption_tracks (Fallback)...');
-        const captions = (info as any).captions?.caption_tracks;
-        
-        if (captions && Array.isArray(captions) && captions.length > 0) {
-            const manualTrack = captions.find((t: any) => t.kind !== 'asr');
-            const targetTrack = manualTrack || captions[0];
-            
-            if (targetTrack.base_url) {
-                log('Stahuji XML z base_url...');
-                const manualText = await fetchManualTranscript(targetTrack.base_url);
-                if (manualText && manualText.length > 0) {
-                    transcript = manualText;
-                    log(`Úspěch (Fallback XML).`);
-                    warning = `Použit fallback režim (XML).`;
-                }
+    // POKUS 1: InnerTube WEB Client (Standard)
+    if (!transcript && ytInfo) {
+        try {
+            log('Pokus 1: InnerTube (WEB Client)...');
+            const tData = await ytInfo.getTranscript();
+            if (tData?.transcript?.content?.body?.initial_segments) {
+                transcript = tData.transcript.content.body.initial_segments.map((seg: any) => 
+                    `${formatTime(parseInt(seg.start_ms || '0', 10))} ${seg.snippet?.text || ''}`
+                ).join('\n');
+                strategyUsed = 'InnerTube (WEB)';
             }
+        } catch (e: any) { 
+            log(`Pokus 1 selhal: ${e.message}`); 
         }
     }
 
+    // POKUS 2: InnerTube Caption Tracks (Raw Data)
+    if (!transcript && ytInfo) {
+        try {
+            log('Pokus 2: InnerTube Caption Tracks...');
+            const captions = (ytInfo as any).captions?.caption_tracks;
+            if (captions?.[0]?.base_url) {
+                const txt = await fetchManualTranscript(captions[0].base_url);
+                if (txt) { transcript = txt; strategyUsed = 'InnerTube (Raw XML)'; }
+            }
+        } catch (e) {}
+    }
+
+    // POKUS 3: HTML Scraping (Deep Search & Dirty Regex)
     if (!transcript) {
-        if (!warning) warning = 'Titulky se nepodařilo získat.';
-        log('Všechny pokusy selhaly.');
+        log('Pokus 3: HTML Scraping (Deep & Dirty)...');
+        const baseUrl = await scrapeTranscriptUrlFromHtml(videoId);
+        if (baseUrl) {
+            const txt = await fetchManualTranscript(baseUrl);
+            if (txt) { transcript = txt; strategyUsed = 'HTML Scraping'; }
+        } else {
+            log('HTML Scraping nenašel URL.');
+        }
+    }
+
+    // POKUS 4: Invidious Proxy (Poslední záchrana)
+    if (!transcript) {
+        log('Pokus 4: Invidious Proxy...');
+        const txt = await fetchInvidiousTranscript(videoId);
+        if (txt) { transcript = txt; strategyUsed = 'Invidious Proxy'; }
+    }
+
+    if (transcript) {
+        log(`✅ ÚSPĚCH! Titulky staženy pomocí: ${strategyUsed}`);
+    } else {
+        log('❌ Všechny metody selhaly.');
     }
 
     return NextResponse.json({
       title,
       description,
       transcript,
-      warning,
+      warning: !transcript ? 'Titulky se nepodařilo získat.' : null,
       debugLogs 
     });
 
   } catch (error: any) {
     log(`CRITICAL ERROR: ${error.message}`);
-    return NextResponse.json({ 
-        message: 'Internal Server Error', 
-        error: error.message,
-        debugLogs 
-    }, { status: 500 });
+    return NextResponse.json({ message: 'Error', error: error.message, debugLogs }, { status: 500 });
   }
 }
 ```
@@ -2878,20 +3052,46 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'Chybí přepis videa (transcript).' }, { status: 400 });
     }
 
-    // 4. Příprava Promptu
+    // 4. Příprava Finálního Promptu (Upraveno pro opravu pozice času)
     const systemPrompt = `
-Prosím z přiloženého přepisu videa v příloze vytvoř jednoduchý jednoúrovňový strukturovaný obsah tohoto videa, kde každá odrážka bude číslována svým pořadím ve formátu "X."
+Proveď detailní hierarchický rozklad (hierarchický strom) přiloženého přepisu videa. Cílem je získat přehled o obsahu videa.
+
+**STRUKTURA A FORMÁT (Dodržuj přesně):**
+
+1.  **Hierarchie:** Použij číslovaný seznam (0., 1., 1.1., 1.1.1.). Max hloubka 4 úrovně.
+2.  **Obsah řádku:** Každý řádek musí následovat PŘESNĚ tento vzor:
+    \`ČÍSLO. Název Tématu [Stručný popis obsahu] (ČAS-ČAS)\`
+
+3.  **Pravidla pro pozici elementů:**
+    * **ZAČÁTEK:** Vždy začni číslem (např. "1.1.").
+    * **PROSTŘEDEK:** Následuje název a poté popis v hranatých závorkách [ ].
+    * **KONEC:** Časová značka v kulatých závorkách (MM:SS-MM:SS) musí být **absolutně posledním textem na řádku**. Nikdy ji nedávej doprostřed!
+
+4.  **Příklad správného formátu:**
+    * *Špatně:* 1.1. Úvod (00:00-01:00) [O čem to je]
+    * *Správně:* 1.1. Úvod [O čem to je] (00:00-01:00)
+
+5.  **Jazyk:** Čeština.
+6.  **Formátování:** Nepoužívej tučné písmo (**), markdown ani odrážky. Jen čistý text.
+
+**Přiložený Přepis Videa:**
     `.trim();
 
-    const fullPrompt = `${systemPrompt}\n\n--- PŘEPIS VIDEA ---\n${transcript}`;
+    const fullPrompt = `${systemPrompt}\n${transcript}`;
 
     // 5. Inicializace a volání AI
     const genAI = new GoogleGenerativeAI(apiKey);
     
-    // POUŽÍVÁME MODEL Z VAŠEHO SEZNAMU (gemini-2.0-flash)
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    // Konfigurace modelu
+    const model = genAI.getGenerativeModel({ 
+        model: 'gemini-2.0-flash',
+        generationConfig: {
+            temperature: 0.1,      // Snížena teplota pro maximální poslušnost formátu
+            maxOutputTokens: 8192,
+        }
+    });
 
-    console.log('🤖 Generuji obsah pomocí modelu gemini-2.0-flash...');
+    console.log('🤖 Generuji obsah pomocí modelu gemini-2.0-flash (Fix Time Position)...');
     
     const result = await model.generateContent(fullPrompt);
     const response = await result.response;
@@ -2899,7 +3099,6 @@ Prosím z přiloženého přepisu videa v příloze vytvoř jednoduchý jednoúr
 
     console.log('✅ AI obsah úspěšně vygenerován.');
 
-    // 6. Návrat výsledku
     return NextResponse.json({ 
       content: text,
       message: 'Obsah úspěšně vygenerován.' 

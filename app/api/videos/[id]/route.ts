@@ -21,13 +21,12 @@ async function checkPermissions(
     };
   }
 
-  // ÚPRAVA: Načítáme i transcript a collections
   const video = await prisma.video.findUnique({
     where: { id: videoId },
     include: { 
       chapters: { orderBy: { order: 'asc' } },
       collections: true,
-      transcript: true // NOVÉ: Načtení přepisu
+      transcript: true 
     },
   });
 
@@ -56,11 +55,9 @@ async function checkPermissions(
     };
   }
 
-  // Zploštění struktury pro frontend (aby transcript byl přímo string, ne objekt)
-  // Toto není nutné, pokud frontend počítá s objektem, ale pro jednoduchost:
   const videoResponse = {
     ...video,
-    transcript: video.transcript?.content || null // Vrátíme jen text nebo null
+    transcript: video.transcript?.content || null 
   };
 
   return { allowed: true, video: videoResponse };
@@ -101,18 +98,36 @@ export async function PUT(
     if (!allowed) return error;
 
     const body = await request.json();
-    // NOVÉ: Načítáme i transcript
-    const { title, summary, structuredContent, collectionIds, transcript } = body;
+    
+    // --- ÚPRAVA PRO FÁZI 12 ---
+    // Přidali jsme nová SEO pole do destrukturalizace
+    const { 
+      title, 
+      summary, 
+      structuredContent, 
+      collectionIds, 
+      transcript,
+      seoSummary,
+      seoKeywords,
+      practicalTips,
+      aiSuggestions
+    } = body;
 
     const parsedChapters = parseStructuredContent(structuredContent || '');
 
     const updatedVideo = await prisma.$transaction(async (tx) => {
-      // 1. Aktualizace videa
+      // 1. Aktualizace videa + NOVÁ SEO POLE
       const video = await tx.video.update({
         where: { id: id },
         data: {
           title,
           summary,
+          // Nová pole Fáze 12
+          seoSummary,
+          seoKeywords: seoKeywords || [],
+          practicalTips: practicalTips || [],
+          aiSuggestions: aiSuggestions || [],
+          // --------------
           updatedAt: new Date(),
           collections: collectionIds ? {
             set: collectionIds.map((cid: string) => ({ id: cid }))
@@ -120,14 +135,8 @@ export async function PUT(
         },
       });
 
-      // 2. Aktualizace / Vytvoření přepisu (Upsert) - NOVÉ
+      // 2. Aktualizace Přepisu
       if (transcript !== undefined) {
-        if (transcript.trim() === '') {
-            // Pokud je prázdný, můžeme ho smazat, aby nezabíral místo? 
-            // Pro teď raději aktualizujeme na prázdný string nebo necháme být.
-            // Použijeme upsert, který zvládne obojí.
-        }
-        
         await tx.transcript.upsert({
           where: { videoId: id },
           create: {
@@ -187,7 +196,6 @@ export async function DELETE(
     const { allowed, error } = await checkPermissions(id, session);
     if (!allowed) return error;
 
-    // Díky onDelete: Cascade v Prisma schématu se Transcript smaže automaticky
     await prisma.video.delete({
       where: { id: id },
     });
