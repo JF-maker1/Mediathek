@@ -7,14 +7,30 @@ export interface ParsedChapter {
 }
 
 /**
- * Převede časový řetězec (MM:SS) na sekundy.
+ * Převede časový řetězec (MM:SS nebo HH:MM:SS) na sekundy.
+ * Nyní exportováno pro použití v transcriptParser.ts (Fáze 13).
  */
-function timeToSeconds(timeStr: string): number {
-  const parts = timeStr.split(':').map(Number);
+export function timeToSeconds(timeStr: string): number {
+  // Odstraníme případné závorky nebo whitespace, pokud by tam byly (pro robustnost)
+  const cleanTime = timeStr.replace(/[\[\]\(\)]/g, '').trim();
+  
+  const parts = cleanTime.split(':').map(Number);
+  
+  // Formát MM:SS
   if (parts.length === 2) {
     return parts[0] * 60 + parts[1];
   }
-  // TODO: Zvážit ošetření neplatného formátu, i když Regex by to měl chytit
+  
+  // Formát HH:MM:SS
+  if (parts.length === 3) {
+    return parts[0] * 3600 + parts[1] * 60 + parts[2];
+  }
+  
+  // Fallback nebo sekundy
+  if (parts.length === 1 && !isNaN(parts[0])) {
+    return parts[0];
+  }
+  
   return 0;
 }
 
@@ -37,7 +53,7 @@ export function parseStructuredContent(
     if (!timeMatch) {
       throw new Error(
         `Neplatný formát řádku: Chybí časová značka (MM:SS) na konci. Řádek: "${trimmedLine}"`
-      ); // 
+      );
     }
 
     const startTime = timeToSeconds(timeMatch[1]);
@@ -53,7 +69,7 @@ export function parseStructuredContent(
     if (!numberingMatch) {
       throw new Error(
         `Neplatný formát řádku: Chybí hierarchické číslování (např. 1.1.) na začátku. Řádek: "${trimmedLine}"`
-      ); // 
+      );
     }
 
     // 4. Výpočet úrovně [cite: 204]

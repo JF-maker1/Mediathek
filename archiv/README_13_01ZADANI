@@ -1,0 +1,233 @@
+JÁ_PROMPT:
+V příloze jsou všechny dokumenty týkajících se zadání ve webovém projektu aplikace, která spravuje sbírky videí z youtube, uspořádává jejich obsah do strukturovaného obsahu a bude vytvářet kompiláty obsahu více videí do jednoho textového materiálu který bude poté sloužit jako průvodce touto knihovnou videí. Nyní bych chtěl diskutovat prioritazici obsahu dalšího 12 zadání pro vývoj této aplikace. Prosím projdi přiložená dosavadní zadání v kterých jsou tovněž návrh na další vývoj této aplikace ktromě těch již vybraných. Z tohoto materiálu vytvoř seznam doporučení pro další vývoj této aplikace směrem k zde popsanému cíli resp. vytvářet kompilované materiály které budou jistým průvodním materiálem této knihovny videí. Resp. kurátor bude vytvářet sbírky videí a nad těmito sbírkami bude vznikat průvodce touto sbírkou. Nyní byl realizovan vytvoření strukturovaného obsahu nad automaticky získávaným přepisem videa. Nyní bych zřejmě chtěl vytvořit druhý jakoby strukturovaný obsah videa či spíš sumář videa který by měl obsahovat SEO prvky tak aby bylo možné kurátorovi sbírek vytvářet automaticky i návrhy na možné vytvoření dalších sbírek, které by shrnovaly obdobná témata. Například kurátor by chtěl vytvořit sbírku o magnesiu v rámci videí o zdravé výživě a pomocí tohoto autorem zadaného tématu by AI asistent na základě sumáře jednotlivých videí vytvořil návrh na sbírku videí který by se věnoval magnesiu v rámci zdravé výživy. Resp. kurátor bude sbírat videa a toto bude pomocník pro vytváření těchto sbírek. Také kurátor například zadá pojem "zdravá výživa" a AI asistent resp. volání AI vytvoří návrh která videa by měla být obssazžena v této sbírce. Nyní bych se tedy asi zaměřil na vytvoření onoho SEO obsahu videa jako druhou variaci na již vytvořený strukturovaný obsah. Resp. architektura bude obdobná jako při vytváření strukturovaného obsahu resp. bude pole kde bude vložen SEO obsah a nad ním tlačítko pro získání SEO obsahu pomocí AI. Obdobné bude rovněž ukládání SEO obsahu do databáze. Nyní však prosím o seznam možných dalších zadání pro tuto webovou aplikaci a jejich prioritizaci. Vše co jsem zde uvedl je defakto vytvoření kontextu pro tento seznam dalších možných zadání a jejich prioritizaci. 
+
+[README_01_01ZADANI][README_02_01ZADANI][README_03_01ZADANI][README_04_01ZADANI][README_05_01ZADANI][README_06_01ZADANI][README_07_01ZADANI][README_08_01ZADANI][README_09_01ZADANI][README_10_01ZADANI][README_11_01ZADANI]
+
+AI_RESPONZE:
+
+To je naprosto skvělá vize. "Ostrov uživatele v nepřeberném moři internetu" je přesně ten typ "North Star" (hlavního cíle), který odlišuje úspěšné produkty od pouhých databází.
+
+Máte pravdu, po Fázi 12 máme v databázi obrovské bohatství dat (metadata, strukturovaný obsah, AI analýzu, transkript), ale uživatel (ani Admin) ho zatím vidí jen jako "hromadu textu" v editoru nebo jako jednoduchý seznam pod videem.
+
+Fáze 13 tedy nebude o "další funkci", ale o Syntéze. Musíme vytvořit Interaktivní Přehrávač 2.0, který tato data přetaví do zážitu.
+
+Skvěle. Postupujeme přesně podle plánu.
+
+Zde je finální Zadání pro Fázi 13, zpracované do standardního formátu, na který jste zvyklý. Tento dokument nyní slouží jako závazná specifikace pro realizaci.
+
+Zahrnuje všechny prvky z naší diskuze: Smart Timeline s vizualizací kapitol, Tabbed Sidebar se synchronizací přepisu a kapitol, a kontextuální zobrazení metadat.
+
+📄 Zadání projektu: Webová aplikace Mediathek (Fáze 13 - Interaktivní Přehrávač 2.0)
+Datum: 27. listopadu 2025 Verze: 13.0
+
+
+Navazuje na: Fáze 12 (SEO a Sémantická Metadata ) a Fáze 6 (Strukturovaný obsah )
+
+
+1. Název projektu
+Mediathek
+
+2. 🎯 Cíl Fáze
+Cílem této fáze je vytvořit "Interaktivní Studovnu". Dosavadní jednoduchý přehrávač nahradíme komplexním rozhraním, které maximálně využije bohatá data shromážděná v předchozích fázích (strukturované kapitoly, přepis, AI abstrakt, praktické tipy). Cílem není video jen přehrát, ale umožnit uživateli aktivně studovat jeho obsah pomocí vizuální navigace (časová osa), synchronizovaného textu (přepis/kapitoly) a přehledných kontextových informací.
+
+3. Rozsah pro Fázi 13
+Frontend (UX/UI): Kompletní redesign stránky detailu videa (/video/[id] a /admin/video/[id]).
+
+Architektura: Implementace rozložení Video (70%) + Smart Sidebar (30%).
+
+Nová Komponenta "Smart Timeline": Vlastní vizualizační pruh pod videem, který zobrazuje segmenty kapitol a umožňuje náhledy (hover).
+
+Nová Komponenta "Tabbed Sidebar": Boční panel s přepínáním mezi:
+
+Kapitoly: Synchronizovaný hierarchický seznam.
+
+Přepis: Parsovaný text s časovými značkami a "karaoke" efektem.
+
+Tipy: Checklist praktických rad (statický).
+
+Logika (Client-side): Implementace parseru pro surový text titulků a logiky pro synchronizaci zvýraznění obsahu s aktuálním časem přehrávače.
+
+Kontext: Zobrazení AI abstraktu, klíčových slov a příslušnosti ke sbírkám.
+
+Mimo rozsah: Přehrávač celých sbírek (playlisty), ukládání stavu "odškrtnutí" u praktických tipů do databáze (zatím pouze vizuální/lokální).
+
+4. 🏛️ Návrh Řešení a Architektura
+4.1. Rozložení Stránky (Grid Layout)
+Stránka bude rozdělena do logických zón.
+
+Zóna 1 (Top): Přehrávač a Sidebar. Na desktopu vedle sebe, na mobilu pod sebou.
+
+Zóna 2 (Timeline): Úzký pruh hned pod videem (součást Zóny 1).
+
+Zóna 3 (Kontext): Pod Zónou 1. Název, Abstrakt, Tagy, Sbírky.
+
+Zóna 4 (Info): Původní popis a technická data.
+
+4.2. Smart Timeline (Inteligentní časová osa)
+Jelikož YouTube Player API neumožňuje kreslit přímo do své lišty, vytvoříme externí vizualizační lištu pod videem.
+
+Data: Využije pole chapters z databáze.
+
+Vizuál: Lišta bude rozdělena na barevné segmenty. Šířka segmentu v % = (délka_kapitoly / celková_délka_videa) * 100.
+
+Interaktivita:
+
+Hover: Zobrazí bublinu s názvem kapitoly.
+
+Click: Posune video na začátek daného segmentu.
+
+Active: Aktuální segment bude barevně zvýrazněn.
+
+4.3. Smart Sidebar (Záložky)
+Pravý panel bude obsahovat stavový přepínač (Tabs) pro tři pohledy:
+
+A. Kapitoly (Strukturovaný obsah)
+
+Zobrazí existující hierarchický strom (1., 1.1, 1.1.1).
+
+Aktivita: Pokud currentTime spadá do intervalu kapitoly (startTime až nextChapter.startTime), řádek se podbarví.
+
+Scroll: Pokud je seznam dlouhý, aktivní kapitola se automaticky scroluje do viditelné oblasti (autoscroll).
+
+B. Přepis (Transcript)
+
+Vstup: Surový string z Transcript.content (např. [00:12] Ahoj světe [00:15] Dneska se...).
+
+Logika: Na frontendu se text rozparsuje na pole objektů { time: number, text: string }.
+
+Zobrazení: Seznam textových bloků.
+
+Aktivita: Blok odpovídající aktuálnímu času se zvýrazní (tučně/podbarvení).
+
+Interaktivita: Kliknutí na větu posune video na daný čas.
+
+C. Praktické Tipy (Checklist)
+
+
+Vstup: Pole practicalTips (String[]) z modelu Video.
+
+Zobrazení: Seznam s checkboxy.
+
+Chování: Kliknutí na checkbox vizuálně přeškrtne řádek (pro dobrý pocit uživatele), stav se neukládá na server.
+
+4.4. Kontext a Navigace
+Pod videem bude sekce věnovaná kurátorskému obsahu:
+
+
+AI Abstrakt: Zobrazí seoSummary  výrazným, čitelným písmem.
+
+Tagy: Zobrazí seoKeywords jako "chips" (štítky).
+
+Sbírky: Zobrazí seznam názvů sbírek (video.collections), ve kterých je video zařazeno. Každý název bude odkazem (zatím neaktivním nebo směřujícím na seznam videí).
+
+5. 🚦 Funkční Požadavky (FR)
+FR1 (Timeline): Pod videem je viditelná lišta rozdělená přesně podle délek kapitol. Po najetí myší se ukáže název kapitoly.
+
+FR2 (Sync Kapitoly): Při přehrávání videa se v sidebaru (pokud je aktivní záložka Kapitoly) zvýrazňuje aktuální kapitola.
+
+FR3 (Sync Přepis): Při přehrávání videa se v sidebaru (pokud je aktivní záložka Přepis) zvýrazňuje aktuální textový segment.
+
+FR4 (Seek z Textu): Kliknutí na libovolnou větu v přepisu posune video na odpovídající čas.
+
+FR5 (Tipy): Uživatel vidí seznam praktických tipů vygenerovaných AI.
+
+FR6 (Navigace): Uživatel vidí, do kterých sbírek video patří.
+
+6. 🔒 Nefunkční Požadavky (NFR)
+NFR1 (Výkon): Synchronizace (zjišťování aktivního segmentu) nesmí způsobit "trhání" videa nebo prohlížeče. Kontrola času by měla probíhat v rozumném intervalu (např. každých 250-500ms).
+
+NFR2 (Responsivita): Na mobilních zařízeních se Sidebar přesune pod video, ale funkčnost záložek zůstane zachována.
+
+NFR3 (Graceful Degradation): Pokud video nemá přepis nebo tipy, příslušné záložky v sidebaru se nezobrazí nebo budou neaktivní.
+
+7. 💻 Technologický Stack
+Frontend: React (Client Components), Tailwind CSS (pro Grid a stylování).
+
+Video: react-youtube (existující knihovna, využití metody getCurrentTime()).
+
+State Management: useState / useEffect pro sledování času a aktivní záložky.
+
+Utils: Vlastní regex parser pro formát titulků.
+
+8. ✅ Akceptační Kriteria (Definice "Hotovo")
+Uživatel otevře detail videa, které má kapitoly, přepis a tipy.
+
+Vidí video a vedle něj panel se 3 záložkami.
+
+Pod videem vidí barevnou osu. Když na ni najede, vidí názvy kapitol.
+
+Spustí video. V záložce "Kapitoly" se zvýrazní první kapitola.
+
+Přepne na záložku "Přepis". Vidí text. Text se posouvá/zvýrazňuje podle toho, co se říká.
+
+Klikne na větu v polovině přepisu -> video skočí na ten čas.
+
+Podívat se pod video a vidí "AI Abstrakt" a seznam sbírek ("Zdraví", "Biohacking").
+
+Toto je finální zadání pro Fázi 13. Mám nyní přistoupit k vytvoření "Zprávy o tvorbě zadání" (jak jste požadoval), která zdokumentuje náš dialog a myšlenkový proces vedoucí k tomuto návrhu?
+
+
+JÁ_PROMPT:
+Ano pojdme vytvořit nyní i zprávu o tvorbě zadání což bude součástí dokumentace k této fázi tvorby zadání pro 13. vývojový cyklus aplikace.
+
+AI_RESPONZE:
+
+Jistě, zde je Zpráva o genezi zadání pro Fázi 13.
+
+Tento dokument shrnuje náš myšlenkový proces, klíčová rozhodnutí a způsob, jakým jsme proměnili dostupná data v koncept "Interaktivní studovny". Je to cenný podklad, který ukazuje, proč má přehrávač vypadat právě takto.
+
+Můžete jej vložit na začátek souboru README_13_01ZADANI nebo jej uložit jako samostatný dokument README_13_00GENEZE.
+
+📜 Zpráva o genezi zadání (Development Report)
+Téma: Fáze 13 – Interaktivní Přehrávač 2.0 ("Studovna") Kontext: Syntéza dat nasbíraných v předchozích fázích (Fáze 6 - Kapitoly, Fáze 10 - Přepis, Fáze 12 - SEO a Tipy) do jednotného uživatelského zážitku.
+
+1. Výchozí bod: "Bohatství dat vs. Chudý přehrávač"
+Po dokončení Fáze 12 se aplikace ocitla v situaci, kdy databáze obsahovala obrovské množství kontextu (AI abstrakty, klíčová slova, strukturované kapitoly, doslovné přepisy, praktické tipy), ale uživatel (Admin) viděl pouze základní YouTube přehrávač a prostý text .
+
+Výzva: Jak zobrazit tolik různorodých informací na jedné obrazovce, aniž by vznikl chaos?
+
+
+Cíl: Posunout se od pasivního sledování k aktivnímu "studiu" videa.
+
+2. První koncept: "Zónování" (Struktura stránky)
+Prvotní diskuze se zaměřila na rozložení stránky. Bylo nutné opustit lineární výpis dat pod videem.
+
+Návrh: Rozdělení stránky do 4 logických zón: Jeviště (Video), Kontext (Metadata), Navigace (Sbírky) a Data (Původní popis).
+
+Vizualizace: Na žádost Product Ownera bylo vytvořeno vizuální schéma, které potvrdilo rozložení "Video vlevo (70%) + Dynamický panel vpravo (30%)".
+
+3. Zásadní korekce: "Reality Check" nad daty
+Během diskuze nad vizuálním návrhem přišla klíčová připomínka ohledně povahy dat:
+
+Problém: Původní návrh předpokládal, že všechna data v bočním panelu budou synchronizovaná s videem.
+
+
+Korekce (Product Owner): Upozornil na to, že zatímco Kapitoly a Přepis mají časovou vazbu, Praktické Tipy (získané z AI v Fázi 12) časové značky nemají.
+
+Rozhodnutí: Boční panel (Smart Sidebar) bude hybridní:
+
+Záložka Kapitoly: Plně synchronizovaná (zvýrazňuje se aktuální).
+
+Záložka Přepis: Plně synchronizovaná ("karaoke" efekt).
+
+Záložka Tipy: Statický checklist (nesynchronizovaný).
+
+4. Technologická inovace: "Smart Timeline"
+Vzešel požadavek na lepší orientaci v čase než jen standardní YouTube lišta.
+
+Idea: Vytvořit vlastní vizuální osu pod videem, která by reflektovala strukturu kapitol.
+
+Řešení: Do zadání byla přidána komponenta Smart Timeline. Jde o vizualizační pruh, který využívá data z modelu Chapter k vykreslení barevných segmentů. Uživatel tak vidí "mapu videa" a může myší "prohmatávat" obsah (hover náhledy) ještě před kliknutím.
+
+5. Technická strategie: Client-side Parsing
+Byla diskutována otázka, jak synchronizovat surový text titulků (uložený jako jeden dlouhý string).
+
+Rozhodnutí: Abychom nezatěžovali databázi složitou strukturou, text se bude parsovat (sekat na věty s časem) až v prohlížeči uživatele (Client-side) pomocí Regexu. To umožní okamžitou interaktivitu (kliknutí na větu = skok ve videu).
+
+6. Závěr
+Výsledné zadání Fáze 13 není jen o redesignu ("aby to bylo hezké"), ale o funkční nadstavbě. Aplikace se mění z "přehrávače" na "výukový nástroj". Zadání je připraveno k realizaci s jasně definovanými datovými zdroji pro každý prvek UI.
+
+------------------------------------------------------------------------
+
+id_chat: 
+https://gemini.google.com/u/1/app/a880453de33f5c56

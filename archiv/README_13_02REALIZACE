@@ -1,0 +1,110 @@
+JÁ_PROMPT:  
+V příloze je zadání pro tvorbu webové aplikace pro správu videí a obsahu videí [README_12_ZADANI]. Prosím ze zadání vytvořit konkrétní plán realizace (resp. jednotlivé příkazy, nastavení, instalace, ověření prostředí jak systémové, tak projektové a tak i podobně) včetně plánu testování který potvrdí úspěšné ukončení realizační fáze vycházející ze zadání této realizační fáze viz zadání pro tuto fázi realizace v příloze . Realizační fáze je ukončena testováním jak na lokálním prostředí tak i na produkčním prostředí. V příloze je rovněž snímek projektového adresáře po ukončení předchozí fáze realizace [README_11_03project_snapshot] který by měl poskytnout zcela konkrétní představu o podmínkách jednak vnitřních v projektu tak i podmínkách vnějších pro tento projekt tak i jeho potřebném detailu. Pokud bude některý soubor potřeba pro bližší specifikaci jednotlivých kroků implementace dle realizačního plánu budou tyto soubory dodány v průběhu právě implementace jednotlivých kroků tohoto realizačního plánu. Nyní pojdme tedy vytvořit realiztační plán který se zaměří na API interface odesílání (prompt, přepis videa) a získávání informací (SEO obsah) z vnějšího prostředí aplikace - z AI asistenta - z nyní získaného přepisu videa získání přes AI (např. Gemini či DeepSeek apod) strukturovaný obsah videa. Na tomto principu by měla pracovat tato vyvíjená aplikace kdy obsah videí bude v kontextu ostatních videí a uživatel si bude moci vytvářet tématické sbírky kde bude obsah jednotlivých videí kompilován do jednoho materiálu. Mohl by to být užitečný nástroj pro různé rešerže. Sdílením těchto rešerší by bylo možné získávat další uživatele této aplikace.  Tato implementace přispěje k uživatelskému konfortu aplikace. Pro info přikládám rovněž zprávu z realizační fáze předchozího vývojového cyklu pro strukturovaný obsah a i pro dopřesní způsobu  administrace vývoje této aplikace. [README_11_02REALIZACE], kterému současné řešení bude velmi podobné (nyní neřešíme strukturovaný obsah ale SEO obsah ale po procesní stránce by měly být podmínky velmi podobné takže infrastruktura je již připravena) Prosím pojďme tedy vytvořit realizační plán pro tuto fázi vývoje této webové aplikace. Díky ;-) 
+
+AI_RESPONZE:
+
+To je skvělý posun. Implementace sémantických metadat a SEO obsahu posouvá aplikaci z pouhé "knihovny" na úroveň "znalostní báze".
+
+Na základě zadání (README_12_01ZADANI) a aktuálního stavu projektu (README_11_03project_snapshot) jsem připravil detailní realizační plán. Využijeme existující infrastrukturu (Next.js, Prisma, Gemini AI), kterou rozšíříme o nové datové modely a specifickou logiku pro "dolování znalostí" z textu.
+
+Zde je Realizační plán pro Fázi 12.
+Realizační Plán Fáze 12/README_12_02REALIZACE_PLAN.md
+26. 11. 21:19
+
+Nyní přistoupíme k implementaci jednotlivých souborů. Začneme databází a backendem, poté dokončíme frontend.
+
+1. Krok: Úprava Databáze (Prisma)
+Upravuji soubor prisma/schema.prisma dle plánu.
+Schéma Databáze
+26. 11. 21:19
+
+Otevřít
+
+2. Krok: Backend API - AI Generator (Prompt Engineering)
+Toto je "mozek" Fáze 12. Implementuji přesně definovaný adaptivní prompt.
+AI SEO Endpoint
+26. 11. 21:19
+
+Otevřít
+
+3. Krok: Backend - Ukládání Dat (Update API)
+Rozšíření PUT metody pro uložení nových polí do databáze.
+Update Video API
+26. 11. 21:19
+
+Otevřít
+
+4. Krok: Frontend - Admin Edit Page (Kompletní UI)
+Zde je kompletní kód pro app/admin/edit/[id]/page.tsx, který obsahuje sekci "SEO a Sémantika" s logikou pro generování a správu nových dat.
+Admin Edit Page
+26. 11. 21:19
+
+Otevřít
+
+Tímto je plán a implementace kompletní.
+
+Shrnutí akcí:
+
+Spusťte migraci databáze pomocí npx prisma migrate dev.
+
+Backendové routy zajistí komunikaci s Gemini a uložení nových dat.
+
+Frontend má nyní "sekci 12" s fialovým brandingem a logikou pro sémantická metadata.
+
+------------------------------------------------------------------------
+
+🛠️ Realizační Plán: Fáze 12 - SEO a Sémantická MetadataDatum: 26. listopadu 2025Cíl: Implementovat AI generování abstraktů, klíčových slov a praktických tipů na základě "Adaptivního Promptu".Vstup: Přepis videa (Transcript).Výstup: Strukturovaná metadata uložená v databázi, editovatelná v Admin UI.1. 🗄️ Databázová Vrstva (Prisma)Nejprve musíme připravit databázi na uložení nových typů dat.1.1. Úprava SchématuSoubor: prisma/schema.prismaAkce: Přidat nová pole do modelu Video.seoSummary (Text) - pro abstrakt.seoKeywords (String[]) - pole řetězců pro klíčová slova.practicalTips (String[]) - pole řetězců pro konkrétní rady.aiSuggestions (String[]) - pole řetězců pro návrhy sbírek.Příkaz pro realizaci:# 1. Upravit soubor schema.prisma (přidat pole)
+# 2. Vytvořit migraci
+# POZOR: Používáme 'npm run' místo přímého 'npx prisma', 
+# abychom správně načetli proměnné z .env.local pomocí dotenv
+npm run prisma:migrate -- --name add_seo_fields_faze12
+2. 🧠 Backend: Logika AI (Nový Endpoint)Vytvoříme specializovaný endpoint, který bude oddělený od generování kapitol, protože používá jiný model uvažování (JSON output, sémantická analýza).2.1. Vytvoření API EndpointuSoubor: app/api/ai/generate-seo/route.ts (NOVÝ)Logika:Auth Check: Pouze ADMIN.Input: Přijme transcript.Prompt: Implementuje "Adaptivní Prompt" ze zadání (Zoom Out -> Zoom In -> Filtr Praktičnosti A/B/C).AI Config:Model: gemini-2.0-flash (osvědčený v minulé fázi).Response format: JSON mode (pokud model podporuje, nebo striktní instrukce).Output: Validní JSON objekt.3. 🔌 Backend: API pro Ukládání (Update Video)Musíme rozšířit existující PUT endpoint, aby uměl přijmout a uložit nová data.3.1. Úprava Video APISoubor: app/api/videos/[id]/route.tsAkce:V metodě PUT: Rozšířit destrukturalizaci body o seoSummary, seoKeywords, practicalTips, aiSuggestions.V prisma.video.update: Přidat tato pole do sekce data.4. 🖥️ Frontend: Admin UI (Edit Page)Nejsložitější část - rozšíření formuláře o dynamické prvky.4.1. Úprava Editovací StránkySoubor: app/admin/edit/[id]/page.tsxAkce:Stavy (State): Přidat useState pro nové proměnné.const [seoSummary, setSeoSummary] = useState('');const [seoKeywords, setSeoKeywords] = useState<string[]>([]);const [practicalTips, setPracticalTips] = useState<string[]>([]);const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);Načítání dat: Upravit useEffect, aby při načtení videa naplnil tyto stavy z DB.Funkce handleAiSeoGenerate:Volá nový endpoint /api/ai/generate-seo.Parsuje JSON odpověď.Naplní stavy.Renderování (UI):Nová sekce "SEO a Sémantika".Tlačítko: "✨ Vygenerovat SEO metadata".Abstrakt: textarea.Klíčová slova: Input, kde uživatel píše slova oddělená čárkou (převedeme na pole), nebo "Tags Input" komponenta (pro MVP stačí čárky).Praktické tipy: Dynamický seznam. Každý tip je input s tlačítkem "X" pro smazání. Tlačítko "+ Přidat tip".Návrhy sbírek: Pouze readonly seznam (inspirace).5. 🧪 Plán Testování (QA)Testování proběhne ve dvou vlnách – funkční a obsahové.5.1. Systémové TestyIDScénářOčekávaný výsledekT1Migrace DBPříkaz npm run prisma:migrate proběhne bez chyb, v DB jsou nové sloupce.T2Generování bez přepisuTlačítko pro SEO je neaktivní (disabled).T3API ResponseEndpoint vrací validní JSON, ne Markdown text.T4UkládáníPo kliknutí na "Uložit video" a obnovení stránky data zůstávají.5.2. Obsahové Testy (Ověření Adaptivního Promptu)IDTyp VideaOčekávaný výsledek (Obsah)C1Praktické (např. recept)AI vyplní practicalTips konkrétními kroky/dávkováním (Priorita A).C2Teoretické (např. mechanismus)AI vyplní practicalTips strategickými radami nebo principy (Priorita B/C). Pole nezůstane prázdné.C3JazykNěmecké/Anglické video vygeneruje Český SEO obsah.6. 🚀 Checklist Implementace[ ] prisma schema + npm run prisma:migrate.[ ] Backend: api/ai/generate-seo/route.ts.[ ] Backend: Update api/videos/[id]/route.ts.[ ] Frontend: Logika v admin/edit/[id]/page.tsx.[ ] Frontend: UI v admin/edit/[id]/page.tsx.[ ] Testování T1-T4 a C1-C3.
+
+------------------------------------------------------------------------
+
+JÁ_PROMPT:  
+Ano testování na produkci proběhlo rovněž OK - díky moc ;-) - pojdme nyní vytvořit zprávu z realizace i této realizační fáze 12 - oba testy na lokále i na produkci proběhly ok a nyní je získáván SEO obsah jak při editaci videa tak přidání nového videa a tyto stránky jsme  také při této příležitosti zharmonizovaly. Do zprávy prosím rovněž významné podrobnosti z této realizace kromě popisu samotné realizace a způsobu realizace hlavního tématu tohoto vývojového cyklu, tak aby zpráva zaznamenala vývoj realizace této aplikace pro potřeby budoucího jejího úspěšného rozvoje. 
+
+AI_RESPONZE:
+
+To je skvělá zpráva! 🎉 Fáze 12 byla nejen o přidání nové "chytré" funkce, ale nakonec se stala i klíčovým momentem pro úklid a profesionalizaci architektury (refactoring).
+
+Tím, že jsme sjednotili Add a Edit stránky, jsme aplikaci zbavili velkého kusu "technického dluhu" ještě předtím, než začal být problematický. To je pro budoucí rozvoj (např. role Kurátora) naprosto zásadní.
+
+Zde je kompletní Zpráva z realizace Fáze 12, která slouží jako dokumentace tohoto milníku.
+
+------------------------------------------------------------------------
+
+📜 Závěrečná Zpráva z Realizace: Fáze 12 - SEO, Sémantika a Architektonická KonsolidaceDatum: 27. listopadu 2025Verze: 12.0 (Final)Status: ✅ Nasazeno na Produkci (Vercel) & OtestovánoHlavní Stack: Next.js, Prisma, Google Gemini 2.0 Flash1. 🎯 Manažerské ShrnutíCílem Fáze 12 bylo proměnit aplikaci z "katalogu videí" na "znalostní bázi". Toho bylo dosaženo implementací AI, která z videa extrahuje nejen kapitoly (Fáze 11), ale nově i sémantický kontext (abstrakt, klíčová slova) a praktické využití (konkrétní tipy).Během realizace došlo k významnému architektonickému rozhodnutí: Sjednocení duplicitní logiky pro přidávání a editaci videí do jedné robustní komponenty. Tím se výrazně zvýšila udržitelnost kódu.2. 🧠 Hlavní Funkcionalita: AI Dolování ZnalostíByl implementován specializovaný AI proces (/api/ai/generate-seo), který pracuje na odlišném principu než generování kapitol.2.1. Adaptivní PromptJádrem řešení je "Adaptivní Prompt", který nefunguje jen jako shrnovač, ale jako analytik. Prompt rozlišuje mezi typy videí:Praktická videa (Recepty/Návody): AI extrahuje konkrétní kroky a dávkování (Priorita A).Teoretická videa (Mechanismy/Přednášky): AI extrahuje strategické principy a souvislosti (Priorita B/C).2.2. Strukturovaná DataVýstupem není volný text, ale striktní JSON objekt, který plní nové sloupce v databázi:seoSummary: Čtivý abstrakt pro lidi i vyhledávače.seoKeywords: Tagy pro budoucí filtrování.practicalTips: Seznam "akčních kroků" (Actionable Items).aiSuggestions: Návrhy pro zařazení do sbírek (našeptávač pro kurátora).3. 🏗️ Architektonický Posun: Refactoring UITato část realizace nebyla v původním zadání, ale vyplynula z potřeby udržet kód čistý (DRY princip - Don't Repeat Yourself).3.1. ProblémStránky admin/add a admin/edit sdílely 90 % logiky (stahování z YouTube, volání AI, formulářová pole). Jakákoliv změna (např. přidání SEO polí) vyžadovala úpravu na dvou místech, což zvyšovalo riziko chyb.3.2. Řešení: Komponenta VideoFormByla vytvořena "super-komponenta" components/admin/VideoForm.tsx, která zapouzdřuje:Veškerou logiku formuláře (State management).Komunikaci s YouTube API (Scraper).Komunikaci s AI API (Kapitoly i SEO).Validaci vstupů.Stránky add a edit nyní slouží pouze jako tenké obálky (wrappers), které této komponentě předávají kontext (zda jde o nové video nebo existující) a metodu uložení (POST vs PUT).Dopad na budoucnost: Až budeme zavádět roli Kurátora (který smí editovat, ale ne mazat), stačí mu zpřístupnit tuto komponentu s omezenými právy, místo vytváření třetí kopie formuláře.4. ⚙️ Technická Implementace4.1. DatabázeSchéma Prisma bylo rozšířeno o pole seoSummary (Text), seoKeywords (String[]), practicalTips (String[]) a aiSuggestions (String[]). Proběhla úspěšná migrace na NeonDB.4.2. Backend APIVytvořen endpoint POST /api/ai/generate-seo využívající model gemini-2.0-flash s nízkou teplotou (0.2) pro faktickou přesnost.Rozšířen endpoint PUT /api/videos/[id] o ukládání nových polí.4.3. Frontend UXPřidána vizuálně odlišná sekce (fialový/indigo design) pro SEO metadata.Implementován dynamický seznam pro "Praktické tipy" (přidávání/mazání řádků).Zachován logovací systém pro transparentnost procesů ("Generuji...", "Hotovo").5. 🧪 Zpráva z Testování (QA)Testování proběhlo ve dvou fázích (Lokální -> Produkční).OblastTestovací ScénářVýsledekPoznámkaAI LogikaVideo s receptem (Kurkuma)✅ OKVygenerovány konkrétní dávky a postupy.AI LogikaTeoretické video (Stárnutí)✅ OKVygenerovány principy a strategie (ne prázdné pole).LokalizaceCizojazyčné video (DE/EN)✅ OKVýstup AI je vždy v češtině.UI/UXRefactoring Add/Edit✅ OKObě stránky fungují identicky, sdílí logiku.ProdukceNasazení na Vercel✅ OKMigrace DB proběhla automaticky, funkce dostupné.6. 🚀 Závěr a Další KrokyFáze 12 je úspěšně dokončena. Aplikace nyní disponuje silným nástrojem pro tvorbu hodnotného obsahu.Klíčové přínosy:Znalostní hodnota: Video už není jen "černá skříňka", ale má strukturovaná metadata.Efektivita: Kurátor vytvoří profesionální záznam na 2 kliknutí.Robustnost: Díky refactoringu je kód připraven na další rozšiřování.Doporučení pro další fázi:Vzhledem k množství metadat, která nyní máme (kapitoly, tipy, abstrakty), se nabízí zaměřit se v další fázi na Interaktivní Přehrávač (Fáze 13?), který tato data zobrazí koncovému uživateli v atraktivní formě (např. checklisty z praktických tipů vedle videa).
+
+------------------------------------------------------------------------
+
+JÁ_PROMPT:
+Díky moc. ;-) Nyní bych poprosil ještě zcela závěrem jako obvykle zrevidovat důležitý projektový snímkovač projektového adresáře vzhledem k nyní proběhlé relalizační fázi na projektu. V příloze je aktuální skript na snímkování projektového adresáře a nastavení jeho vnitřních a vnějších podmínek projektu. Prosím o jeho revizi vzhledem k nyní proběhlé realizační fázi, tak aby nový výsledný snímkovač pokrýval co neefektivněji a optimálně celý dosavadní projekt včetně nových funkcionalit. Takovýto snímkovač projektu pak bud využit v další fázi projektu k předání podmínek celého projektu pro implementaci nových funkcionalit resp. předat takto potřebné nezbytné nastavení a realizaci vlastností této aplikace tak nastavení jejích vnitřních a vnějších podmínek.
+
+[project_snapshot.py]
+
+AI_RESPONZE:
+To je velmi důležitý krok. Aktualizace "snímkovacího stroje" je klíčová, abychom do další fáze (pravděpodobně Fáze 13 - Interaktivní Přehrávač) vstupovali s pravdivým obrazem reality.
+
+Vzhledem k tomu, že Fáze 12 přinesla zásadní změny v architektuře (sjednocení formulářů) a datovém modelu (SEO pole), musíme skript upravit tak, aby tyto nové klíčové soubory "viděl".
+
+Provedené změny ve skriptu (Verze 12.0):
+
+Nový výstupní soubor: README_12_03project_snapshot (místo 11_03).
+
+Nová klíčová komponenta: Přidáno sledování components/admin/VideoForm.tsx (toto je nyní srdce administrace).
+
+Nové API: Přidáno sledování app/api/ai/generate-seo/route.ts.
+
+Aktualizace popisu: V hlavičce reportu je nyní uvedeno, že Fáze 12 je hotová.
+
+Zde je aktualizovaný skript. Uložte jej jako project_snapshot.py (přepište ten starý) a spusťte.
+project_snapshot.py
+27. 11. 20:54
+
+ID_chatu: 
+https://gemini.google.com/u/1/app/035fc52ba73fa0e4
+
+
+
