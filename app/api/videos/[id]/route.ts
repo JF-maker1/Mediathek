@@ -99,8 +99,6 @@ export async function PUT(
 
     const body = await request.json();
     
-    // --- ÚPRAVA PRO FÁZI 12 ---
-    // Přidali jsme nová SEO pole do destrukturalizace
     const { 
       title, 
       summary, 
@@ -116,7 +114,29 @@ export async function PUT(
     const parsedChapters = parseStructuredContent(structuredContent || '');
 
     const updatedVideo = await prisma.$transaction(async (tx) => {
-      // 1. Aktualizace videa + NOVÁ SEO POLE
+      
+      // --- FIX P2025: SANITIZACE SBÍREK ---
+      // Před pokusem o update ověříme, která ID skutečně existují v databázi.
+      // Tím předejdeme chybě "Expected X records, found Y".
+      let validCollectionIds: string[] = [];
+      
+      if (collectionIds && Array.isArray(collectionIds) && collectionIds.length > 0) {
+        const existingCollections = await tx.collection.findMany({
+          where: {
+            id: { in: collectionIds }
+          },
+          select: { id: true }
+        });
+        
+        validCollectionIds = existingCollections.map(c => c.id);
+        
+        // Volitelné: Logování, pokud se počty neshodují (pro debug)
+        if (validCollectionIds.length !== collectionIds.length) {
+           console.warn(`Warning: Attempted to link ${collectionIds.length} collections, but only ${validCollectionIds.length} exist.`);
+        }
+      }
+
+      // 1. Aktualizace videa
       const video = await tx.video.update({
         where: { id: id },
         data: {
@@ -129,9 +149,10 @@ export async function PUT(
           aiSuggestions: aiSuggestions || [],
           // --------------
           updatedAt: new Date(),
-          collections: collectionIds ? {
-            set: collectionIds.map((cid: string) => ({ id: cid }))
-          } : undefined,
+          collections: {
+            // Použijeme POUZE existující ID
+            set: validCollectionIds.map((cid) => ({ id: cid }))
+          },
         },
       });
 
@@ -177,7 +198,8 @@ export async function PUT(
       });
     }
     console.error('API_VIDEOS_PUT_ERROR', error);
-    return new NextResponse(JSON.stringify({ message: 'Internal Server Error' }), {
+    // Vracíme error i s detailem pro snazší debug na klientovi
+    return new NextResponse(JSON.stringify({ message: 'Internal Server Error', detail: error.message }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });

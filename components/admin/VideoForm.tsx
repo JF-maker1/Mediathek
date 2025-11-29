@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, FormEvent, useEffect } from 'react';
+import { Sparkles, ExternalLink, RefreshCw } from 'lucide-react';
 
 // Definice datové struktury, se kterou formulář pracuje
 export interface VideoFormData {
-  youtubeUrl: string; // Pro ADD je to URL, pro EDIT spíše ID (ale držíme v jednom poli)
+  youtubeUrl: string;
   title: string;
   summary: string;
   transcript: string;
@@ -21,16 +22,17 @@ export interface VideoFormData {
 interface Collection {
   id: string;
   name: string;
+  description?: string; // Fáze 14: Potřebujeme description pro AI kontext
 }
 
 // Props komponenty
 interface VideoFormProps {
-  initialData?: VideoFormData; // Pokud existuje, jsme v režimu EDIT
-  collections: Collection[];   // Seznam dostupných sbírek pro checkbox
-  onSubmit: (data: VideoFormData) => Promise<void>; // Funkce, co se stane po odeslání
-  isSubmitting: boolean;       // Stav ukládání (pro disabled button)
-  submitButtonText: string;    // Text tlačítka ("Uložit" vs "Přidat")
-  youtubeIdReadOnly?: boolean; // V editaci nechceme měnit ID videa
+  initialData?: VideoFormData;
+  collections: Collection[];
+  onSubmit: (data: VideoFormData) => Promise<void>;
+  isSubmitting: boolean;
+  submitButtonText: string;
+  youtubeIdReadOnly?: boolean;
 }
 
 export default function VideoForm({
@@ -43,8 +45,6 @@ export default function VideoForm({
 }: VideoFormProps) {
   
   // --- 1. INICIALIZACE STAVŮ ---
-  // Pokud máme initialData (Edit), použijeme je. Jinak prázdné (Add).
-  
   const [youtubeInput, setYoutubeInput] = useState(initialData?.youtubeUrl || '');
   const [title, setTitle] = useState(initialData?.title || '');
   const [summary, setSummary] = useState(initialData?.summary || '');
@@ -53,27 +53,30 @@ export default function VideoForm({
   
   const [selectedCollectionIds, setSelectedCollectionIds] = useState<string[]>(initialData?.collectionIds || []);
   
-  // SEO Stavy (Fáze 12)
+  // SEO Stavy
   const [seoSummary, setSeoSummary] = useState(initialData?.seoSummary || '');
-  // Keywords v DB jsou pole, ale v inputu je chceme jako string s čárkami
   const [seoKeywords, setSeoKeywords] = useState(initialData?.seoKeywords?.join(', ') || '');
   const [practicalTips, setPracticalTips] = useState<string[]>(initialData?.practicalTips || []);
   const [aiSuggestions, setAiSuggestions] = useState<string[]>(initialData?.aiSuggestions || []);
 
   // Pomocné stavy pro UI
-  const [isFetching, setIsFetching] = useState(false); // Stahování z YT
+  const [isFetching, setIsFetching] = useState(false);
   const [isAiGeneratingChapters, setIsAiGeneratingChapters] = useState(false);
   const [isAiGeneratingSeo, setIsAiGeneratingSeo] = useState(false);
+  
+  // FÁZE 14: Nové stavy pro Matchmaker
+  const [isAiMatching, setIsAiMatching] = useState(false);
+  const [aiProposals, setAiProposals] = useState<{name: string, description: string}[]>([]);
+
   const [fetchWarning, setFetchWarning] = useState<string | null>(null);
   
-  // Logování (stejné jako dříve)
+  // Logování
   const [debugLogs, setDebugLogs] = useState<string[]>([]);
   const addLog = (msg: string) => {
       const timestamp = new Date().toLocaleTimeString();
       setDebugLogs(prev => [`[${timestamp}] ${msg}`, ...prev]);
   };
 
-  // Synchronizace při pozdním načtení dat (pokud data přitečou až po prvním renderu)
   useEffect(() => {
     if (initialData) {
       setYoutubeInput(initialData.youtubeUrl);
@@ -93,8 +96,6 @@ export default function VideoForm({
   const handleFetchFromYoutube = async () => {
     if (!youtubeInput) return;
     
-    // Pokud editujeme, 'youtubeInput' je ID. Musíme z něj udělat URL pro scraper.
-    // Pokud přidáváme, 'youtubeInput' je už URL.
     let urlToFetch = youtubeInput;
     if (youtubeIdReadOnly && !youtubeInput.includes('http')) {
         urlToFetch = `https://www.youtube.com/watch?v=${youtubeInput}`;
@@ -112,7 +113,6 @@ export default function VideoForm({
       if (data.debugLogs) setDebugLogs(prev => [...data.debugLogs, ...prev]);
       if (!res.ok) throw new Error(data.message || 'Chyba při stahování');
 
-      // Helper pro potvrzení přepsání dat (v Edit režimu se ptáme, v Add rovnou píšeme)
       const shouldUpdate = (field: string) => !initialData || confirm(`Chcete přepsat ${field} novými daty z YouTube?`);
 
       if (data.title && shouldUpdate('NÁZEV')) setTitle(data.title);
@@ -160,7 +160,7 @@ export default function VideoForm({
     }
   };
 
-  // B) SEO Metadata (Fáze 12)
+  // B) SEO Metadata
   const handleAiGenerateSeo = async () => {
     if (!transcript) return;
     setIsAiGeneratingSeo(true);
@@ -189,7 +189,65 @@ export default function VideoForm({
     }
   };
 
-  // --- 4. HANDLERS pro UI (Tipy, Sbírky) ---
+  // C) FÁZE 14: AI MATCHMAKER LOGIC
+  const handleAiMatchCollections = async () => {
+    if (!title && !summary && !seoSummary) {
+        alert('Pro návrh zařazení je potřeba mít vyplněný alespoň název a shrnutí (nebo vygenerované SEO).');
+        return;
+    }
+
+    setIsAiMatching(true);
+    setAiProposals([]);
+    addLog('Spouštím AI Matchmaker...');
+
+    try {
+        const payload = {
+            videoContext: {
+                title,
+                summary: seoSummary || summary, // Preferujeme SEO summary
+                keywords: seoKeywords,
+                aiSuggestions: aiSuggestions.join(', ')
+            },
+            existingCollections: collections
+        };
+
+        const res = await fetch('/api/ai/match-collections', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Chyba při párování');
+
+        // 1. Aplikace shod (Matches) - Aditivní
+        if (data.matches && Array.isArray(data.matches)) {
+            const newMatches = data.matches.filter((id: string) => !selectedCollectionIds.includes(id));
+            if (newMatches.length > 0) {
+                setSelectedCollectionIds(prev => [...prev, ...newMatches]);
+                addLog(`Automaticky zaškrtnuto: ${newMatches.length} sbírek.`);
+            } else {
+                addLog('Žádné nové shody v existujících sbírkách.');
+            }
+        }
+
+        // 2. Návrhy (Proposals)
+        if (data.new_proposals && Array.isArray(data.new_proposals) && data.new_proposals.length > 0) {
+            setAiProposals(data.new_proposals);
+            addLog(`AI navrhuje ${data.new_proposals.length} nové sbírky.`);
+        } else {
+            addLog('AI nenavrhlo žádné nové sbírky.');
+        }
+
+    } catch (e: any) {
+        addLog(`Chyba Matchmaker: ${e.message}`);
+        console.error(e);
+    } finally {
+        setIsAiMatching(false);
+    }
+  };
+
+  // --- 4. HANDLERS UI ---
   const handleAddTip = () => setPracticalTips([...practicalTips, '']);
   const handleRemoveTip = (index: number) => setPracticalTips(practicalTips.filter((_, i) => i !== index));
   const handleTipChange = (index: number, val: string) => {
@@ -201,16 +259,12 @@ export default function VideoForm({
       setSelectedCollectionIds(prev => prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]);
   };
 
-  // --- 5. ODESLÁNÍ FORMULÁŘE ---
+  // --- 5. ODESLÁNÍ ---
   const handleSubmitInternal = (e: FormEvent) => {
       e.preventDefault();
-      
-      // Zpracování keywords (string -> array)
       const keywordsArray = seoKeywords.split(',').map(k => k.trim()).filter(k => k);
-      // Zpracování tipů (vyhodit prázdné)
       const tipsArray = practicalTips.filter(t => t.trim());
 
-      // Zavoláme funkci předanou z rodiče (Add nebo Edit page)
       onSubmit({
           youtubeUrl: youtubeInput,
           title,
@@ -225,7 +279,6 @@ export default function VideoForm({
       });
   };
 
-  // --- RENDER ---
   return (
     <div className="space-y-8">
         {/* LOG PANEL */}
@@ -238,7 +291,7 @@ export default function VideoForm({
 
         <form onSubmit={handleSubmitInternal} className="space-y-8">
             
-            {/* SEKVENCE 1: ZÁKLADNÍ INFO + YOUTUBE */}
+            {/* SEKVENCE 1: ZÁKLADNÍ INFO */}
             <section className="space-y-4 border-b border-gray-700 pb-6">
                 <h2 className="text-xl font-semibold text-gray-200">Základní informace</h2>
                 
@@ -278,27 +331,13 @@ export default function VideoForm({
                 </div>
             </section>
 
-            {/* SEKVENCE 2: SBÍRKY */}
-            <section className="bg-gray-900 p-4 rounded-md border border-gray-700">
-                <h3 className="text-sm font-medium text-gray-300 mb-3">Zařadit do sbírek</h3>
-                <div className="space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
-                    {collections.length === 0 ? <p className="text-gray-500 text-sm italic">Žádné sbírky.</p> : 
-                        collections.map((col) => (
-                        <label key={col.id} className="flex items-center space-x-3 cursor-pointer hover:bg-gray-800 p-2 rounded">
-                            <input type="checkbox" checked={selectedCollectionIds.includes(col.id)} onChange={() => toggleCollection(col.id)} className="h-4 w-4 rounded border-gray-600 bg-gray-700" />
-                            <span className="text-sm text-gray-200">{col.name}</span>
-                        </label>
-                    ))}
-                </div>
-            </section>
-
-            {/* SEKVENCE 3: PŘEPIS */}
+            {/* SEKVENCE 2: PŘEPIS (Přesunuto nahoru) */}
             <section className="space-y-4 border-b border-gray-700 pb-6">
                 <h2 className="text-xl font-semibold text-gray-200">Přepis (Zdroj pro AI)</h2>
                 <textarea rows={6} value={transcript} onChange={e => setTranscript(e.target.value)} className="mt-1 block w-full bg-gray-900 text-white p-2 text-sm font-mono border-gray-600 rounded-md" placeholder="Zde bude text titulků..." />
             </section>
 
-            {/* SEKVENCE 4: KAPITOLY */}
+            {/* SEKVENCE 3: KAPITOLY (Přesunuto nahoru) */}
             <section className="space-y-4 border-b border-gray-700 pb-6">
                  <div className="flex justify-between items-end">
                     <h2 className="text-xl font-semibold text-gray-200">Kapitoly</h2>
@@ -309,7 +348,7 @@ export default function VideoForm({
                 <textarea rows={8} value={structuredContent} onChange={e => setStructuredContent(e.target.value)} className="mt-1 block w-full bg-gray-800 text-white p-2 font-mono border-gray-600 rounded-md" />
             </section>
 
-            {/* SEKVENCE 5: SEO A SÉMANTIKA (FÁZE 12) */}
+            {/* SEKVENCE 4: SEO A SÉMANTIKA (Nyní před sbírkami) */}
             <section className="space-y-6 bg-gradient-to-r from-gray-900 to-indigo-900/20 p-6 rounded-lg border border-indigo-500/30">
                  <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
@@ -345,13 +384,79 @@ export default function VideoForm({
                     </div>
                 </div>
 
-                {/* READONLY Návrhy sbírek */}
                 {aiSuggestions.length > 0 && (
                     <div className="bg-indigo-900/30 p-3 rounded border border-indigo-500/20">
                         <p className="text-xs text-indigo-300 font-bold mb-2">AI Návrhy sbírek:</p>
                         <div className="flex flex-wrap gap-2">
                             {aiSuggestions.map((sug, i) => <span key={i} className="text-xs bg-indigo-800/50 text-indigo-200 px-2 py-1 rounded-full">{sug}</span>)}
                         </div>
+                    </div>
+                )}
+            </section>
+
+            {/* SEKVENCE 5: SBÍRKY (Přesunuto nakonec) */}
+            <section className="bg-gray-900 p-4 rounded-md border border-gray-700 relative overflow-hidden">
+                <div className="flex justify-between items-center mb-3">
+                    <h3 className="text-sm font-medium text-gray-300">Zařadit do sbírek</h3>
+                    
+                    {/* FÁZE 14: Tlačítko Matchmaker */}
+                    <button 
+                        type="button" 
+                        onClick={handleAiMatchCollections}
+                        disabled={isAiMatching}
+                        className="text-xs bg-indigo-600 hover:bg-indigo-500 text-white py-1.5 px-3 rounded shadow-lg flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {isAiMatching ? (
+                            <RefreshCw className="w-3 h-3 animate-spin" />
+                        ) : (
+                            <Sparkles className="w-3 h-3" />
+                        )}
+                        {isAiMatching ? 'Analyzuji...' : 'Navrhnout zařazení (AI)'}
+                    </button>
+                </div>
+
+                <div className="space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar border-b border-gray-800 pb-4 mb-4">
+                    {collections.length === 0 ? <p className="text-gray-500 text-sm italic">Žádné sbírky.</p> : 
+                        collections.map((col) => (
+                        <label key={col.id} className="flex items-center space-x-3 cursor-pointer hover:bg-gray-800 p-2 rounded transition-colors">
+                            <input 
+                                type="checkbox" 
+                                checked={selectedCollectionIds.includes(col.id)} 
+                                onChange={() => toggleCollection(col.id)} 
+                                className="h-4 w-4 rounded border-gray-600 bg-gray-700 text-indigo-600 focus:ring-indigo-500" 
+                            />
+                            <span className="text-sm text-gray-200">{col.name}</span>
+                        </label>
+                    ))}
+                </div>
+
+                {/* FÁZE 14: Zobrazení Návrhů (Evoluce) */}
+                {aiProposals.length > 0 && (
+                    <div className="bg-indigo-900/20 border border-indigo-500/30 rounded p-3 animate-in slide-in-from-top-2 fade-in duration-300">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Sparkles className="w-4 h-4 text-indigo-400" />
+                            <h4 className="text-sm font-bold text-indigo-300">💡 AI navrhuje nové téma:</h4>
+                        </div>
+                        
+                        {aiProposals.map((prop, idx) => (
+                            <div key={idx} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gray-800/50 p-2 rounded">
+                                <div>
+                                    <strong className="block text-white text-sm">{prop.name}</strong>
+                                    <p className="text-xs text-gray-400">{prop.description}</p>
+                                </div>
+                                <a 
+                                    href={`/admin/collections?name=${encodeURIComponent(prop.name)}&description=${encodeURIComponent(prop.description)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="shrink-0 flex items-center gap-1 text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded transition-colors"
+                                >
+                                    Vytvořit sbírku <ExternalLink className="w-3 h-3" />
+                                </a>
+                            </div>
+                        ))}
+                        <p className="text-[10px] text-gray-500 mt-2 text-center">
+                            Po vytvoření sbírky v novém okně klikněte znovu na "Navrhnout zařazení" pro aktualizaci seznamu.
+                        </p>
                     </div>
                 )}
             </section>

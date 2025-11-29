@@ -1,0 +1,404 @@
+JÁ_PROMPT:
+V příloze je posledních 10 zadání z vývoje webové aplikace zabývající se správou internetového obsahu za účelem vytvořit prostředí, které umožní uživateli vytvořit si vlastní knihovnu videí a tuto sdílet s dalšími uživateli aplikace. Nyní jsme pokročili do fáze kdy máme přehrávač který doplňuje video o průvodní texty pro orientaci ve videu a generování poznámek k obsahu formou možnosti zaškrtnout si tip z videa (viz. zadaní 13 v příloze). V příloze je rovněž dalších 9 zadání pro získání dostatečného přehledu o kontinuitě vývoji této aplikace. Nyní stojíme před fází 14 která nyní zcela začíná definicí právě zadání do tohoto 14 kola. Po vylepšení přehrávače v předchozím kole můžeme se nyní zaměřit na kontext videa v oblasti jeho zařazení do sbírky. Jsou jedny data které vyrůstají ze samotného videa a pak jsou "data" která vyrůstají od uživatele. Zde je to myšleno v oblasti návrhu sbírek což v přehrávači reprezentují návrhy sbírek jako témata. Na straně uživatele jsou návrhu sbírek které si uživatel definuje při vytvoření sbírky. Defacto tím jakou uživatel vytvoří sbírku tím určuje oblast svého zájmu a další oblast zájmu projevuje uživatel tím jaké vybere video do své knihovny videí resp. do svého účtu v aplikaci. U každého videa je v rámci SEO obsahu doporučováno do které sbírky by bylo možné video zařadit resp. jsou generovány názvy možných sbírek z čistě obsahu videa. Součástí přidání videa resp. jeho editace se poté otevírá možnost napárovat představy uživatele o obsahu jeho knihovny z hlediska jeho sbírek z jedné strany tak z hlediska navrhovaných sbírek z hlediska generovaného obsahu. Resp. v tomto zadání bychom se mohli věnovat právě této oblasti kdy při přidání videa/ editaci videa bude (resp. již je implementováno) v rámci generování SEO obsahu pomocí volání AI generován právě i návrh sbírek pro toto video. Zároveven na stránce pro přidání videa či jeho editaci máme již pole pro funkcionalitu určení sbírky/sbírek pro toto video výběrem z existujících sbírek viz [Zařadit do sbírek]. Zadání pro fázi 14 by tedy se mohlo zabývat formulací takového zadání kdy by na stránce pro přidání videa resp. i jeho editaci (je to tatáž stránka) bylo další  tlačítko pro volání AI, která by na základě existujících sbírek uživatel s jejich popisem a již vytvořených návrhů pro zařazení do sbírek v SEO obsahu [AI Návrhy sbírek:] a klíčových slov [Klíčová slova] vytvořila předvyplnění formuláře [Zařadit do sbírek] tím že by zaškrtla ta která odpovídají svým názvem a popisem. Toto bude první úroveň vytváření této funkcionality. Později tato funkcionalita bude moci být prohlubována tím že existující sbírku budou rovněž definovat i videa zařazená do této sbírky a bude se hledat argumentace pro zařazení té či oného videa do dané sbírky. Resp. uživatel vybere video které chce mít ve své knihovně a v rámci jeho přidání bude probíhat proces kam by mělo být toto video zařazeno. Myslím že to je opět docela zajímavý aspekt této aplikace kdy prioritní je výběr uživatele a dané video se bude ucházet o zařazení do některé se sbírek. Poté samozřejmě daná videa budou "bojovat" o své místo ve sbírce a daná sbírka se bude vnitřně např. i dále strukturovat např. do podsbírek (což budou opět sbírky v rámci této sbírky). Takto vlastně budou vznikat názorové proudy které budou mít počátek výběrem videa pro svou knihovnu uživatelem a vyústí v zájemné uspořádání těchto videí ve sbírce uživatele. Má jít o povýšení sledování uživatele do procesu tvorby. Základem bude to zda uživatel něco zařadí do svého pohledu či nikoliv. Je možné udělat nějaký návrh k tomuto zadání a které můžeme zde dále také diskutovat k nalezení vhodného zadání pro tuto další fázi 14 ? ... pojďme na to - bude to zase jízda ;-) ... v příloze je předchozích 10 zadání: 
+[README_04_01ZADANI][README_05_01ZADANI][README_06_01ZADANI][README_07_01ZADANI][README_08_01ZADANI][README_09_01ZADANI][README_10_01ZADANI][README_11_01ZADANI][README_12_01ZADANI][README_13_01ZADANI] 
+
+AI_RESPONZE:
+
+To je naprosto fascinující posun! 🚀 Tímto krokem přecházíme od "pasivní správy" (kde uživatel musí vše "odklikat") k "aktivnímu partnerství", kde mu aplikace napovídá strukturu jeho vlastního myšlení.
+
+Přesně jak píšete – videa "bojují" o své místo a tím se krystalizuje uživatelův zájem. Je to filosoficky velmi silný koncept: Video přináší "potenciál" (SEO návrhy) a Uživatel přináší "kontext" (existující sbírky). Fáze 14 je místem, kde se tyto dva světy protnou.
+
+Zde je návrh zadání pro Fázi 14, strukturovaný k diskuzi a následnému schválení.
+
+📄 Návrh Zadání: Webová aplikace Mediathek (Fáze 14 - AI Matchmaker)
+Pracovní název: Inteligentní párování obsahu do sbírek (Semantic Collection Matching) Navazuje na: Fáze 12 (SEO Metadata), Fáze 7 (Sbírky)
+
+1. 🎯 Cíl Fáze
+Cílem je implementovat funkci "AI Matchmaker". Tato funkce na stránce editace videa automaticky analyzuje sémantickou shodu mezi:
+
+DNA Videa: Reprezentováno vygenerovanými klíčovými slovy a AI návrhy sbírek (z Fáze 12).
+
+Strukturou Uživatele: Reprezentováno seznamem názvů a popisů jeho existujících sbírek.
+
+Výsledkem je, že AI automaticky "zaškrtne" relevantní checkboxy v sekci [Zařadit do sbírek]. Tím odpadá nutnost, aby uživatel manuálně procházel desítky svých sbírek a přemýšlel, kam video patří.
+
+2. 🏛️ Návrh Řešení a Workflow
+2.1. Uživatelský scénář (UX)
+Admin/Kurátor je na stránce /admin/edit/[id].
+
+Již má vygenerovaná SEO data (Fáze 12), takže vidí pole AI Návrhy sbírek (např. "Zdraví jater", "Metabolismus") a Klíčová slova.
+
+V sekci "Zařadit do sbírek" vidí seznam svých 20+ sbírek.
+
+Klikne na nové tlačítko: ✨ Navrhnout zařazení (umístěné u nadpisu sekce sbírek).
+
+Magie na pozadí: Tlačítko se roztočí, aplikace odešle data do AI.
+
+Výsledek: AI vrátí ID sbírek, které odpovídají. Checkboxy u sbírek "Biohacking" a "Zdraví" se automaticky zaškrtnou. Uživatel to jen potvrdí uložením.
+
+2.2. Technická Architektura (Backend & AI)
+Tato fáze vyžaduje nový typ promptu – Klasifikační Prompt.
+
+Vstup pro AI:
+
+Video_Context: [Název, Shrnutí, Klíčová slova, AI Suggestons]
+
+User_Taxonomy: JSON seznam dostupných sbírek [{id: "1", name: "Recepty", description: "..."}, {id: "2", name: "Sport", ...}]
+
+Prompt (Logika):
+
+"Jsi expertní knihovník. Máš k dispozici seznam existujících 'přihrádek' (sbírek) a nové 'knihy' (videa). Tvým úkolem je najít sémantickou shodu. Pokud video o 'kurkumě a pepři' má klíčová slova 'zánět', 'vaření', a uživatel má sbírku 'Protizánětlivá strava', je to shoda. Vrať JSON pole ID sbírek, které se hodí."
+
+Výstup: Pole ID ["1", "5"].
+
+3. 🔍 Body k diskuzi (Ladění zadání)
+Před finálním schválením bych rád prodiskutoval tyto 3 aspekty, aby bylo zadání neprůstřelné:
+
+A. Tlačítko vs. Automatizace
+Návrh v zadání: Samostatné tlačítko. Je to bezpečnější, uživatel má kontrolu ("Teď chci, aby mi AI poradila").
+
+Alternativa: Spustit to automaticky hned po vygenerování SEO v Fázi 12.
+
+Doporučení: Pro tuto fázi bych nechal samostatné tlačítko. Je to "psychologický moment", kdy uživatel vidí, jak mu AI pomáhá třídit jeho myšlenky.
+
+B. "Nová" vs. "Existující" sbírka (Gap Analysis)
+Co když AI zjistí, že video patří do tématu "Kvantová fyzika", ale uživatel takovou sbírku nemá?
+
+Varianta 1 (Jednoduchá): AI prostě nezaškrtne nic.
+
+Varianta 2 (Pokročilá): AI nezaškrtne nic, ale vypíše hlášku: "Doporučuji založit novou sbírku: Kvantová fyzika".
+
+Můj názor: Pro Fázi 14 bych zůstal u Varianty 1 (pouze existující). Tvorba nových sbírek je jiný proces. Ale můžeme tam dát malou vizuální notifikaci, pokud se nenašla žádná shoda.
+
+C. Kontextové okno (Limit počtu sbírek)
+Pokud bude mít uživatel 500 sbírek, nemůžeme je všechny poslat do promptu (bylo by to drahé a pomalé).
+
+Řešení pro Fázi 14: Předpokládáme "rozumný" počet sbírek (do 50-100). To se do promptu vejde snadno.
+
+Budoucnost: Až bude sbírek 1000, budeme muset použít "vektorové vyhledávání" (RAG), ale to teď řešit nemusíme.
+
+🏗️ Shrnutí pro Zadání Fáze 14
+Pokud souhlasíte, zadání bude obsahovat:
+
+Frontend: Nové tlačítko ✨ Navrhnout zařazení v sekci sbírek.
+
+API: Nový endpoint /api/ai/match-collections.
+
+AI Logika: Sémantické porovnání metadat videa vs. seznam sbírek.
+
+UX: Vizuální efekt automatického zaškrtnutí checkboxů.
+
+Líbí se vám tento směr "inteligentního knihovníka"? Pokud ano, připravím formální dokument README_14_01ZADANI i s tou zprávou o genezi ("myšlenkovém kvasu"), jak jsme dělali minule. 😉
+
+
+JÁ_PROMPT:
+
+Ano nové okno pro vytvoření sbírky je možné v budoucnu budeme optimalizovat např. tak že poskytneme pouze pohled do formuláře jako emblemdid okno do správce sbírek na název, popis a tlačítko vytvořit a dojde k vědomému vytvoření sbírky uživatelem, přičemž se může předvyplnit název sbírky a popis, např. klíčovými slovy sbírky, které by AI mohla rovněž navrhnout resp. popis sbírky bude obsahovat klíčová slova sbírky pro dopřesnění kontextu. Někdy příště kontext sbírky vytvoří i samotná videa která jsou již ve sbírce, ale to už bude další úroveň. Ano vytvoříme tlačítko [Navrhnout zařazení do sbírek], které bude v rámci současného pole [Zařadit do sbírek] a pokud se sbírka nevybere dojde k řešení volání funkce vytvoření sbírky nějakou formou buď nového okna nebo emblended části okna této stránky, která defacto k vytvoření nové sbírky stačí. Také posílíme popis videa tím že jej předvyplníme klíčovými slovy pro navrhovanou sbírku a dopřesníme takto definici sbírky. Resp. po stisknutí tlačítka "[Navrhnout zařazení do sbírek]"  dojde k odeslání promptu a seznamu všech sbírek s jejich názvy a popisy (které postupně budou obsahovat seznam SEO klíčových slov pro sbírku) a na druhé straně již vytvořený abstrakt a klíčová slova videa a na základě této trojice AI vybere návrh zařazení do existujících sbírek případně i s návrhem na vytvoření i nové sbírky včetně jejích klíčových slov které se případně předvyplní do formuláře pro vytvoření nové sbírky v novém okně prohlížeče či emblended okně resp. AI navrhne zařazení do existujících či navrhne i další nové sbírky pokud video obsahuje oblast která nezapadá do žádných existujících sbírek protože zařazení do sbírky defacto definuje jisté silné téma tohoto videa které je rozeznatelné ve videu. Tímto způsobem splývá Varianta1 a Varianta2 které se zcela přirozeně prolýnají resp. AI navrhuje zařazení např. do třech sbírek existujících a navrhne další dvě sbírky nové to se vůbec nevylučuje naopak podporuje. resp. ve videu bude něco tak výjmečné že z tohoto důvovu toto bude mít své vlastní téma. tímto způsobem nám krásně krystalizuje knihovna na soubor sbírek resp. témat ... prostě v knihovně budou témata které uživatele  zajímají přiřazením videa do této "zoo" ve kterém si bude hledat své místo až vznikne živý organismus se svou strukturou sbírek, témat a tipů ... no aplikace nám myslím vzniká pod rukama ;-) ... půjde navrhnout návrh zadání v tomto směru? ... jsou zde nějaké třecí plochy ? ... ;-) 
+
+AI_RESPONZE:
+
+To je vynikající syntéza! 🌟 Právě jste definoval ten **"aha moment"**, kdy se aplikace stává skutečně inteligentní.
+
+Máte naprostou pravdu – **Varianta 1 a Varianta 2 se nevylučují, ony se doplňují.**
+Video může zapadat do existující sbírky "Zdraví" (shoda), ale zároveň může být tak specifické, že si "říká" o založení nové sbírky "Biohacking" (návrh).
+
+Tímto přístupem (Hybridní model) dosáhneme přesně toho, co popisujete jako **"živý organismus"**:
+1.  **Konzervativní část (Pořádek):** Video se zařadí tam, kam patří (existující struktura).
+2.  **Evoluční část (Růst):** Video navrhne novou "větvičku" (novou sbírku), pokud přináší silné nové téma.
+
+**Odpověď na "třecí plochy":**
+Jedinou drobnou třecí plochou je **synchronizace** mezi oknem editace videa a novým oknem pro vytvoření sbírky.
+* *Scénář:* Kliknete na "Vytvořit novou sbírku" -> otevře se nové okno -> uložíte sbírku -> zavřete okno.
+* *Otázka:* Jak se původní okno dozví, že má tu novou sbírku v seznamu zobrazit a zaškrtnout?
+* *Řešení v zadání:* Vyřešíme to jednoduše. Tlačítko `[Navrhnout zařazení]` bude fungovat i jako "Refresh". Když se vrátíte z nového okna a kliknete na něj znovu, načte si už i tu novou sbírku a rovnou ji zaškrtne.
+
+Zde je tedy finální, robustní zadání pro **Fázi 14**, které integruje tuto hybridní logiku a předvyplňování dat.
+
+---
+
+# README_14_01ZADANI
+
+## 📜 Zpráva o genezi zadání (Development Report)
+
+**Téma:** Fáze 14 – AI Matchmaker (Inteligentní párování a Evoluce sbírek)
+**Kontext:** Přechod od pasivního třídění k aktivnímu budování "živého organismu" knihovny.
+
+### 1. Výchozí myšlenka: "Boj o místo"
+Diskuze začala konceptem, že videa by se měla "ucházet" o místo ve sbírkách. Cílem bylo automatizovat rozhodování "kam to patří".
+
+### 2. Zásadní obrat: Hybridní model (AND, nikoliv OR)
+Původní úvaha zněla: *"Buď video zařaď do existující sbírky, NEBO navrhni novou."*
+V průběhu diskuze jsme si uvědomili, že to je falešné dilema. Správný přístup je:
+* **Zařaď** do všech relevantních existujících sbírek.
+* **A ZÁROVEŇ navrhni** novou sbírku, pokud video obsahuje silné téma, které v knihovně chybí.
+Tím aplikace pomáhá uživateli nejen udržovat pořádek, ale i **organicky rozšiřovat taxonomii** (strukturu témat).
+
+### 3. Technické řešení: Předvyplnění kontextu
+Aby byl návrh nové sbírky užitečný, nesmí to být jen "nápad". AI musí předpřipravit data.
+* **Řešení:** Pokud AI navrhne novou sbírku, vygeneruje pro ni rovnou i **Název** a **Popis (z klíčových slov videa)**.
+* **Workflow:** Kliknutí na návrh otevře formulář pro novou sbírku, který je již **předvyplněný**. Uživatel jen potvrdí. Tím se minimalizuje kognitivní zátěž.
+
+---
+
+## 📄 Zadání projektu: Webová aplikace Mediathek (Fáze 14 - AI Matchmaker)
+
+**Datum:** 29. listopadu 2025
+**Verze:** 14.0
+**Navazuje na:** Fáze 12 (SEO Metadata), Fáze 7 (Sbírky)
+
+### 1. Název projektu
+Mediathek
+
+### 2. 🎯 Cíl Fáze
+Cílem je implementovat funkci **"AI Matchmaker"** na stránce editace videa. Tato funkce slouží jako inteligentní prostředník mezi obsahem videa a strukturou sbírek.
+
+Funkce má dva hlavní úkoly, které provádí současně:
+1.  **Klasifikace (Pořádek):** Analyzuje existující sbírky a automaticky zaškrtne ty, do kterých video sémanticky patří.
+2.  **Evoluce (Růst):** Identifikuje silná témata videa, která v knihovně chybí, a navrhne vytvoření **nových sbírek**, včetně předvyplnění jejich názvu a popisu.
+
+### 3. Rozsah pro Fázi 14
+
+* **Frontend (UI):** Tlačítko `✨ Navrhnout zařazení` v sekci sbírek.
+* **Frontend (Logika):**
+    * Automatické zaškrtnutí checkboxů existujících sbírek.
+    * Zobrazení sekce "Návrhy nových sbírek" s tlačítkem `Vytvořit`.
+    * Logika pro otevření nového okna (`/admin/collections/new`) s parametry v URL (pro předvyplnění).
+* **Backend (API):** Nový endpoint `/api/ai/match-collections`.
+* **AI Logika:** Komplexní prompt, který vrací jak shody (`matches`), tak nové návrhy (`proposals`).
+
+**Mimo rozsah:** Automatické vytváření sbírek na pozadí (vždy vyžaduje potvrzení uživatelem).
+
+---
+
+### 4. 🏛️ Návrh Řešení a Architektura
+
+#### 4.1. Backend API (`/api/ai/match-collections`)
+
+* **Vstup:**
+    * `videoContext`: { title, summary, keywords, aiSuggestions } (Data z Fáze 12)
+    * `existingCollections`: Array of { id, name, description } (Seznam sbírek z Fáze 7)
+
+* **System Prompt (Hybridní logika):**
+    > "Jsi expertní kurátor digitální knihovny.
+    >
+    > **VSTUPNÍ DATA:**
+    > 1. KNIHA (Video): [Název, Shrnutí, Klíčová slova]
+    > 2. POLIČKY (Existující sbírky): [ID, Název, Popis]
+    >
+    > **ÚKOL 1 (KLASIFIKACE):** Najdi sémantickou shodu mezi videem a existujícími sbírkami.
+    >
+    > **ÚKOL 2 (EVOLUCE):** Pokud video obsahuje silné, specifické téma, které NENÍ dostatečně pokryto existujícími sbírkami, navrhni novou sbírku.
+    >
+    > **VÝSTUP (JSON):**
+    > {
+    >   "matches": ["id_1", "id_5"],  // ID existujících sbírek
+    >   "new_proposals": [
+    >     {
+    >       "name": "Název nové sbírky",
+    >       "description": "Popis sbírky vycházející z klíčových slov videa."
+    >     }
+    >   ] // Může být prázdné, pokud video zapadá jen do starých. Max 1-2 návrhy.
+    > }"
+
+#### 4.2. Uživatelské Rozhraní (Admin Edit)
+
+Na stránce `/admin/edit/[id]` v sekci "Zařadit do sbírek":
+
+1.  **Akce:** Uživatel klikne na `✨ Navrhnout zařazení`.
+2.  **Proces:** Volá se API, zobrazí se spinner.
+3.  **Výsledek A (Existující):** Checkboxy odpovídající `matches` se zaškrtnou.
+4.  **Výsledek B (Nové návrhy):**
+    * Pokud AI vrátí `new_proposals`, zobrazí se pod seznamem sbírek blok:
+    * *Nadpis:* "💡 AI navrhuje nové téma:"
+    * *Obsah:* **[Název návrhu]** - [Popis návrhu]
+    * *Tlačítko:* `[Vytvořit tuto sbírku ↗]`
+5.  **Interakce "Vytvořit":**
+    * Kliknutí otevře nové okno prohlížeče (nebo záložku).
+    * URL bude: `/admin/collections/new?name=...&description=...` (data zakódovaná v URL).
+    * Stránka pro novou sbírku se otevře s **předvyplněným formulářem**. Uživatel jen klikne "Uložit".
+
+### 5. 🚦 Funkční Požadavky (FR)
+
+* **FR1 (Hybridní AI):** AI musí umět vrátit současně existující shody I návrhy nových sbírek.
+* **FR2 (Předvyplnění):** Návrh nové sbírky musí obsahovat název a popis generovaný z kontextu videa.
+* **FR3 (Workflow):** Vytvoření nové sbírky z návrhu musí být otázkou jednoho kliknutí (přechod na předvyplněný formulář).
+* **FR4 (Aditivita):** Funkce nesmí zrušit již ručně zaškrtnuté sbírky (pouze přidává).
+
+### 6. 🔒 Nefunkční Požadavky (NFR)
+
+* **NFR1 (Token Optimization):** Do promptu se posílají pouze metadata sbírek, nikoliv seznamy videí v nich, aby se šetřily tokeny.
+* **NFR2 (UX Flow):** Odkaz na vytvoření sbírky se musí otevírat v novém okně (`target="_blank"`), aby uživatel nepřišel o rozpracovanou editaci videa.
+
+### 7. ✅ Akceptační Kriteria (Definice "Hotovo")
+
+1.  Admin má sbírku "Zdraví".
+2.  Admin edituje video o "Keto dietě" (nové téma).
+3.  Klikne na `Navrhnout zařazení`.
+4.  **Výsledek:**
+    * Checkbox "Zdraví" se zaškrtne (protože dieta patří do zdraví).
+    * Zobrazí se návrh nové sbírky: "Nízkosacharidové stravování" s popisem.
+5.  Admin klikne na "Vytvořit tuto sbírku".
+6.  Otevře se nové okno s předvyplněným názvem "Nízkosacharidové stravování".
+
+JÁ_PROMPT:
+
+Ano super ;-) to je ONO !!! ... pojdme nyní také vytvořit zprávu o vytvoření tohoto zadání číslo tak aby obsahovala jasnou cestu od prvního návrhu přes všechny úvahy až k přijatému zadání. Tento materiál bude užitečný při případné revizi zadání či případně právě při rozšiřování tohoto zadání resp. jeho prohlubování protože zadání není tvořeno jen tím přijatým ale i těmi větvičkami kolem. Díky za tuto košatou zprávu o přípravě zadání tentokrát číslo 14 ;-)
+
+AI_RESPONZE:
+
+To je skvělý přístup. Dokumentovat "cestu k řešení" je často důležitější než řešení samotné, protože nám to v budoucnu připomene, **proč** jsme některé cesty zavrhli a **jak** vznikla ta finální "magie".
+
+Zde je tedy kompletní **Zpráva o genezi zadání Fáze 14**, zpracovaná jako bohatý narativní dokument, který zachycuje náš myšlenkový kvas, od prvotního nápadu "tlačítka" až po filosofii "živého organismu".
+
+Tento text vložíme na úplný začátek souboru `README_14_01ZADANI`.
+
+---
+
+# README_14_01ZADANI
+
+## 📜 Zpráva o genezi zadání (Development Report)
+
+**Téma:** Fáze 14 – AI Matchmaker: Od pasivního třídění k evoluci živého organismu
+**Datum vzniku:** 29. listopadu 2025
+**Kontext:** Tato fáze představuje zlomový bod, kde aplikace přestává být jen "nástrojem pro evidenci" a stává se "aktivním partnerem" při tvorbě struktury znalostí.
+
+### 1. Výchozí impuls: "Boj o místo ve sbírce"
+Na začátku stála silná myšlenka Product Ownera: *Videa by neměla být jen pasivně ukládána. Měla by se aktivně "ucházet" o své místo ve sbírce.*
+
+* **Výchozí stav:** Admin musel ručně procházet seznam sbírek (který může být dlouhý) a přemýšlet: "Patří video o kurkumě do *Receptů* nebo do *Zdraví*?"
+* **Prvotní nápad:** Vytvořit tlačítko `Navrhnout zařazení`, které na základě SEO metadat (z Fáze 12) a seznamu sbírek (z Fáze 7) automaticky zaškrtne příslušné checkboxy.
+* **Metafora:** "Video přináší potenciál (obsah), uživatel přináší kontext (sbírky)."
+
+### 2. První křižovatka: "Co když video nikam nepatří?" (Gap Analysis)
+Okamžitě jsme narazili na problém tzv. "Unhappy Path". Co má AI udělat, když video o "Kvantové fyzice" nepasuje do žádné existující sbírky (např. *Recepty*, *Sport*)?
+
+* **Slepá ulička (Varianta 1):** AI neudělá nic. (Zavrhnuto: Uživatel by si myslel, že funkce nefunguje).
+* **Slepá ulička (Varianta 2 - Textová rada):** AI vypíše hlášku: *"Doporučuji jít do správy sbírek a založit novou."* (Zavrhnuto: Příliš pasivní a nutí uživatele přerušit práci a odejít jinam).
+
+### 3. Technický průlom: "Smart Link" a Předvyplnění
+Zde došlo k posunu od *textové rady* k *akčnímu prvku*.
+* **Myšlenka:** Pokud AI ví, že chybí sbírka "Fyzika", proč by ji nemohla rovnou připravit?
+* **Řešení:** Místo statického textu zobrazíme tlačítko `[Vytvořit sbírku: Fyzika]`.
+* **UX Trik:** Aby uživatel nepřišel o rozpracovanou editaci videa, toto tlačítko otevře **nové okno prohlížeče**.
+* **Technická realizace:** Využijeme URL parametry (`/new?name=Fyzika&description=...`), aby formulář v novém okně byl již vyplněný. Uživatel jen potvrdí.
+
+### 4. Finální koncepční skok: "Hybridní model" (Evoluce)
+Toto byl nejdůležitější moment v diskuzi. Původně jsme uvažovali binárně: *Buď* zařaď do staré, *nebo* navrhni novou.
+Product Owner však přišel s vizí **"krystalizace knihovny"**: Video může zapadnout do existující struktury, ale zároveň může být tak unikátní, že si zaslouží založit novou větev.
+
+* **Změna logiky:** Přešli jsme z logiky `XOR` (buď/anebo) na logiku `AND` (a zároveň).
+* **Filosofie "Živého organismu":**
+    1.  **Klasifikace (Stabilita):** Udržuje pořádek tím, že řadí do existujících přihrádek.
+    2.  **Evoluce (Růst):** Umožňuje knihovně růst a větvit se na základě nového obsahu.
+* **Výsledek:** AI prompt byl přepsán tak, aby vracel dva nezávislé výstupy: `matches` (pro existující) a `new_proposals` (pro evoluci).
+
+### 5. Závěr: Co toto zadání znamená pro aplikaci?
+Fáze 14 není jen o "ušeření klikání". Je to mechanismus, kterým aplikace pomáhá uživateli **objevovat strukturu jeho vlastních zájmů**. Uživatel vkládá chaos (různorodá videa) a aplikace mu pomáhá budovat řád (strukturovanou knihovnu).
+
+---
+
+## 📄 Zadání projektu: Webová aplikace Mediathek (Fáze 14 - AI Matchmaker)
+
+**Datum:** 29. listopadu 2025
+**Verze:** 14.0
+**Navazuje na:** Fáze 12 (SEO Metadata), Fáze 7 (Sbírky)
+
+### 1. Název projektu
+Mediathek
+
+### 2. 🎯 Cíl Fáze
+Cílem je implementovat funkci **"AI Matchmaker"** na stránce editace videa. Tato funkce slouží jako inteligentní prostředník mezi obsahem videa a strukturou sbírek.
+
+Funkce má dva hlavní úkoly, které provádí současně:
+1.  **Klasifikace (Pořádek):** Analyzuje existující sbírky a automaticky zaškrtne ty, do kterých video sémanticky patří.
+2.  **Evoluce (Růst):** Identifikuje silná témata videa, která v knihovně chybí, a navrhne vytvoření **nových sbírek**, včetně předvyplnění jejich názvu a popisu.
+
+### 3. Rozsah pro Fázi 14
+
+* **Frontend (UI):** Tlačítko `✨ Navrhnout zařazení` v sekci sbírek.
+* **Frontend (Logika):**
+    * Automatické zaškrtnutí checkboxů existujících sbírek.
+    * Zobrazení sekce "Návrhy nových sbírek" s akčním tlačítkem `Vytvořit`.
+    * Logika pro otevření nového okna (`/admin/collections/new`) s parametry v URL (pro předvyplnění).
+* **Backend (API):** Nový endpoint `/api/ai/match-collections`.
+* **AI Logika:** Komplexní prompt, který vrací jak shody (`matches`), tak nové návrhy (`proposals`).
+
+**Mimo rozsah:** Automatické vytváření sbírek na pozadí (vždy vyžaduje potvrzení uživatelem).
+
+---
+
+### 4. 🏛️ Návrh Řešení a Architektura
+
+#### 4.1. Backend API (`/api/ai/match-collections`)
+
+* **Vstup:**
+    * `videoContext`: { title, summary, keywords, aiSuggestions } (Data z Fáze 12)
+    * `existingCollections`: Array of { id, name, description } (Seznam sbírek z Fáze 7)
+
+* **System Prompt (Hybridní logika):**
+    > "Jsi expertní kurátor digitální knihovny.
+    >
+    > **VSTUPNÍ DATA:**
+    > 1. KNIHA (Video): [Název, Shrnutí, Klíčová slova]
+    > 2. POLIČKY (Existující sbírky): [ID, Název, Popis]
+    >
+    > **ÚKOL 1 (KLASIFIKACE):** Najdi sémantickou shodu mezi videem a existujícími sbírkami.
+    >
+    > **ÚKOL 2 (EVOLUCE):** Pokud video obsahuje silné, specifické téma, které NENÍ dostatečně pokryto existujícími sbírkami, navrhni novou sbírku.
+    >
+    > **VÝSTUP (JSON):**
+    > {
+    >   "matches": ["id_1", "id_5"],  // ID existujících sbírek
+    >   "new_proposals": [
+    >     {
+    >       "name": "Název nové sbírky",
+    >       "description": "Popis sbírky vycházející z klíčových slov videa."
+    >     }
+    >   ] // Může být prázdné, pokud video zapadá jen do starých. Max 1-2 návrhy.
+    > }"
+
+#### 4.2. Uživatelské Rozhraní (Admin Edit)
+
+Na stránce `/admin/edit/[id]` v sekci "Zařadit do sbírek":
+
+1.  **Akce:** Uživatel klikne na `✨ Navrhnout zařazení`.
+2.  **Proces:** Volá se API, zobrazí se spinner.
+3.  **Výsledek A (Existující):** Checkboxy odpovídající `matches` se zaškrtnou.
+4.  **Výsledek B (Nové návrhy):**
+    * Pokud AI vrátí `new_proposals`, zobrazí se pod seznamem sbírek blok:
+    * *Nadpis:* "💡 AI navrhuje nové téma:"
+    * *Obsah:* **[Název návrhu]** - [Popis návrhu]
+    * *Tlačítko:* `[Vytvořit tuto sbírku ↗]`
+5.  **Interakce "Vytvořit":**
+    * Kliknutí otevře nové okno prohlížeče (`target="_blank"`).
+    * URL bude: `/admin/collections/new?name=...&description=...` (data zakódovaná v URL).
+    * Stránka pro novou sbírku se otevře s **předvyplněným formulářem**. Uživatel jen klikne "Uložit".
+6.  **Návrat:** Po návratu do původního okna uživatel znovu klikne na `Navrhnout zařazení` (nebo refreshne seznam), čímž se nová sbírka objeví a rovnou zaškrtne.
+
+### 5. 🚦 Funkční Požadavky (FR)
+
+* **FR1 (Hybridní AI):** AI musí umět vrátit současně existující shody I návrhy nových sbírek.
+* **FR2 (Předvyplnění):** Návrh nové sbírky musí obsahovat název a popis generovaný z kontextu videa.
+* **FR3 (Workflow):** Vytvoření nové sbírky z návrhu musí být otázkou jednoho kliknutí (přechod na předvyplněný formulář v novém okně).
+* **FR4 (Aditivita):** Funkce nesmí zrušit již ručně zaškrtnuté sbírky (pouze přidává).
+
+### 6. 🔒 Nefunkční Požadavky (NFR)
+
+* **NFR1 (Token Optimization):** Do promptu se posílají pouze metadata sbírek, nikoliv seznamy videí v nich.
+* **NFR2 (UX Flow):** Odkaz na vytvoření sbírky se musí otevírat v novém okně, aby uživatel nepřišel o data ve formuláři videa.
+
+### 7. ✅ Akceptační Kriteria (Definice "Hotovo")
+
+1.  Admin má sbírku "Zdraví".
+2.  Admin edituje video o "Keto dietě" (nové téma).
+3.  Klikne na `Navrhnout zařazení`.
+4.  **Výsledek:**
+    * Checkbox "Zdraví" se zaškrtne (protože dieta patří do zdraví).
+    * Zobrazí se návrh nové sbírky: "Nízkosacharidové stravování" s popisem.
+5.  Admin klikne na "Vytvořit tuto sbírku".
+6.  Otevře se nové okno s předvyplněným názvem "Nízkosacharidové stravování".
+
+------------------------------------------------------------------------
+
+id_chat: 
+https://gemini.google.com/u/1/app/db85eb08ee31958f

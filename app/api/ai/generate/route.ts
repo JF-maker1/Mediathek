@@ -26,29 +26,51 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'Chybí přepis videa (transcript).' }, { status: 400 });
     }
 
-    // 4. Příprava Finálního Promptu (Upraveno pro opravu pozice času)
+    // 4. Příprava Finálního Promptu (Robustní verze dle vašeho zadání)
     const systemPrompt = `
-Proveď detailní hierarchický rozklad (hierarchický strom) přiloženého přepisu videa. Cílem je získat přehled o obsahu videa.
+Jsi expertní analytik video obsahu a editor. Tvým úkolem je provést hloubkovou sémantickou analýzu přiloženého přepisu a vytvořit strukturovaný, hierarchický obsah v češtině.
 
-**STRUKTURA A FORMÁT (Dodržuj přesně):**
+[===ZÁMĚR===] Rozložit obsah videa na logické celky (Kapitola > Sekce > Detail) s přesným časovým vymezením. Cílem je vytvořit přehlednou mapu videa, kde každá část má svůj jasný začátek a konec. Struktura musí být vyvážená – žádná větev hierarchie nesmí končit osamoceným bodem (tzv. "orphan rule").
 
-1.  **Hierarchie:** Použij číslovaný seznam (0., 1., 1.1., 1.1.1.). Max hloubka 4 úrovně.
-2.  **Obsah řádku:** Každý řádek musí následovat PŘESNĚ tento vzor:
-    \`ČÍSLO. Název Tématu [Stručný popis obsahu] (ČAS-ČAS)\`
+[=== PŘÍSNÁ PRAVIDLA SYNTAXE (Musí být dodržena na 100 %) ===]
 
-3.  **Pravidla pro pozici elementů:**
-    * **ZAČÁTEK:** Vždy začni číslem (např. "1.1.").
-    * **PROSTŘEDEK:** Následuje název a poté popis v hranatých závorkách [ ].
-    * **KONEC:** Časová značka v kulatých závorkách (MM:SS-MM:SS) musí být **absolutně posledním textem na řádku**. Nikdy ji nedávej doprostřed!
+Formát řádku: {Hierarchické_číslo}. {Název} [{Popis_obsahu}] ({Čas_Od}-{Čas_Do})
 
-4.  **Příklad správného formátu:**
-    * *Špatně:* 1.1. Úvod (00:00-01:00) [O čem to je]
-    * *Správně:* 1.1. Úvod [O čem to je] (00:00-01:00)
+Číslo: Na začátku řádku (např. 1., 1.1., 1.1.1.).
 
-5.  **Jazyk:** Čeština.
-6.  **Formátování:** Nepoužívej tučné písmo (**), markdown ani odrážky. Jen čistý text.
+Název: Stručný titulek (max 7 slov).
 
-**Přiložený Přepis Videa:**
+Popis: Vždy v hranatých závorkách [...].
+
+Čas: Vždy v kulatých závorkách (...) na úplném konci řádku. Formát MM:SS. Časy na sebe musí plynule navazovat bez mezer.
+
+Pravidlo větvení (Kritické):
+
+Pokud se rozhodneš vytvořit nižší úroveň (např. podkapitolu 1.1.), musí následovat minimálně ještě jedna položka stejné úrovně (1.2.).
+
+ZAKÁZÁNO: Mít položku 1., která má pouze podpoložku 1.1. a nic dalšího.
+
+POVOLENO: Položka 1. má podpoložky 1.1. a 1.2., nebo položka 1. nemá žádné podpoložky.
+
+Jazyk a styl:
+
+Výstup vždy v češtině, bez ohledu na jazyk vstupu.
+
+Pouze prostý text (žádné Markdown formátování jako tučné písmo či kurzíva).
+
+[=== INSTRUKCE PRO ZPRACOVÁNÍ ===]
+
+Analýza: Přečti celý text a identifikuj hlavní tematické bloky.
+
+Segmentace: Rozděl bloky na menší celky. Vždy kontroluj, zda má smysl dělit dál – pokud nemůžeš najít alespoň dva různé aspekty (podbody) daného tématu, nevytvářej pro ně novou úroveň, ale zahrň je do popisu nadřazeného bodu.
+
+Časování: Přiřaď přesné časy startu a konce každé myšlenky. Konec jedné sekce je začátkem druhé.
+
+Překlad: Názvy a popisy formuluj přirozenou češtinou.
+
+Kontrola: Před vypsáním ověř, že žádné hierarchické číslo nezůstalo osamocené (např. pokud existuje X.1., musí existovat i X.2.).
+
+ZDE JE PŘEPIS K ANALÝZE:
     `.trim();
 
     const fullPrompt = `${systemPrompt}\n${transcript}`;
@@ -60,12 +82,12 @@ Proveď detailní hierarchický rozklad (hierarchický strom) přiloženého př
     const model = genAI.getGenerativeModel({ 
         model: 'gemini-2.0-flash',
         generationConfig: {
-            temperature: 0.1,      // Snížena teplota pro maximální poslušnost formátu
+            temperature: 0.1, // Nízká teplota pro dodržování striktních pravidel
             maxOutputTokens: 8192,
         }
     });
 
-    console.log('🤖 Generuji obsah pomocí modelu gemini-2.0-flash (Fix Time Position)...');
+    console.log('🤖 Generuji obsah pomocí modelu gemini-2.0-flash (Robustní Prompt s Orphan Rule)...');
     
     const result = await model.generateContent(fullPrompt);
     const response = await result.response;
