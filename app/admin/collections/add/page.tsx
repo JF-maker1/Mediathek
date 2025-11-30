@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import CollectionForm, { CollectionFormData } from '@/components/admin/CollectionForm';
 
-export default function AddCollectionPage() {
+// 1. Oddělená komponenta pro logiku, která potřebuje URL parametry
+function AddCollectionContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -34,7 +35,6 @@ export default function AddCollectionPage() {
       const res = await fetch('/api/collections', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        // Zde posíláme celá data tak, jak vylezla z formuláře
         body: JSON.stringify(data),
       });
 
@@ -68,5 +68,14 @@ export default function AddCollectionPage() {
         submitButtonText="Vytvořit sbírku"
       />
     </div>
+  );
+}
+
+// 2. Hlavní exportovaná stránka, která zajišťuje Suspense boundary
+export default function AddCollectionPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-gray-500">Načítám formulář...</div>}>
+      <AddCollectionContent />
+    </Suspense>
   );
 }
