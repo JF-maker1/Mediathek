@@ -3,84 +3,78 @@ import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
-// DŮLEŽITÉ: Vypnutí cachování pro tento endpoint
 export const dynamic = 'force-dynamic';
-
 const prisma = new PrismaClient();
 
-// Pomocná funkce pro kontrolu práv
 async function checkPermissions(collectionId: string, session: any) {
-  if (!session) {
-    return { allowed: false, code: 401, message: 'No session' };
-  }
-
+  if (!session) return { allowed: false, code: 401, message: 'No session' };
   try {
-    const collection = await prisma.collection.findUnique({ 
-        where: { id: collectionId } 
-    });
-  
-    if (!collection) {
-        return { allowed: false, code: 404, message: 'Collection not found' };
-    }
-
-    const isOwner = collection.authorId === session.user.id;
-    const isAdmin = session.user.role === 'ADMIN';
-
-    if (!isOwner && !isAdmin) {
-        return { allowed: false, code: 403, message: 'Forbidden' };
-    }
-
+    const collection = await prisma.collection.findUnique({ where: { id: collectionId } });
+    if (!collection) return { allowed: false, code: 404, message: 'Not found' };
+    if (collection.authorId !== session.user.id && session.user.role !== 'ADMIN') return { allowed: false, code: 403, message: 'Forbidden' };
     return { allowed: true, collection };
-  } catch (e) {
-      console.error("[checkPermissions] DB Error:", e);
-      return { allowed: false, code: 500, message: 'DB Error' };
-  }
+  } catch (e) { return { allowed: false, code: 500, message: 'DB Error' }; }
 }
 
-// PUT: Update sbírky (Změna viditelnosti, názvu)
+export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
+    const session = await getServerSession(authOptions);
+    const { id } = await context.params;
+    const { allowed, code, message } = await checkPermissions(id, session);
+    if (!allowed) return new NextResponse(JSON.stringify({ message }), { status: code });
+
+    const collection = await prisma.collection.findUnique({
+        where: { id },
+        include: { videos: { select: { id: true, title: true, youtubeId: true } } }
+    });
+    return NextResponse.json(collection);
+}
+
 export async function PUT(request: Request, context: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
-    const params = await context.params;
-    const id = params.id;
-
+    const { id } = await context.params;
     const { allowed, code, message } = await checkPermissions(id, session);
-    
-    if (!allowed) {
-       return new NextResponse(JSON.stringify({ message }), { status: code });
-    }
+    if (!allowed) return new NextResponse(JSON.stringify({ message }), { status: code });
 
     const body = await request.json();
-    const { name, description, isPublic } = body;
+    
+    // Zde je důležité, abychom četli všechna pole
+    const { 
+        name, 
+        description, 
+        keywords, // User intent
+        isPublic, 
+        seoTitle, 
+        seoDescription, 
+        seoKeywords // AI mirror
+    } = body;
 
     const updated = await prisma.collection.update({
       where: { id },
-      data: { name, description, isPublic },
+      data: { 
+          name, 
+          description: description || '',
+          keywords: keywords || [],
+          isPublic,
+          
+          seoTitle: seoTitle || '',
+          seoDescription: seoDescription || '',
+          seoKeywords: seoKeywords || [],
+      },
     });
 
     return NextResponse.json(updated);
   } catch (error) {
-    console.error('[PUT] Error:', error);
+    console.error('Update Error', error);
     return new NextResponse(JSON.stringify({ message: 'Internal Error' }), { status: 500 });
   }
 }
 
-// DELETE: Smazání sbírky
 export async function DELETE(request: Request, context: { params: Promise<{ id: string }> }) {
-  try {
     const session = await getServerSession(authOptions);
-    const params = await context.params;
-    const id = params.id;
-
+    const { id } = await context.params;
     const { allowed, code, message } = await checkPermissions(id, session);
-    if (!allowed) {
-        return new NextResponse(JSON.stringify({ message }), { status: code });
-    }
-
+    if (!allowed) return new NextResponse(JSON.stringify({ message }), { status: code });
     await prisma.collection.delete({ where: { id } });
     return new NextResponse(null, { status: 204 });
-  } catch (error) {
-    console.error('[DELETE] Error:', error);
-    return new NextResponse(JSON.stringify({ message: 'Internal Error' }), { status: 500 });
-  }
 }

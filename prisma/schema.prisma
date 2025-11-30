@@ -70,19 +70,25 @@ model Chapter {
 // Model pro sbírky videí
 model Collection {
   id          String   @id @default(cuid())
-  name        String
-  description String?  @db.Text
-  isPublic    Boolean  @default(false) // Příznak viditelnosti
+  
+  // --- ZÁMĚR UŽIVATELE (User Intent) ---
+  name        String   // Uživatelský název
+  description String?  @db.Text // Uživatelský popis
+  keywords    String[] // Uživatelská klíčová slova
+  isPublic    Boolean  @default(false)
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  // Vlastnictví (RBAC)
   authorId    String
   author      User     @relation(fields: [authorId], references: [id])
 
-  // Vztah M:N s videi
   videos      Video[]
+
+  // --- AI ZRCADLO / REALITA (AI Mirror) ---
+  seoTitle       String?   // AI navržený název
+  seoDescription String?   @db.Text // AI navržený popis
+  seoKeywords    String[]  // AI navržená klíčová slova
 }
 
 // Model pro přepisy videí

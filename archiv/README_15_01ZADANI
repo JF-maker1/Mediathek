@@ -1,0 +1,172 @@
+JÁ_PROMPT:
+Ano pojdme do vytvoření komletního zadání pro novou editaci sbírky na své vlastní stránce "Editace sbírky" a i včetně úpravy současné stránky "Sbírky" do nové stránky ""Správa Sbírek" resp. úzce to souvisí s přístupem na jednotlivé stránky "Editace sbírky". Vzorem by měla být architektura těchto stránek pro videa což by mělo být implementačbním požadavkem - zde je to defacto správa obsahu na úrovni ne vieí ale sbírek - není důvod aby se architektura řešení odlišovala od řešení jednotlivých videi ... pojdme na to ;-) Prosím tedy o zprávu o genezi zadání i samotné zadání současné fáze 15 ;-)
+
+AI_RESPONZE:
+
+Rozumím. Toto je velmi rozumné a architektonicky čisté rozhodnutí.
+
+Sjednocení architektury pro **Videa** a **Sbírky** (tj. vzor `Přehled/Tabulka` -\> `Detail/Editace`) přinese do aplikace řád a výrazně zjednoduší budoucí údržbu i používání. Pokud uživatel (nebo budoucí kurátor) umí ovládat videa, bude okamžitě umět ovládat i sbírky.
+
+Tím, že se soustředíme na **"Vyzrávání Sbírek"** a implementujeme AI generování jejich popisů z obsahu videí ("Bottom-Up"), dáváme sbírkám skutečnou informační hodnotu, která bude klíčová pro budoucí veřejnou prezentaci.
+
+Zde je kompletní dokumentace pro Fázi 15.
+
+-----
+
+# README\_15\_01ZADANI
+
+## 📜 Zpráva o genezi zadání (Development Report)
+
+**Téma:** Fáze 15 – Ekosystém Sbírek (Architektura a Kontext)
+**Datum vzniku:** 30. listopadu 2025
+**Kontext:** Aplikace má robustní správu videí (Fáze 6), ale správa sbírek (Fáze 7) zůstala v zárodečné fázi (jen základní vytvoření). Pro naplnění vize "knihovny" je nutné povýšit Sbírky na plnohodnotné entity s vlastním kontextem a SEO.
+
+### 1\. Rozhodnutí o Architektuře: "Zrcadlení"
+
+Původní úvahy směřovaly k rychlým úpravám stávající stránky.
+
+  * **Klíčový moment:** Uvědomění si, že "Sbírka" není jen štítek, ale kontejner s obsahem, který potřebuje stejnou péči jako Video.
+  * **Rozhodnutí:** Přijmout architektonický vzor z Fáze 6 (`Manage Table` -\> `Edit Form`) a aplikovat ho na Sbírky.
+  * **Cíl:** Sjednotit UX. Admin (a budoucí Kurátor) bude mít pro videa i sbírky identické workflow: `Přehled` -\> `Editace` -\> `AI Asistence`.
+
+### 2\. Strategie Obsahu: "Bottom-Up" (Zdola nahoru)
+
+Řešili jsme, kde vzít kvalitní popis sbírky (SEO), aniž by ho musel admin psát ručně.
+
+  * **Hypotéza:** Identita sbírky je tvořena součtem identit videí v ní obsažených.
+  * **Řešení:** Využít AI k agregaci. Místo vymýšlení textu AI "přečte" abstrakty videí ve sbírce a vytvoří syntézu.
+  * **Dopad:** Tím se sbírka stává "živým" materiálem, který reflektuje svůj obsah.
+
+### 3\. Odložení překladů
+
+Původně zvažovaná funkce překladů jednotlivých videí byla odložena.
+
+  * **Důvod:** Prioritou je nyní struktura knihovny (sbírky). Překlad je "lokální" vylepšení videa, ale bez kvalitních sbírek se videa v knihovně "ztrácejí".
+
+-----
+
+## 📄 Zadání projektu: Webová aplikace Mediathek (Fáze 15 - Ekosystém Sbírek)
+
+**Datum:** 30. listopadu 2025
+**Verze:** 15.0
+[cite\_start]**Navazuje na:** Fáze 7 (Implementace Sbírek [cite: 1139][cite\_start]), Fáze 6 (Správa obsahu [cite: 1447][cite\_start]), Fáze 12 (SEO Metadata [cite: 637])
+
+### 1\. Název projektu
+
+Mediathek
+
+### 2\. 🎯 Cíl Fáze
+
+Cílem této fáze je povýšit správu **Sbírek (Collections)** na stejnou úroveň, jakou má správa Videí.
+Přecházíme od jednoduchého seznamu k plnohodnotnému editorskému prostředí.
+Vytvoříme dedikovanou stránku pro **Editaci Sbírky**, která umožní:
+
+1.  Spravovat metadata sbírky (Název, Popis, Viditelnost).
+2.  Vidět kontext (seznam videí ve sbírce).
+3.  Využít AI k vygenerování **SEO obsahu sbírky** (Popis a Klíčová slova) na základě analýzy videí v ní obsažených.
+
+### 3\. Rozsah pro Fázi 15
+
+  * [cite\_start]**Frontend (Správa):** Transformace stránky `/admin/collections` na tabulkový přehled "Správa Sbírek" (dle vzoru `/admin/manage` [cite: 1450]).
+  * **Frontend (Editace):** Vytvoření nové stránky `/admin/collections/edit/[id]`, která bude sloužit jako hlavní editorské rozhraní pro konkrétní sbírku.
+  * **Frontend (Přidání):** Vytvoření stránky `/admin/collections/add` pro konzistenci (oddělení od přehledu).
+  * **Backend (API):** Rozšíření API pro sbírky o metody GET (detail), PUT (update) a logiku pro AI generování.
+  * **Databáze:** Rozšíření modelu `Collection` o SEO pole.
+  * **AI Logika:** Implementace agregace obsahu videí pro generování popisu sbírky.
+
+### 4\. 🏛️ Návrh Řešení a Architektura
+
+#### 4.1. Databázový Model (Prisma)
+
+Rozšíření modelu `Collection` o pole pro uchování vygenerovaného kontextu.
+
+```prisma
+model Collection {
+  // ... existující pole (id, name, description, isPublic, authorId...)
+
+  // --- NOVÁ POLE FÁZE 15 ---
+  seoDescription String?   @db.Text  // AI generovaný souhrn obsahu sbírky
+  seoKeywords    String[]  // Klíčová slova typická pro tuto sbírku
+}
+```
+
+#### 4.2. Stránka "Správa Sbírek" (`/admin/collections`)
+
+Tato stránka nahradí současný jednoduchý seznam. [cite\_start]Bude implementována jako **RSC (React Server Component)**[cite: 960].
+
+  * **Vzhled:** Tabulka (Table View).
+  * **Sloupce:**
+      * Název sbírky
+      * Počet videí (Count)
+      * Viditelnost (Veřejná/Soukromá)
+      * SEO Status (Indikátor, zda je vyplněn `seoDescription`)
+      * Akce (Tlačítka: `[Editovat]`, `[Smazat]`)
+  * [cite\_start]**Logika:** Načítá data s ohledem na roli uživatele (ADMIN vidí vše, KURATOR jen své) – využití existující RBAC logiky[cite: 1463].
+
+#### 4.3. Stránka "Editace Sbírky" (`/admin/collections/edit/[id]`)
+
+Nová stránka, která je centrem této fáze.
+
+**Sekce A: Metadata (Formulář)**
+
+  * Název sbírky (Input).
+  * Viditelnost (Checkbox `isPublic`).
+  * *Poznámka:* Původní pole `description` může být sloučeno s novým `seoDescription` nebo ponecháno jako "krátký popis" vs "plný obsah". (Doporučení: Nechat AI generovat do `seoDescription` a uživatel ať to edituje).
+
+**Sekce B: Kontext (Seznam videí)**
+
+  * Zobrazí seznam videí, která jsou aktuálně v této sbírce.
+  * U každého videa zobrazí miniaturu a jeho `seoSummary` (pokud existuje).
+  * *Účel:* Aby editor viděl, "z čeho" se sbírka skládá.
+
+**Sekce C: SEO a AI (Generátor)**
+
+  * Tlačítko: `✨ Vygenerovat popis sbírky z videí`.
+  * Pole:
+      * `Popis sbírky` (Textarea - napojeno na `seoDescription`).
+      * `Klíčová slova` (Tags input - napojeno na `seoKeywords`).
+
+#### 4.4. Backend a AI Logika (Bottom-Up)
+
+Nový endpoint `/api/ai/generate-collection-seo`.
+
+  * **Vstup:** ID sbírky.
+  * **Proces:**
+    1.  Načte z DB posledních X (např. 15) videí v dané sbírce.
+    2.  Z každého videa vezme `seoSummary` (nebo `title` + `summary`, pokud SEO chybí).
+    3.  Sestaví prompt.
+  * **Prompt (System):**
+    > "Jsi kurátor digitální knihovny. Tvým úkolem je vytvořit anotaci pro sbírku videí.
+    > Zde jsou shrnutí jednotlivých videí v této sbírce:
+    > [SEZNAM SHRUNTÍ]
+    > Na základě těchto témat vytvoř:
+    > 1.  Výstižný, souhrnný popis (seoDescription), o čem tato sbírka jako celek pojednává. Hledej společné jmenovatele a vzdělávací přínos.
+    > 2.  Seznam 5-10 klíčových slov (seoKeywords), která sbírku definují."
+
+### 5\. 🚦 Funkční Požadavky (FR)
+
+  * **FR1 (Architektura):** Struktura stránek pro sbírky (`Manage` -\> `Edit`) musí kopírovat strukturu stránek pro videa.
+  * **FR2 (Přehled):** Admin vidí tabulku sbírek s informací o počtu videí a stavu SEO.
+  * **FR3 (Editace):** Na stránce editace je viditelný seznam videí zařazených do sbírky (kontext).
+  * **FR4 (AI Generování):** Systém umí vygenerovat popis sbírky a klíčová slova na základě analýzy textů videí v ní obsažených.
+  * **FR5 (Uložení):** Vygenerovaná metadata lze upravit a uložit do databáze.
+
+### 6\. 🔒 Nefunkční Požadavky (NFR)
+
+  * **NFR1 (Konzistence):** UI prvky (tabulky, formuláře, tlačítka) musí vizuálně odpovídat sekci Videí.
+  * **NFR2 (Token Optimization):** Do promptu pro AI se neposílají celé přepisy videí, ale pouze jejich existující shrnutí (`seoSummary` nebo `summary`), aby se šetřily tokeny a zrychlila odezva.
+
+### 7\. ✅ Akceptační Kriteria (Definice "Hotovo")
+
+1.  Admin přejde na `/admin/collections` a vidí tabulku místo prostého seznamu.
+2.  Admin klikne na "Editovat" u sbírky "Zdraví".
+3.  Otevře se stránka `/admin/collections/edit/[id]`.
+4.  Admin vidí, že ve sbírce je 5 videí a vidí jejich názvy.
+5.  Admin klikne na `✨ Vygenerovat popis`.
+6.  Do pole Popis se načte text: *"Tato sbírka se komplexně věnuje tématům dlouhověkosti, se zaměřením na..."*
+7.  Admin text uloží a ten se propíše do databáze.
+
+------------------------------------------------------------------------
+
+id_chat: 
+https://gemini.google.com/u/1/app/db85eb08ee31958f
