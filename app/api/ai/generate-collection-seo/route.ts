@@ -31,28 +31,31 @@ export async function POST(request: Request) {
         return NextResponse.json({ message: 'Sbírka je prázdná.' }, { status: 400 });
     }
 
+    // Příprava kontextu pro AI
     const videosContext = collection.videos.map(v => `
-- "${v.title}": ${v.seoSummary || v.summary} (${v.seoKeywords.join(', ')})
-    `).join('\n');
+- VIDEO: "${v.title}"
+  OBSAH: ${v.seoSummary || v.summary}
+  TAGY: ${v.seoKeywords.join(', ')}
+    `).join('\n\n');
 
-    // Prompt pro "Zrcadlo" - AI analyzuje realitu
+    // --- KLÍČOVÁ ZMĚNA: PROMPT PRO SYNTÉZU ---
     const systemPrompt = `
-Jsi nekompromisní editor. Tvým úkolem je analyzovat "Realitu" této sbírky videí a nastavit jí zrcadlo.
+Jsi šéfredaktor vzdělávacího portálu. Máš před sebou seznam videí, která tvoří jednu tematickou sbírku.
 
-OBSAH SBÍRKY:
+[VSTUPNÍ DATA - OBSAH SBÍRKY]:
 ${videosContext}
 
-INSTRUKCE:
-1. Ignoruj původní záměr autora. Soustřeď se jen na to, co ve sbírce SKUTEČNĚ je.
-2. Navrhni "title": Výstižný, krátký název (max 5 slov), který přesně popisuje obsah.
-3. Navrhni "description": Syntéza obsahu. O čem to je? Pro koho to je?
-4. Navrhni "keywords": 5-10 tagů.
+[TVŮJ ÚKOL]:
+Vytvoř JEDNOTNOU anotaci pro celou tuto skupinu videí.
+Hledej společné téma, které všechna videa spojuje. Ignoruj detaily jednotlivých videí, pokud nejsou důležité pro celek.
+Nedeskriptuj videa jedno po druhém. Syntetizuj je do jednoho narativu.
 
-VÝSTUP (JSON, Čeština):
+[VÝSTUPNÍ FORMÁT]:
+Vrať POUZE jeden JSON objekt (nikoliv pole!).
 {
-  "title": "...",
-  "description": "...",
-  "keywords": ["..."]
+  "title": "Vymysli jeden výstižný název, který zastřešuje všechna videa (max 6 slov).",
+  "description": "Napiš 2-3 věty o tom, co se divák v této sbírce dozví jako celek. Použij formulace jako 'Tato sbírka nabízí...', 'Série se zaměřuje na...'.",
+  "keywords": ["5-10", "klíčových", "slov", "pro", "celou", "kategorii"]
 }
     `.trim();
 
@@ -62,12 +65,38 @@ VÝSTUP (JSON, Čeština):
         generationConfig: { responseMimeType: "application/json", temperature: 0.3 }
     });
 
+    console.log(`[AI] Generuji SEO Syntézu pro sbírku: ${collection.name} (${collection.videos.length} videí)`);
+    
     const result = await model.generateContent(systemPrompt);
     const text = result.response.text();
     
-    let jsonData = JSON.parse(text.replace(/```json|```/g, ''));
+    console.log(`[AI] Raw response: ${text.substring(0, 100)}...`);
 
-    return NextResponse.json({ data: jsonData });
+    // Čištění a parsování
+    let cleanText = text.replace(/```json|```/g, '').trim();
+    let jsonData;
+    
+    try {
+        jsonData = JSON.parse(cleanText);
+    } catch (e) {
+        console.error('[AI] JSON Parse Error:', cleanText);
+        return NextResponse.json({ message: 'AI vrátila neplatný JSON' }, { status: 500 });
+    }
+
+    // Bezpečnostní pojistka: Pokud by AI i přes zákaz vrátila pole, 
+    // pokusíme se najít objekt, který vypadá jako shrnutí, nebo vezmeme první a upravíme ho v logice (zde jen bereme první).
+    if (Array.isArray(jsonData)) {
+        console.log('[AI] Varování: AI vrátila pole. Beru první prvek.');
+        jsonData = jsonData[0];
+    }
+
+    const normalizedData = {
+        title: jsonData.title || jsonData.name || jsonData.seoTitle || jsonData.nazev || '',
+        description: jsonData.description || jsonData.summary || jsonData.seoDescription || jsonData.popis || '',
+        keywords: jsonData.keywords || jsonData.tags || jsonData.seoKeywords || jsonData.klicova_slova || []
+    };
+
+    return NextResponse.json({ data: normalizedData });
 
   } catch (error: any) {
     console.error('AI_ERROR', error);
