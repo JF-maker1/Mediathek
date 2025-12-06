@@ -1,0 +1,388 @@
+JÁ_PROMPT:
+V příloze jsou dokumenty z vývojového cyklu webové aplikace resp. z posledních 5 vývojových cyklů resp. dokument z vývoje zadání a dokument z realizace tohoto zadání. Vývojový cyklus začíná diskuzí nad dalším vývojem aplikace, dohodou nad novým zadáním, vytvoření plánu realizace a samotné implementace zadání. Během tohoto procesu vznikají různé nápady,náměty, možnosti a varianty dalšího vývoje této aplikace. Z těchto posledních pěti vývojových cyklů lze rovněž odhadnout aktuální vývoj aplikace. Prosím o vytvoření z těchto dokumentů aktuální priotitizaci dalšího zadání. resp. prosím o posbírání těchto podnětů k dalšímu vývoji této aplikace z těchto dokumentů a přidání případně nového inovativního podnětu k dalšímu vývoji aplikace a poté jejich prioritazici resp. jejich seřazení jakou mají prioritu k realizaci. jde o to abychom respektovali organický rozvoj této aplikace a aby daná aplikace byla robustní s potenciálem rozvíjet se potřebným směrem. Aplikace by měla mít mnoho možností rozvinout se jistým směrem. Tímto způsobem obdržíme životaschopnou aplikaci rozvíjet se ve své prostředí zájmu - zde je to kategorizace informací resp. videí z internetu a aplikace bude schopna vytvářet strukturu která umožní poznávání internetového obsahu pro jejího uživatele. Pojdme se podívat na tyto dokumenty a pojdme vytvořit podnětný prioritizovaný seznam vlastností k další implementaci. Tento seznam může posloužit pro pár dalšícvh vývojových cyklů aplikace. V příloze jsou tyto dokumenty z posledních pšti vývovojových cyklů této webové aplikace pro správu internetového obsahu resp. nyní zatím videí z youtube v budoucnu obecného materiálu jako jsou články a pod ...  
+
+AI_RESPONZE:
+
+To je vynikající úkol. Prošel jsem detailně dokumentaci posledních 5 fází (Fáze 11–15) a je fascinující sledovat, jak se aplikace organicky vyvíjí z "databáze" v "živý organismus".
+
+Zatímco Fáze 11 a 12 se soustředily na těžbu dat (kapitoly, SEO, tipy), Fáze 13 jim dala tvář (přehrávač) a Fáze 14 a 15 vytvořily mozek (párování, zrcadlo, taxonomie).
+
+Nyní stojíme na prahu, kdy je systém "uvnitř" velmi chytrý, ale "navenek" zatím němý (chybí veřejná část) a uživatel je stále spíše pasivní divák než aktivní student (chybí persistence interakcí).
+
+Zde je Prioritizovaný plán rozvoje (Roadmap), sestavený na základě "nedokončených myšlenek" v chatech a logické návaznosti architektury.
+
+🏛️ Strategický Plán Rozvoje: Od Archivu k "Živé Univerzitě"
+Rozdělil jsem podněty do tří horizontů podle priority a logické závislosti.
+
+1. Horizont: Veřejná Tvář (The Public Face)
+Priorita: Nejvyšší (Logický krok po Fázi 15)
+
+Aktuálně je aplikace skvělým nástrojem pro Kurátora, ale koncový Uživatel (Divák) nemá kam vstoupit. Fáze 15 připravila data ("Zrcadlo"), teď je musíme ukázat.
+
+Veřejný Katalog Sbírek (Fáze 16)
+
+Zdroj: Zmíněno v závěru README_15_03REALIZACE ("Doporučení pro Fázi 16").
+
+Popis: Vytvoření veřejných stránek /collections (Mřížka témat) a /collection/[id] (Detail sbírky).
+
+Inovace: Využití AI popisů a klíčových slov z Fáze 15 pro "inteligentní filtrování" a SEO indexaci. Sbírky nebudou jen seznamem, ale "vizuálním příběhem".
+
+Inteligentní Vyhledávání (Semantic Search)
+
+Zdroj: README_12_01ZADANI (zmínka o "budoucím vyhledávání a průvodci").
+
+Popis: Implementace vyhledávání, které nehledá jen v názvech videí, ale v jejich obsahu (AI abstrakty, praktické tipy, kapitoly).
+
+Proč teď: Máme už strukturovaná data (practicalTips, seoSummary). Uživatel by měl moci napsat "bolest hlavy" a aplikace najde přesnou pasáž ve videu, kde se o tom mluví.
+
+2. Horizont: Aktivní Student (The Active Learner)
+Priorita: Vysoká (Prohloubení Fáze 13)
+
+Fáze 13 vytvořila "Studovnu" a checklisty "Praktických tipů", ale ty se zatím neukládají. Zde povýšíme uživatele z diváka na tvůrce vlastního vědění.
+
+Persistence "Pokladů" (My Knowledge Base)
+
+Zdroj: README_13_03REALIZACE (Vize C: "Správa Pokladů").
+
+Popis: Umožnit přihlášenému uživateli "odškrtnout si" praktický tip nebo uložit kapitolu do "Oblíbených". Tyto střípky se budou ukládat do jeho profilu.
+
+Cíl: Vytvořit osobní "Dashboard vědění", kde uživatel vidí seznam všech tipů (recepty, návody), které si z videí uložil, bez nutnosti videa znovu hledat.
+
+Uživatelské Poznámky na Ose (Annotations)
+
+Zdroj: README_13_03REALIZACE ("Vlastní poznámky").
+
+Popis: Umožnit uživateli kliknout do Smart Timeline a připsat si vlastní poznámku (např. "Tohle vyzkoušet ráno").
+
+Inovace: Tyto poznámky budou soukromé, ale v rámci "Klubu" mohou být sdílené (viz Horizont 3).
+
+3. Horizont: Meta-Struktura & Klub (The Architect & Community)
+Priorita: Střední (Vyžaduje předchozí kroky)
+
+Aplikace roste a prostý seznam sbírek přestane stačit. Zde přichází "Meta-kurátorství" a sociální aspekt.
+
+Sbírky Sbírek (Topics / Meta-Collections)
+
+Zdroj: README_13_03REALIZACE ("Vize D: Sbírky Sbírek") a README_14_01ZADANI (Taxonomie).
+
+Popis: Zavedení entity "Téma" (Topic), která sdružuje více sbírek. Např. Téma "Dlouhověkost" obsahuje sbírky "Strava", "Spánek", "Suplementace".
+
+Koncept: Vizualizace souvislostí – uživatel nevidí jen seznam, ale mapu vědění.
+
+Klubová Funkcionalita (Social Curation)
+
+Zdroj: Úvodní prompt tohoto chatu ("forma klubu", "pozvání").
+
+Popis: Systém pozvánek a rolí. Uživatelé mohou sdílet své "výběry" nebo komentovat videa.
+
+Inovace: "Community Context" – AI by mohla v budoucnu analyzovat i komentáře uživatelů a obohacovat tím metadata videa.
+
+💡 Inovativní "Wildcard" Návrh (Nová myšlenka)
+Na základě vaší zmínky o "vytváření obsahu pozorováním" a "ostrovu v moři internetu" navrhuji zcela novou funkcionalitu:
+
+✨ Koncept: "AI Syntetizátor / Generátor Průvodců"
+
+Myšlenka: Máme sbírku 10 videí o "Kávě". Každé video má AI metadata.
+
+Funkce: Tlačítko "Vytvořit článek". AI vezme metadata všech 10 videí a napíše jeden souvislý článek/průvodce (PDF/Web), který syntetizuje poznatky.
+
+Kapitola 1: Historie (zdroj: video A)
+
+Kapitola 2: Příprava (zdroj: video B, C)
+
+Kapitola 3: Zdravotní aspekty (zdroj: video D)
+
+Proč: To je finální "produkt" kurátorství. Uživatel nemusí vidět 5 hodin videa, přečte si syntézu a rozklikne jen to, co ho zajímá. Tím aplikace skutečně "vytváří nový obsah".
+
+🏁 Doporučení pro následující Fázi 16
+Vzhledem k dokumentaci je logickým, nezbytným a nejpřínosnějším krokem realizace Bodu 1: Veřejný Katalog Sbírek.
+
+Proč?
+
+Architektura je hotová: Máme data (Fáze 15) i přehrávač (Fáze 13).
+
+Chybí "Front office": Aplikace je nyní jen "Back office" (Administrace).
+
+Okamžitá hodnota: Zpřístupnění obsahu ospravedlní veškerou dosavadní práci.
+
+Navrhované Zadání Fáze 16:
+
+"Implementace veřejného rozhraní aplikace (Katalog Sbírek a Detail Sbírky) s využitím AI generovaných popisů a sémantického filtrování, aby se 'ostrov vědění' otevřel návštěvníkům."
+
+Souhlasíte s tímto směrem prioritizace?
+
+------------------------------------------------------------------------
+
+JÁ_PROMPT:
+Ano, toto ["Implementace veřejného rozhraní aplikace (Katalog Sbírek a Detail Sbírky) s využitím AI generovaných popisů a sémantického filtrování, aby se 'ostrov vědění' otevřel návštěvníkům."] je logický krok nyní ... Katalog sbírek bude odpovídat defacto Přehledu obsahu (videí) - nyní na úrovni sbírky tedy bude Katalog sbírek jakoby Přehled obsahu (sbírek) resp. tedy Katalog sbírek a místo přehrávače videa který je jako vlastně detail videa bude defacto jako Detail sbírky jakýsi přehrávač sbírek ... resp architekturu kterou máme u videí nyní přeneseme na sbírky a uděláme přehled sbírek (Katalog sbírek) a přehrávač sbírek (Detail sbírky) ... toto je architektura a druhá věc je podoba těchto entit Katalog sbírek a Detail sbírky ... Katalog sbírek bude prezentovat metada sbírek (což je uživatelský popis sbírky a její AI popis sbírky - můžeme prezentovat oboje jako jing a jang - co autor chce a co je naplněno nebo můžeme prezentovat jen to co je naplněno) ... případně prosím o návrh co můžeme prezentovat jako ikonu sbírky v Katalogu sbírek a co můžeme prezentovat v Detailu sbírky ... prosím i o inovativní návrhy ... ale přirozený je pro Detail sbírky seznam videí a průvodce sbírkou resp. jistý kompilát z obsahu sbírky což je v současné době naše zrcadlo a do budoucna by toto mělo vykrystalizovat v ucelený dokument kompilující obsah sbírky. Rovněž do budoucna je užitečné uvažovat o hierarchické struktuře sbírek resp. že ve sbírce budou vznikat podsbírky resp. sbírky které jsou v rámci jiné sbírky. Nyní pojdme zauvažovat o prezentaci sbírky v Katalogu sbírek jako v její ikoně (nebo jinak?) a o prezentaci sbírky v 'Detailu sbírky ... toto prodiskutujeme - vybereme to zajímavé k realizaci a na základě toho vytvoříme zadání pro fázi 16 ... pojdme tedy diskutovat obsah Katalogu sbírek a Detailu sbírky na úrovni jak zde bude sbírka prezentována ... vodítkem by opět měla být úroven videa resp. Přehled obsahu a přehrávač videa ... ;-) 
+
+AI_RESPONZE:
+To je vynikající a architektonicky čistý přístup. Sjednocením architektury (Přehled -> Detail) pro Videa i Sbírky snižujeme kognitivní zátěž uživatele – "kdo umí ovládat jedno, umí i druhé".
+
+Pojďme tedy rozpracovat vizuální a funkční podobu těchto dvou nových entit pro Fázi 16.
+
+Zde jsou návrhy k diskuzi, vycházející z dat, která jsme v minulých fázích nasbírali (AI popisy, klíčová slova, seznamy videí).
+
+1. Katalog Sbírek (The Collection Gallery)
+Analogie: Přehled videí (Grid)
+
+Toto je "vstupní hala" knihovny. Musí nalákat a rychle informovat.
+
+A. Vizuální reprezentace (Ikona sbírky) Jelikož sbírka je abstraktní kontejner, nemůžeme použít jeden statický obrázek (to by bylo nudné). Navrhuji "Dynamickou Smart Cover" (Chytrou obálku).
+
+Návrh 1: "Mozaika" (The Mosaic): Ikona sbírky bude tvořena mřížkou 2x2 miniatur (thumbnails) prvních 4 videí ve sbírce. Tím uživatel okamžitě vidí vizuální styl obsahu.
+
+Návrh 2: "Hero Video" (Živý náhled): Když uživatel najede myší na kartu sbírky, začne se v tichosti přehrávat (muted loop) ukázka z nejrelevantnějšího videa ve sbírce (vybraného např. podle shody klíčových slov sbírky a videa).
+
+Doporučení: Pro Fázi 16 začít Mozaikou (3 miniatury vedle sebe nebo 2x2) s jemným gradientem přes ně. Působí to jako "album".
+
+B. Textová prezentace (Jing a Jang) Líbí se mi váš nápad konfrontace "Autor vs. Realita".
+
+Nadpis (Autor): Velký, marketingový název, který dal kurátor (např. "Cesta k nesmrtelnosti").
+
+Perex (AI Realita): Pod tím menším písmem seoDescription z Fáze 15, které říká pravdu (např. "Sbírka videí o doplňcích stravy, otužování a spánkové hygieně").
+
+Štítky (Tags): Barevné "chips" s seoKeywords (Fáze 15).
+
+2. Detail Sbírky (The Collection Player)
+Analogie: Přehrávač videa (Player)
+
+Pokud je detail videa "Studovna", pak detail sbírky musí být "Učebnice" nebo "Průvodce". Uživatel zde nekonzumuje jedno video, ale téma jako celek.
+
+Architektura stránky (Rozložení): Navrhuji rozložení "Kniha s obsahem" (Master-Detail layout).
+
+A. Levý panel (nebo Horní sekce): "Průvodce" (The Context) Zde využijeme naplno to, co jsme vytvořili ve Fázi 15 ("Zrcadlo").
+
+Prolog: Zde bude zobrazen kompletní AI popis sbírky. Není to jen malý text, ale úvodní článek.
+
+Inovace: "Tlačítko Start". Velké tlačítko "Přehrát sbírku", které spustí první video.
+
+B. Pravý panel (nebo Dolní sekce): "Obsah" (The Playlist) Seznam videí ve sbírce.
+
+Ale ne jen seznam názvů!
+
+Každá položka seznamu zobrazí i své individuální "AI Summary" (krátké shrnutí videa).
+
+Vizuální trik: Videa budou seřazena pod sebou jako kapitoly v knize.
+
+C. Inovativní prvek: "Kompilovaný Průvodce" (The Syllabus) Zde navazuji na vaši vizi "kompilátu".
+
+V detailu sbírky by mohla být záložka (Tab) "Souvislosti".
+
+Zde by se (v budoucnu) zobrazil text, který říká: "V této sbírce se dozvíte o X (video 1), což navazuje na Y (video 2)."
+
+Pro Fázi 16: Zobrazíme zde zatím "Klíčová témata" – agregovaný seznam klíčových slov všech videí, seřazený podle četnosti. (Tzv. Word Cloud, ale v čistém designu).
+
+📀 Návrh Zadání pro Fázi 16 (K diskuzi)
+Na základě výše uvedeného bych navrhoval tuto specifikaci:
+
+Cíl: Vytvořit veřejnou část aplikace (Katalog a Detail).
+
+Stránka Katalogu (/collections):
+
+Mřížka karet.
+
+Karta sbírky:
+
+Vizualizace: Kompozitní obrázek (koláž) ze 3 náhledů videí uvnitř.
+
+Text: Název (User) + Anotace (AI).
+
+Metadata: Počet videí, Celková délka (součet délek videí).
+
+Stránka Detailu (/collection/[id]):
+
+Header (Hlavička): Velký název, AI popis (Průvodce), Autor sbírky.
+
+Seznam videí (Playlist):
+
+Interaktivní seznam. Kliknutí na video otevře detail videa (/video/[id]).
+
+U každého videa v seznamu je vidět jeho "AI Tip" (pokud existuje) nebo krátké shrnutí.
+
+Otázka k rozhodnutí: Chceme v detailu sbírky rovnou přehrávat videa (tzv. "Inline Player" – video se rozbalí přímo v seznamu), nebo chceme uživatele po kliknutí přesměrovat do naší krásné "Studovny" (Detail videa z Fáze 13)?
+
+Můj názor: Vzhledem k propracovanosti Fáze 13 (Studovna, Timeline, Tipy) bych uživatele směroval do Studovny. Detail sbírky by měl sloužit jako Rozcestník/Menu, kde si vybere, co chce studovat, a pak se "ponoří" do konkrétního videa.
+
+Co si o tomto směru myslíte? Můžeme takto koncipovat zadání 16?
+
+------------------------------------------------------------------------
+
+JÁ_PROMPT:
+Ano pojdme vytvořit zadání pro tento návrh - líbí se mi ;-) - případné úpravy budeme provádět v průběhu implemetace tak jak jsme dělali i u přehrávače - studovny videa ... měl bych nápad pro přehrávač sbírky ... umístit někam vhodně okno na Detail sbírky kde by se měnily ikony videí které jsou ve sbírce ... a toto by mohla být i ikona sbírky v Katalogu sbírek ... poté z této myšlenky odvodit doplnujíc věci ... líbí se ti tento nápad? ... stojí za to jej rozpracovat? ... či aspon diskutovat? ... ? ;-)
+
+AI_RESPONZE:
+To je vynikající nápad! Rozhodně stojí za to jej rozpracovat.
+
+Tato myšlenka "Živé obálky" (Living Cover) řeší jeden ze základních problémů digitálních knihoven: statičnost. Kniha má jeden obal, ale sbírka videí je proměnlivá množina. Pokud se v okně střídají ikony videí, uživatel podvědomě chápe, že "uvnitř je toho víc".
+
+Pojďme to integrovat do zadání jako klíčový vizuální prvek:
+
+V Katalogu (Ikona): Představme si to jako "Balíček karet". Vidíte horní kartu (obal prvního videa). Když na sbírku najedete myší (nebo v pravidelném intervalu), karta se "otočí" nebo prolne v další video ze sbírky. Je to dynamické, ale ne chaotické.
+
+V Detailu (Hlavička): Zde to může být "Cinematický banner". Na pozadí hlavičky se pomalu střídají (prolínají) rozmazané/tmavší náhledy videí, což vytváří atmosféru, zatímco v popředí je ostrý text (Název a AI Popis).
+
+Tímto vizuálním jazykem říkáme: "Tato sbírka je živý organismus složený z těchto částí."
+
+Zde je kompletní Zadání pro Fázi 16, které zahrnuje tento inovativní vizuální koncept i architekturu "Katalog -> Detail -> Studovna".
+
+README_16_01ZADANI
+📜 Zpráva o genezi zadání (Development Report)
+Téma: Fáze 16 – Veřejná Tvář: Katalog a Živé Obálky Datum vzniku: 1. prosince 2025 Kontext: Aplikace má za sebou 15 fází vývoje "vnitřností" (Admin, AI, Data). Nyní nastal čas otevřít brány "Ostrovu vědění" návštěvníkům.
+
+1. Filosofie: "Od Archivu k Výstavě"
+Doposud jsme řešili, jak data efektivně ukládat a analyzovat. Fáze 16 řeší, jak je prodat.
+
+Rozhodnutí: Nechceme jen "seznam odkazů". Chceme vizuální zážitek.
+
+Koncept: Katalog sbírek není jen databázový výpis, ale Galerie.
+
+2. Vizuální inovace: "Živá Obálka" (The Living Cover)
+V diskuzi vznikl unikátní nápad na reprezentaci sbírky.
+
+Problém: Jak jednou ikonou vyjádřit obsah sbírky, která obsahuje 20 různých videí?
+
+Řešení (User Idea): Dynamické okno, kde se střídají miniatury videí obsažených ve sbírce.
+
+Implementace:
+
+Katalog: "Shuffle efekt" – při interakci (nebo v pomalém cyklu) se mění náhledová karta. Uživatel vidí průřez obsahem bez kliknutí.
+
+Detail: "Ambientní Header" – Atmosférické pozadí tvořené koláží nebo prolínačkou obsahu.
+
+3. Architektura: Zachování vzorů
+Byla potvrzena strategie "Sjednocení zážitku".
+
+Katalog = Přehled (Grid).
+
+Detail Sbírky = Rozcestník/Průvodce (Syllabus).
+
+Přehrání = Přesměrování do existující "Studovny" (Detail videa z Fáze 13).
+
+Důvod: Detail sbírky má sloužit k pochopení kontextu (čtení AI průvodce), nikoliv k okamžitému konzumu. Pro konzum je určena Studovna.
+
+📄 Zadání projektu: Webová aplikace Mediathek (Fáze 16 - Veřejný Katalog a Živé Obálky)
+Datum: 1. prosince 2025 Verze: 16.0
+
+
+Navazuje na: Fáze 15 (AI Popisy sbírek ), Fáze 13 (Přehrávač/Studovna )
+
+
+
+1. Název projektu
+Mediathek
+
+2. 🎯 Cíl Fáze
+Cílem této fáze je vytvořit Veřejné Rozhraní (Frontend) aplikace, které zpřístupní kurátorský obsah neregistrovaným návštěvníkům (nebo čtenářům). Nebude se jednat o strohý výpis dat, ale o vizuálně atraktivní "Galerii témat", která využívá metadata generovaná v předchozích fázích (AI popisy, klíčová slova) a implementuje dynamický prvek "Živých obálek".
+
+3. Rozsah pro Fázi 16
+Frontend (Veřejný):
+
+Nová stránka /collections (Hlavní katalog/Rozcestník).
+
+Nová stránka /collection/[id] (Detail sbírky/Průvodce).
+
+UI Komponenty:
+
+CollectionCard: Komponenta s efektem "Živé obálky" (střídání miniatur).
+
+CollectionHeader: Komponenta pro detail sbírky s ambientním pozadím.
+
+Backend (Data):
+
+Public API (nebo Server Actions) pro načítání pouze veřejných (isPublic: true) sbírek a videí.
+
+Navigace: Propojení Detailu sbírky s Detailem videa (Fáze 13).
+
+4. 🏛️ Návrh Řešení a Design
+4.1. Katalog Sbírek (/collections)
+Tato stránka slouží jako vstupní brána ("Homepage" obsahu).
+
+Layout: Responzivní mřížka (Grid).
+
+Karta Sbírky (The Living Card):
+
+Vizuál: Rámeček 16:9. Uvnitř se zobrazuje miniatura (thumbnail) jednoho z videí.
+
+Dynamika: Komponenta si načte např. 3-5 náhledů videí ze sbírky. V pravidelném intervalu (např. 5s) nebo při najetí myší (hover) se obrázek prolneme do dalšího.
+
+Info:
+
+Autorův Název: Výrazný titulek (např. "Biohacking").
+
+AI Perex: Zkrácený seoDescription (např. "Průvodce optimalizací spánku a stravy...").
+
+Metrika: Počet videí ("12 videí").
+
+4.2. Detail Sbírky (/collection/[id])
+Tato stránka slouží jako "Obsah knihy" nebo "Studijní plán".
+
+Sekce A: Hlavička (Ambientní Hero):
+
+Na pozadí je rozostřená nebo ztmavená koláž z videí ve sbírce (vizuální kontinuita).
+
+V popředí:
+
+Velký Název sbírky.
+
+AI Průvodce: Plný text seoDescription (z Fáze 15), který vysvětluje kontext tématu.
+
+Štítky: Seznam seoKeywords.
+
+Sekce B: Seznam Videí (Playlist):
+
+Seznam videí řazený pod sebou.
+
+Každý řádek obsahuje:
+
+Miniaturu videa.
+
+Název videa.
+
+AI Insight: Krátký úryvek z seoSummary videa (např. "Vysvětluje roli hořčíku...").
+
+Akce: Kliknutí na řádek (nebo tlačítko "Studovat") přesměruje uživatele na /video/[id] (Studovna Fáze 13), kde začne přehrávání.
+
+5. 🚦 Funkční Požadavky (FR)
+FR1 (Veřejný přístup): Stránky /collections a /collection/[id] musí být přístupné bez přihlášení.
+
+
+FR2 (Filtr): Zobrazují se pouze sbírky, které mají v DB nastaveno isPublic: true.
+
+
+FR3 (Živá ikona): Karta sbírky v katalogu dynamicky střídá náhledy obsažených videí (pokud sbírka obsahuje alespoň 2 videa).
+
+FR4 (Kontext): V detailu sbírky se zobrazuje AI vygenerovaný popis (Zrcadlo z Fáze 15).
+
+FR5 (Navigace): Z detailu sbírky vede funkční odkaz na detail videa (Přehrávač).
+
+6. 🔒 Nefunkční Požadavky (NFR)
+NFR1 (Výkon): "Živé obálky" musí být optimalizované. Obrázky se načítají "lazy" (až když jsou vidět) a střídání by mělo být řešeno pomocí CSS opacity transition, aby nezatěžovalo procesor.
+
+NFR2 (SEO): Stránky musí obsahovat správné HTML meta tagy (Title, Description) generované z dat sbírky pro indexaci vyhledávači.
+
+NFR3 (Responsivita): Katalog musí fungovat na mobilu (1 sloupec) i desktopu (3-4 sloupce).
+
+7. ✅ Akceptační Kriteria (Definice "Hotovo")
+Uživatel (nepřihlášený) otevře /collections.
+
+Vidí mřížku veřejných sbírek.
+
+Najede myší na sbírku "Zdraví" -> Obrázek se změní z videa A na video B.
+
+Klikne na sbírku. Otevře se /collection/[id].
+
+Vidí velký nadpis a čtivý text o tom, co sbírka obsahuje.
+
+Vidí seznam videí. Klikne na první video.
+
+Je přesměrován do "Studovny" (černé rozhraní přehrávače), video se spustí.
+
+Mám nyní připravit Realizační plán pro tuto Fázi 16? Je to čistě frontendová práce, která bude velmi uspokojivá na pohled. ;-)
+
+
+------------------------------------------------------------------------
+
+id_chat: 
+https://gemini.google.com/u/1/app/0a48422577cdba5d
+

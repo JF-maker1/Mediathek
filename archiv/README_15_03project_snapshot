@@ -1,0 +1,4681 @@
+# Snímek Projektu: Mediathek
+
+*Vygenerováno: 2025-12-01 04:57:09*
+
+## 1. Souhrn Projektu
+
+Jedná se o projekt **web_app_mediathek**.
+**Fáze vývoje:** Dokončena Fáze 15 (Ekosystém Sbírek & AI Zrcadlo).
+**Hlavní stack:** Next.js, React, TypeScript, Prisma (PostgreSQL), Tailwind CSS v4.
+**Klíčové integrace:** YouTube (InnerTube/Scraping), Google Gemini AI, NextAuth.
+
+## 2. Analýza Projektu (package.json)
+
+### Dostupné Skripty
+
+| Příkaz (`npm run ...`) | Popis |
+| ---------------------- | ----- |
+| `dev` | `next dev` |
+| `build` | `dotenv -e .env.local -- prisma generate && dotenv -e .env.local -- prisma migrate deploy && next build` |
+| `start` | `next start` |
+| `lint` | `eslint` |
+| `prisma:migrate` | `dotenv -e .env.local -- prisma migrate dev` |
+| `prisma:studio` | `dotenv -e .env.local -- prisma studio` |
+| `prisma:generate` | `dotenv -e .env.local -- prisma generate` |
+
+### Klíčové Závislosti
+
+| Knihovna | Verze | Účel |
+| -------- | ----- | ---- |
+| `next` | `16.0.1` | Full-stack React framework |
+| `react` | `19.2.0` | Knihovna pro tvorbu UI |
+| `prisma` | `^6.18.0` | ORM a nástroj pro databázi |
+| `@prisma/client` | `^6.18.0` | ORM klient |
+| `next-auth` | `^4.24.13` | Autentizace |
+| `bcrypt` | `^6.0.0` | Hashování hesel |
+| `react-youtube` | `^10.1.0` | YouTube Player komponenta |
+| `youtubei.js` | `^16.0.1` | InnerTube Client (Scraping) |
+| `@google/generative-ai` | `^0.24.1` | Google Gemini SDK (AI) |
+| `he` | `^1.2.0` | HTML Entity Decoder |
+| `tailwindcss` | `^4` | CSS Framework |
+| `typescript` | `^5` | Jazyk |
+| `eslint` | `^9` | Linter |
+| `lucide-react` | `^0.555.0` | Ikony (Fáze 13 UI) |
+| `clsx` | `^2.1.1` | Utility pro třídy |
+| `tailwind-merge` | `^3.4.0` | Utility pro třídy |
+| `dotenv` | `^17.2.3` | N/A |
+| `react-dom` | `19.2.0` | N/A |
+| `@tailwindcss/postcss` | `^4` | N/A |
+| `@types/bcrypt` | `^6.0.0` | N/A |
+| `@types/he` | `^1.2.3` | N/A |
+| `@types/node` | `^20` | N/A |
+| `@types/react` | `^19` | N/A |
+| `@types/react-dom` | `^19` | N/A |
+| `dotenv-cli` | `^11.0.0` | N/A |
+| `eslint-config-next` | `16.0.1` | N/A |
+| `ts-node` | `^10.9.2` | N/A |
+
+## 3. Environmentální Proměnné
+
+Byl nalezen soubor `.env`. Aplikace očekává následující proměnné (hodnoty jsou skryty):
+```
+DATABASE_URL
+```
+
+Byl nalezen soubor `.env.local`. Aplikace očekává následující proměnné (hodnoty jsou skryty):
+```
+DATABASE_URL
+DATABASE_URL_UNPOOLED
+NEON_PROJECT_ID
+PGDATABASE
+PGHOST
+PGHOST_UNPOOLED
+PGPASSWORD
+PGUSER
+POSTGRES_DATABASE
+POSTGRES_HOST
+POSTGRES_PASSWORD
+POSTGRES_PRISMA_URL
+POSTGRES_URL
+POSTGRES_URL_NON_POOLING
+POSTGRES_URL_NO_SSL
+POSTGRES_USER
+VERCEL_OIDC_TOKEN
+NEXTAUTH_SECRET
+GEMINI_API_KEY
+```
+
+## 4. Systémové Prostředí
+
+```
+Node.js verze: v24.11.0
+NPM verze:     11.6.1
+Prisma verze:  ^6.18.0 (z package.json)
+Git verze:     git version 2.47.3
+Systém:        Linux rpi5 6.12.47+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.12.47-1+rpt1 (2025-09-16) aarch64 GNU/Linux
+```
+
+## 5. Stav Git Repozitáře
+
+```
+On branch main
+M archiv/README_15_02REALIZACE
+```
+
+## 6. Struktura Projektového Adresáře
+
+```
+./
+    1763586862976-player-script.js
+    1763586489510-player-script.js
+    1763587042519-player-script.js
+    postcss.config.mjs
+    middleware.ts
+    1763586688369-player-script.js
+    1763586489527-player-script.js
+    next-env.d.ts
+    .gitignore
+    project_snapshot.md
+    1763586862960-player-script.js
+    test-env.js
+    1763586688358-player-script.js
+    1763587042502-player-script.js
+    next.config.ts
+    prisma.config.ts
+    package.json
+    tsconfig.json
+    eslint.config.mjs
+    components/
+        Navbar.tsx
+        VideoDetailClientWrapper.tsx
+        VideoGrid.tsx
+        Providers.tsx
+        DeleteButton.tsx
+        VideoPlayer.tsx
+        ChapterList.tsx
+        admin/
+            CollectionForm.tsx
+            VideoForm.tsx
+        player/
+            TranscriptView.tsx
+            SmartSidebar.tsx
+            PracticalTipsView.tsx
+            SmartTimeline.tsx
+    prisma/
+        schema.prisma
+        migrations/
+            migration_lock.toml
+            20251130084214_add_collection_seo_faze15/
+                migration.sql
+            20251130073424_add_collection_seo_faze15/
+                migration.sql
+            20251130092354_add_user_keywords_faze15/
+                migration.sql
+            20251112204337_add_chapter_model/
+                migration.sql
+            20251119175653_add_transcript_model/
+                migration.sql
+            20251116101540_add_collection_model/
+                migration.sql
+            20251102210418_init_user_model/
+                migration.sql
+            20251104201217_add_video_model/
+                migration.sql
+            20251126205320_add_seo_fields_faze12/
+                migration.sql
+    .vercel/
+        project.json
+        README.txt
+    app/
+        favicon.ico
+        layout.tsx
+        page.tsx
+        globals.css
+        dashboard/
+            page.tsx
+        api/
+            ai/
+                generate-seo/
+                    route.ts
+                generate-collection-seo/
+                    route.ts
+                match-collections/
+                    route.ts
+                generate/
+                    route.ts
+            auth/
+                [...nextauth]/
+                    route.ts
+            videos/
+                route.ts
+                [id]/
+                    route.ts
+            youtube/
+                fetch-data/
+                    route.ts
+            collections/
+                route.ts
+                [id]/
+                    route.ts
+            register/
+                route.ts
+        video/
+            [id]/
+                page.tsx
+        admin/
+            dashboard/
+                page.tsx
+            add/
+                page.tsx
+            collections/
+                page.tsx
+                add/
+                    page.tsx
+                edit/
+                    [id]/
+                        page.tsx
+            manage/
+                page.tsx
+            edit/
+                [id]/
+                    page.tsx
+        register/
+            page.tsx
+        login/
+            page.tsx
+    public/
+        file.svg
+        window.svg
+        next.svg
+        vercel.svg
+        globe.svg
+    lib/
+        parser.ts
+        transcriptParser.ts
+    types/
+        next-auth.d.ts
+```
+
+## 7. Obsah Klíčových Souborů
+
+### `package.json`
+
+```json
+{
+  "name": "web_app_mediathek",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "dotenv -e .env.local -- prisma generate && dotenv -e .env.local -- prisma migrate deploy && next build",
+    "start": "next start",
+    "lint": "eslint",
+    "prisma:migrate": "dotenv -e .env.local -- prisma migrate dev",
+    "prisma:studio": "dotenv -e .env.local -- prisma studio",
+    "prisma:generate": "dotenv -e .env.local -- prisma generate"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@prisma/client": "^6.18.0",
+    "bcrypt": "^6.0.0",
+    "clsx": "^2.1.1",
+    "dotenv": "^17.2.3",
+    "he": "^1.2.0",
+    "lucide-react": "^0.555.0",
+    "next": "16.0.1",
+    "next-auth": "^4.24.13",
+    "prisma": "^6.18.0",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "react-youtube": "^10.1.0",
+    "tailwind-merge": "^3.4.0",
+    "youtubei.js": "^16.0.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/bcrypt": "^6.0.0",
+    "@types/he": "^1.2.3",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "dotenv-cli": "^11.0.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.0.1",
+    "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5"
+  }
+}
+
+```
+
+### `middleware.ts`
+
+```typescript
+    import { withAuth } from 'next-auth/middleware';
+    import { NextResponse } from 'next/server';
+    
+    export default withAuth(
+      // `middleware` se volá POUZE pokud je token platný (uživatel přihlášen)
+      function middleware(req) {
+        const token = req.nextauth.token;
+        const { pathname } = req.nextUrl;
+    
+        // 1. Ochrana /admin
+        if (pathname.startsWith('/admin')) {
+          // Pokud je přihlášen, ale NENÍ admin, přesměruj pryč
+          if (token?.role !== 'ADMIN') {
+            // Můžeme přesměrovat na dashboard nebo domovskou stránku
+            return NextResponse.redirect(new URL('/dashboard', req.url));
+          }
+        }
+        
+        // 2. Pro /dashboard stačí být přihlášen, což `withAuth` již řeší.
+    
+        // Pokud projde kontrolou role, pokračuj
+        return NextResponse.next();
+      },
+      {
+        // Callback pro `withAuth`
+        callbacks: {
+          // Volá se VŽDY, když se přistupuje na chráněnou trasu v `matcher`u
+          authorized: ({ token }) => {
+            // Pokud uživatel nemá token (není přihlášen),
+            // `withAuth` ho automaticky přesměruje na `signIn` stránku.
+            return !!token; // !!token převede token (nebo null) na boolean
+          },
+        },
+        pages: {
+          signIn: '/login', // Stránka pro přesměrování nepřihlášených
+        },
+      }
+    );
+    
+    // Konfigurace matcheru (které stránky chránit)
+    export const config = {
+      matcher: [
+        '/dashboard/:path*', // Původní chráněná trasa
+        '/admin/:path*',    // Nová chráněná trasa pro adminy
+      ],
+    };
+```
+
+### `next.config.ts`
+
+```typescript
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  /* config options here */
+};
+
+export default nextConfig;
+
+```
+
+### `prisma/schema.prisma`
+
+```text
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Definice rolí pro uživatele
+enum Role {
+  USER
+  ADMIN
+}
+
+// Datový model pro uživatele
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Vztah: Uživatel může přidat více videí
+  videos      Video[]
+  // Sbírky vytvořené uživatelem
+  collections Collection[]
+}
+
+model Video {
+  id        String   @id @default(cuid())
+  youtubeId String   @unique // ID videa z URL (např. "dQw4w9WgXcQ")
+  title     String   // Manuálně zadaný název
+  summary   String   @db.Text // Manuálně zadané shrnutí (delší text)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Propojení na autora
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+
+  chapters    Chapter[]
+  // Relace M:N (Video může být ve více sbírkách)
+  collections Collection[]
+  // Relace 1:1 na přepis
+  transcript  Transcript?
+
+  // --- NOVÁ SEO POLE (Fáze 12) ---
+  seoSummary     String?   @db.Text  // AI Abstrakt (kontext + řešení)
+  seoKeywords    String[]  // Klíčová slova (entity, látky, diagnózy)
+  practicalTips  String[]  // Konkrétní rady (Actionable items)
+  aiSuggestions  String[]  // Návrhy názvů sbírek
+}
+
+model Chapter {
+  id        String   @id @default(cuid())
+  text      String   // Zobrazený text (např. "1.1. Úvod...")
+  startTime Int      // Čas "od" v sekundách
+  endTime   Int?     // Čas "do" v sekundách (nepovinné)
+  level     Int      // Úroveň zanoření (0 = kořen, 1 = podkapitola)
+  order     Int      // Pořadí kapitoly v rámci videa
+
+  // Relace k videu. Při smazání videa se smažou i kapitoly.
+  video   Video  @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  videoId String
+}
+
+// Model pro sbírky videí
+model Collection {
+  id          String   @id @default(cuid())
+  
+  // --- ZÁMĚR UŽIVATELE (User Intent) ---
+  name        String   // Uživatelský název
+  description String?  @db.Text // Uživatelský popis
+  keywords    String[] // Uživatelská klíčová slova
+  isPublic    Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
+
+  videos      Video[]
+
+  // --- AI ZRCADLO / REALITA (AI Mirror) ---
+  seoTitle       String?   // AI navržený název
+  seoDescription String?   @db.Text // AI navržený popis
+  seoKeywords    String[]  // AI navržená klíčová slova
+}
+
+// Model pro přepisy videí
+model Transcript {
+  id          String   @id @default(cuid())
+  
+  // Relace 1:1 na Video
+  videoId     String   @unique
+  video       Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  
+  // Obsah
+  content     String   @db.Text      // Surový text titulků spojený do jednoho bloku
+  fullData    Json?                  // Kompletní JSON s časovými značkami (pro budoucí AI)
+  language    String   @default("cs") // Jazyk titulků
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+```
+
+### `types/next-auth.d.ts`
+
+```typescript
+import 'next-auth';
+import 'next-auth/jwt';
+
+/**
+ * Rozšiřujeme standardní typy NextAuth, abychom TypeScriptu
+ * řekli, že budeme do session a tokenu přidávat vlastní data.
+ */
+
+declare module 'next-auth' {
+  /**
+   * Toto je objekt, který vidí klient (např. přes useSession())
+   */
+  interface Session {
+    user: {
+      id: string;
+      role: string;
+    } & DefaultSession['user']; // Zachováme i standardní vlastnosti (name, email, image)
+  }
+
+  /**
+   * Toto je objekt 'user', který vracíme z providera (authorize)
+   * a dostáváme v JWT callbacku.
+   */
+  interface User {
+    // Výchozí User již má id, name, email, image.
+    // My přidáváme pouze naši roli.
+    role: string;
+  }
+}
+
+/**
+ * Rozšíření JWT tokenu.
+ */
+declare module 'next-auth/jwt' {
+  /** Toto je obsah našeho JWT tokenu v cookie. */
+  interface JWT {
+    id: string;
+    role: string;
+  }
+}
+
+```
+
+### `app/globals.css`
+
+```css
+@import "tailwindcss";
+
+/* V Tailwind v4 se definice témat dělají přes @theme nebo přímo v CSS proměnných.
+  Zde definujeme základní barvy a chování.
+*/
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 248, 250, 252;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 15, 23, 42;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-start-rgb));
+}
+
+/* Custom Scrollbar - Kompatibilní s v4 */
+@layer utilities {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent; 
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(156, 163, 175, 0.3);
+    border-radius: 20px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(107, 114, 128, 0.6);
+  }
+
+  /* Firefox */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(156, 163, 175, 0.3) transparent;
+  }
+}
+```
+
+### `app/layout.tsx`
+
+```typescript
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
+import Providers from "@/components/Providers";
+import Navbar from "@/components/Navbar"; // <-- 1. Importujte Navbar
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "Create Next App",
+  description: "Generated by create next app",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <Providers>
+          <Navbar /> {/* <-- 2. Vložte Navbar sem (dovnitř Providers) */}
+          <main>{children}</main>
+        </Providers>
+      </body>
+    </html>
+  );
+}
+```
+
+### `app/page.tsx`
+
+```typescript
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { PrismaClient, Prisma } from '@prisma/client';
+// 1. Importujeme naši sdílenou komponentu
+import VideoGrid from '@/components/VideoGrid';
+
+const prisma = new PrismaClient();
+
+// Vynutíme dynamické renderování, aby se session vždy četla čerstvá
+export const dynamic = 'force-dynamic';
+
+export default async function HomePage() {
+  const session = await getServerSession(authOptions);
+
+  // 2. Sestavení dynamického 'where' dotazu dle specifikace Fáze 8
+  
+  // Výchozí pravidlo: VISITOR a USER vidí jen videa,
+  // která jsou v ALESPOŇ JEDNÉ veřejné sbírce.
+  let whereClause: Prisma.VideoWhereInput = {
+    collections: {
+      some: {
+        isPublic: true,
+      },
+    },
+  };
+
+  // Výjimka: ADMIN vidí VŠECHNO (drafty, soukromé, veřejné)
+  if (session && session.user.role === 'ADMIN') {
+    whereClause = {}; // Prázdný 'where' znamená "vše"
+  }
+  
+  // TODO: Logika pro KURATORA (Fáze 9)
+  // if (session && session.user.role === 'KURATOR') {
+  //   whereClause = {
+  //     OR: [
+  //       { collections: { some: { isPublic: true } } },
+  // { authorId: session.user.id }
+  //     ]
+  //   };
+  // }
+
+  // 3. Finální dotaz do DB
+  // AKTUALIZACE: Přidáme 'include' autora, aby VideoGrid
+  // mohl zobrazit stejné detaily jako admin dashboard.
+  const videos = await prisma.video.findMany({
+    where: whereClause,
+    orderBy: {
+      createdAt: 'desc',
+    },
+    include: {
+      author: {
+        select: {
+          email: true
+        }
+      },
+      // PŘIDÁNO: Načtení názvů a ID přiřazených sbírek
+      collections: {
+        select: {
+          id: true,
+          name: true
+        }
+      }
+    }
+  });
+
+  // 4. Zobrazení pomocí sdílené komponenty
+  return (
+    <main className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+      <h1 className="text-3xl font-bold mb-8">Vítejte v Mediathek - zde je Vaše knihovna mediálního obsahu - prohlížejte sbírky shlednutých videí vytvořených jinými nejen pro sebe, ale také i pro Vás - vytvářejte témata - uspořádávejte i svou sbírku - vybírejte to nejlepší - dělejte si poznámky ke shlednutému - sdílejte svou sbírku s ostatními - dejte mediálnímu obsahu svůj jedinečný pohled</h1>
+      
+      {/* AKTUALIZACE: Použijeme stejnou komponentu, ale změníme
+        baseHref, aby odkazy směřovaly na budoucí
+        veřejnou stránku detailu (např. /video/[id]).
+        Prozatím můžeme nechat /admin/video, 
+        návštěvník bude přesměrován na /login (Test 5).
+      */}
+      <VideoGrid videos={videos} baseHref="/video" showEditButton={false} />
+    </main>
+  );
+}
+```
+
+### `components/Navbar.tsx`
+
+```typescript
+"use client";
+
+import Link from "next/link";
+import { useSession } from "next-auth/react";
+
+export default function Navbar() {
+  const { data: session, status } = useSession();
+
+  return (
+    <nav style={{ display: "flex", gap: "1rem", padding: "1rem", background: "#eee" }}>
+      <Link href="/">Domů</Link>
+
+      {status === "loading" && <p>...</p>}
+
+      {status === "unauthenticated" && (
+        <>
+          <Link href="/login">Přihlásit se</Link>
+          <Link href="/register">Registrovat</Link>
+        </>
+      )}
+
+      {status === "authenticated" && (
+        <>
+          <Link href="/dashboard">Můj Dashboard</Link>
+          
+          {/* --- ADMIN NAVIGACE --- */}
+          {session.user?.role === 'ADMIN' && (
+            <>
+              <Link href="/admin/dashboard" className="hover:underline">Přehled obsahu</Link>
+              <Link href="/admin/manage" className="hover:underline">Správa obsahu</Link>
+              {/* ZMĚNA: Přejmenováno z "Sbírky" na "Správa sbírek" pro sjednocení terminologie */}
+              <Link href="/admin/collections" className="hover:underline">Správa sbírek</Link>
+              <Link href="/admin/add" className="font-bold hover:underline">Přidat video</Link>
+            </>
+          )}
+          {/* --- KONEC ADMIN NAVIGACE --- */}
+
+          <span style={{ marginLeft: "auto" }}>
+            Přihlášen: {session.user?.email}
+          </span>
+        </>
+      )}
+    </nav>
+  );
+}
+```
+
+### `components/Providers.tsx`
+
+```typescript
+"use client";
+import { SessionProvider } from "next-auth/react";
+
+export default function Providers({ children }: { children: React.ReactNode }) {
+  return <SessionProvider>{children}</SessionProvider>;
+}
+```
+
+### `components/VideoDetailClientWrapper.tsx`
+
+```typescript
+"use client";
+
+import { useRef, useState, useEffect } from 'react';
+import { Prisma } from '@prisma/client';
+import { BookOpen, Layers } from 'lucide-react';
+
+import VideoPlayer from '@/components/VideoPlayer';
+import SmartSidebar from '@/components/player/SmartSidebar';
+import SmartTimeline from '@/components/player/SmartTimeline';
+
+type Chapter = Prisma.ChapterGetPayload<{}>;
+type Collection = { id: string; name: string };
+
+interface VideoDetailClientWrapperProps {
+  youtubeId: string;
+  title: string;
+  chapters: Chapter[];
+  transcript: string | null;
+  practicalTips: string[];
+  seoSummary: string;
+  seoKeywords: string[];
+  aiSuggestions: string[];
+  collections: Collection[];
+  originalDescription: string;
+}
+
+export default function VideoDetailClientWrapper({
+  youtubeId,
+  title,
+  chapters,
+  transcript,
+  practicalTips,
+  seoSummary,
+  seoKeywords,
+  aiSuggestions,
+  collections,
+  originalDescription
+}: VideoDetailClientWrapperProps) {
+  
+  const playerRef = useRef<any>(null);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const handlePlayerReady = (event: { target: any }) => {
+    playerRef.current = event.target;
+    setDuration(event.target.getDuration());
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (playerRef.current && typeof playerRef.current.getCurrentTime === 'function') {
+        const time = playerRef.current.getCurrentTime();
+        if (Math.abs(time - currentTime) > 0.5 || time === 0) {
+          setCurrentTime(time);
+        }
+        setIsPlaying(playerRef.current.getPlayerState() === 1);
+      }
+    }, 500);
+    return () => clearInterval(interval);
+  }, [currentTime]);
+
+  const handleSeek = (time: number) => {
+    if (playerRef.current) {
+      playerRef.current.seekTo(time, true);
+      playerRef.current.playVideo();
+      setCurrentTime(time);
+    }
+  };
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      {/* === LEVÝ SLOUPEC (Video) === */}
+      <div className="lg:col-span-8 w-full min-w-0">
+        
+        {/* Přehrávač */}
+        <div className="relative w-full bg-black rounded-xl overflow-hidden shadow-lg" style={{ paddingBottom: '56.25%' }}>
+          <div className="absolute inset-0">
+             <VideoPlayer youtubeId={youtubeId} onReady={handlePlayerReady} />
+          </div>
+        </div>
+
+        {/* Smart Timeline */}
+        <div className="mt-4">
+            <SmartTimeline 
+                chapters={chapters} 
+                duration={duration} 
+                currentTime={currentTime} 
+                onSeek={handleSeek} 
+            />
+        </div>
+
+        {/* Kontext */}
+        <div className="mt-6 space-y-6">
+            
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 leading-tight">
+                {title}
+            </h1>
+
+            {/* AI Abstrakt + Tagy + Témata (Sjednocená minimalistická karta) */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border-l-4 border-indigo-500 shadow-sm">
+                
+                {/* 1. Abstrakt */}
+                <div className="flex items-start gap-4">
+                    <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg shrink-0">
+                        <BookOpen className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                    </div>
+                    <div>
+                         <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">
+                            O čem to je
+                         </h3>
+                         <p className="text-base text-gray-600 dark:text-gray-300 leading-relaxed"> {/* Text barva sjednocena s abstraktem */}
+                            {seoSummary}
+                         </p>
+                    </div>
+                </div>
+
+                {/* 2. Klíčová slova (Tagy) */}
+                {/* SOFT INDIGO:
+                    Default: bg-indigo-50/50 (jemná) + text-gray-600
+                    Hover: bg-indigo-100/50 (trochu výraznější) + text-gray-900
+                */}
+                {seoKeywords && seoKeywords.length > 0 && (
+                    <div className="mt-4 flex flex-wrap gap-2 pl-0 sm:pl-[3.25rem]">
+                        {seoKeywords.map((tag, idx) => (
+                            <span key={idx} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-all duration-200 cursor-default border bg-indigo-50/50 text-gray-600 border-indigo-100/50 hover:bg-indigo-100/50 hover:text-gray-900 hover:border-indigo-200/50 dark:bg-indigo-900/20 dark:text-gray-400 dark:border-indigo-800 dark:hover:bg-indigo-900/40 dark:hover:text-gray-200">
+                                {tag}
+                            </span>
+                        ))}
+                    </div>
+                )}
+
+                {/* 3. Témata (AI Suggestions) */}
+                {/* INVERZNÍ SOFT INDIGO:
+                    Default: bg-indigo-100/50 (trochu výraznější) + text-gray-600
+                    Hover: bg-indigo-50/50 (jemná) + text-gray-900
+                */}
+                {aiSuggestions && aiSuggestions.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-2 pl-0 sm:pl-[3.25rem]">
+                        {aiSuggestions.map((sug, idx) => (
+                            <span key={idx} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-all duration-200 cursor-default border bg-indigo-100/50 text-gray-600 border-indigo-200/50 hover:bg-indigo-50/50 hover:text-gray-900 hover:border-indigo-100/50 dark:bg-indigo-900/40 dark:text-gray-400 dark:border-indigo-700 dark:hover:bg-indigo-900/20 dark:hover:text-gray-200">
+                                {sug}
+                            </span>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            {/* Navigace (Sbírky) */}
+            {collections && collections.length > 0 && (
+                 <div className="flex flex-wrap items-center gap-2 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800">
+                    <Layers className="text-gray-400 w-4 h-4" />
+                    <span className="text-sm text-gray-500 mr-1">Součást sbírek:</span>
+                    {collections.map(col => (
+                        <span key={col.id} className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer">
+                            {col.name}
+                        </span>
+                    ))}
+                 </div>
+            )}
+
+            {/* Hluboký ponor */}
+            <div className="pt-6 mt-6 border-t border-gray-200 dark:border-gray-700">
+                <h3 className="text-xs font-bold text-gray-400 uppercase mb-3">Původní popis</h3>
+                <div className="prose prose-sm dark:prose-invert max-w-none text-gray-600 dark:text-gray-400">
+                    {originalDescription}
+                </div>
+            </div>
+
+        </div>
+      </div>
+
+      {/* === PRAVÝ SLOUPEC (Smart Sidebar) === */}
+      <div className="lg:col-span-4 w-full">
+        <div className="sticky top-6">
+            <SmartSidebar 
+                chapters={chapters}
+                transcript={transcript}
+                practicalTips={practicalTips}
+                duration={duration}
+                currentTime={currentTime}
+                onSeek={handleSeek}
+            />
+        </div>
+      </div>
+
+    </div>
+  );
+}
+```
+
+### `components/VideoPlayer.tsx`
+
+```typescript
+"use client";
+
+import YouTube from 'react-youtube';
+
+interface VideoPlayerProps {
+  youtubeId: string;
+  // 1. PŘIDÁNÍ onReady PROPU
+  onReady?: (event: { target: any }) => void;
+}
+
+export default function VideoPlayer({ youtubeId, onReady }: VideoPlayerProps) {
+  const opts = {
+    height: '100%',
+    width: '100%',
+    playerVars: {
+      autoplay: 0,
+    },
+  };
+  
+  return (
+    <YouTube
+      videoId={youtubeId}
+      opts={opts}
+      className="absolute top-0 left-0 w-full h-full"
+      // 2. PROPOJENÍ onReady
+      onReady={onReady}
+    />
+  );
+}
+```
+
+### `components/ChapterList.tsx`
+
+```typescript
+"use client";
+
+import { Prisma } from '@prisma/client';
+import { RefObject, useEffect, useRef } from 'react';
+
+// Explicitně definujeme typ, který očekáváme z Prisma dotazu
+type ChapterWithData = Prisma.ChapterGetPayload<{}>;
+
+interface ChapterListProps {
+  chapters: ChapterWithData[];
+  playerRef: RefObject<any>; // Reference na YouTube přehrávač
+  currentTime?: number; // NOVÉ: Přijímáme aktuální čas pro zvýraznění
+}
+
+export default function ChapterList({ chapters, playerRef, currentTime = 0 }: ChapterListProps) {
+  const activeChapterRef = useRef<HTMLButtonElement>(null);
+
+  if (!chapters || chapters.length === 0) {
+    return <p className="text-gray-900 dark:text-gray-100 p-4">Pro toto video není dostupný strukturovaný obsah.</p>;
+  }
+
+  const handleChapterClick = (startTime: number) => {
+    playerRef.current?.seekTo(startTime, true);
+    playerRef.current?.playVideo();
+  };
+
+  // Auto-scroll efekt (aby aktivní kapitola byla vždy vidět)
+  useEffect(() => {
+    if (activeChapterRef.current) {
+      activeChapterRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest', // 'nearest' je méně rušivé než 'center' pro seznamy
+      });
+    }
+  }, [currentTime]); // Spustí se při změně aktivní kapitoly
+
+  return (
+    <div className="space-y-1">
+      {chapters.map((chapter, index) => {
+        // Logika pro zjištění, zda je kapitola aktivní
+        // Kapitola je aktivní, pokud čas je >= její start A zároveň < start další kapitoly
+        const nextChapterStart = chapters[index + 1]?.startTime ?? Infinity;
+        const isActive = currentTime >= chapter.startTime && currentTime < nextChapterStart;
+
+        return (
+          <button
+            key={chapter.id}
+            // Pokud je aktivní, přiřadíme ref pro auto-scroll
+            ref={isActive ? activeChapterRef : null}
+            onClick={() => handleChapterClick(chapter.startTime)}
+            className={`
+              block w-full text-left p-2 rounded-md transition-all duration-200 text-sm
+              ${isActive 
+                ? 'bg-yellow-100 dark:bg-yellow-900/30 text-gray-900 dark:text-gray-100 font-bold border-l-4 border-yellow-400 pl-3 shadow-sm' 
+                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 border-l-4 border-transparent pl-3'
+              }
+            `}
+            style={{
+              // Hierarchické odsazení na základě 'level' z DB
+              // Přičteme padding, aby to vypadalo hezky
+              marginLeft: `${chapter.level * 16}px`,
+              width: `calc(100% - ${chapter.level * 16}px)`,
+            }}
+          >
+            <div className="flex justify-between items-baseline gap-2">
+              <span>{chapter.text}</span>
+              <span className={`text-xs font-mono shrink-0 ${isActive ? 'text-gray-500' : 'text-gray-300'}`}>
+                {new Date(chapter.startTime * 1000).toISOString().substring(14, 19)}
+              </span>
+            </div>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+```
+
+### `components/VideoGrid.tsx`
+
+```typescript
+"use client";
+
+import Link from 'next/link';
+import { Video } from '@prisma/client';
+
+type VideoWithDetails = Video & {
+  author: { email: string | null } | null;
+  collections: { id: string; name: string }[];
+};
+
+interface VideoGridProps {
+  videos: VideoWithDetails[];
+  baseHref?: string;
+  showEditButton?: boolean;
+}
+
+export default function VideoGrid({ videos, baseHref = '/admin/video', showEditButton }: VideoGridProps) {
+  
+  if (videos.length === 0) {
+    return (
+      <p className="text-center text-gray-400">
+        Nebyly nalezeny žádné video záznamy.
+      </p>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {videos.map((video) => (
+        <div
+          key={video.id}
+          className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden flex flex-col transition-all duration-200 hover:shadow-lg hover:ring-2 hover:ring-indigo-500 group"
+        >
+          {/* 1. HLAVNÍ ODKAZ (Obrázek + Tělo) */}
+          <Link href={`${baseHref}/${video.id}`} className="flex-1 flex flex-col">
+              <div className="aspect-video bg-gray-100 dark:bg-gray-700 relative">
+                 <img
+                    src={`https://img.youtube.com/vi/${video.youtubeId}/mqdefault.jpg`}
+                    alt={`Náhled videa ${video.title}`}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                 />
+              </div>
+
+              <div className="p-5 flex-1">
+                  <h2 className="text-xl font-semibold mb-2 line-clamp-2 group-hover:text-indigo-600 transition-colors" title={video.title}>
+                    {video.title}
+                  </h2>
+                  <div className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                      <p>ID: <span className="font-mono">{video.youtubeId}</span></p>
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-300 line-clamp-3 mb-0">
+                    {video.summary}
+                  </p>
+              </div>
+          </Link>
+
+          {/* 2. PATIČKA (Samostatný blok, aby se nekřížily odkazy) */}
+          <div className="mt-auto pt-2 pb-2 border-t border-gray-200 dark:border-gray-700 
+                          text-xs space-y-1 
+                          bg-violet-50 dark:bg-violet-900/30">
+            
+            <div className="text-gray-600 dark:text-gray-300 space-y-1 px-5">
+              <p>
+                <strong>Sbírka(y):</strong> {
+                  video.collections.length > 0 
+                    ? video.collections.map(c => c.name).join(', ') 
+                    : 'Nezařazeno'
+                }
+              </p>
+              <p>
+                <strong>Kurátor:</strong> {video.author?.email || 'Neznámý'}
+              </p>
+            </div>
+
+            <div className="flex justify-between items-center text-gray-500 dark:text-gray-400 px-5">
+              <span>
+                  {new Date(video.createdAt).toLocaleDateString('cs-CZ')}
+              </span>
+              
+              {/* Tlačítko Upravit je nyní bezpečně vedle hlavního odkazu, ne uvnitř */}
+              {showEditButton === true && (
+                   <Link 
+                      href={`/admin/edit/${video.id}`} 
+                      className="text-indigo-500 hover:text-indigo-700 font-medium transition-colors hover:underline p-1"
+                   >
+                      Upravit
+                   </Link>
+              )}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+### `components/DeleteButton.tsx`
+
+```typescript
+"use client";
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+interface DeleteButtonProps {
+  videoId: string;
+}
+
+export default function DeleteButton({ videoId }: DeleteButtonProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const router = useRouter();
+
+  const handleDelete = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch(`/api/videos/${videoId}`, {
+        method: 'DELETE',
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || 'Smazání se nezdařilo');
+      }
+
+      setShowModal(false);
+      // FR7: Přesměrování zpět (nebo refresh)
+      // `push` je lepší pro zajištění čerstvých dat ze serveru (RSC)
+      router.push('/admin/manage');
+      router.refresh(); // Zajistí re-fetch dat na /admin/manage
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <button
+        onClick={() => setShowModal(true)}
+        className="text-red-500 hover:text-red-700 hover:underline"
+        disabled={isLoading}
+      >
+        Smazat
+      </button>
+
+      {/* --- Modální okno pro potvrzení --- */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-sm w-full">
+            <h3 className="text-lg font-bold mb-4">Potvrdit smazání</h3>
+            <p className="mb-6">Opravdu si přejete trvale smazat toto video a všechny jeho kapitoly?</p>
+            {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={() => setShowModal(false)}
+                className="py-2 px-4 rounded-md bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500"
+                disabled={isLoading}
+              >
+                Zrušit
+              </button>
+              <button
+                onClick={handleDelete}
+                className="py-2 px-4 rounded-md bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Mazání...' : 'Potvrdit smazání'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+```
+
+### `components/player/SmartSidebar.tsx`
+
+```typescript
+"use client";
+
+import React, { useState } from 'react';
+import { List, FileText, CheckCircle2 } from 'lucide-react';
+import { Prisma } from '@prisma/client';
+import clsx from 'clsx';
+import ChapterList from '@/components/ChapterList';
+import TranscriptView from './TranscriptView';
+import PracticalTipsView from './PracticalTipsView';
+
+type Chapter = Prisma.ChapterGetPayload<{}>;
+
+interface SmartSidebarProps {
+  chapters: Chapter[];
+  transcript: string | null;
+  practicalTips: string[];
+  duration: number;
+  currentTime: number;
+  onSeek: (time: number) => void;
+  playerRef?: any;
+}
+
+type TabType = 'chapters' | 'transcript' | 'tips';
+
+export default function SmartSidebar({
+  chapters,
+  transcript,
+  practicalTips,
+  duration,
+  currentTime,
+  onSeek
+}: SmartSidebarProps) {
+  
+  const [activeTab, setActiveTab] = useState<TabType>(
+    chapters.length > 0 ? 'chapters' : (transcript ? 'transcript' : 'tips')
+  );
+
+  const tabs = [
+    { id: 'chapters', label: 'Kapitoly', icon: List, disabled: chapters.length === 0 },
+    { id: 'transcript', label: 'Přepis', icon: FileText, disabled: !transcript },
+    { id: 'tips', label: 'Tipy', icon: CheckCircle2, disabled: practicalTips.length === 0 },
+  ] as const;
+
+  return (
+    <div className="flex flex-col bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden h-[calc(100vh-100px)] min-h-[500px]">
+      
+      {/* Hlavička */}
+      <div className="flex border-b border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => !tab.disabled && setActiveTab(tab.id as TabType)}
+            disabled={tab.disabled}
+            className={clsx(
+              "flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-3 px-2 text-xs sm:text-sm font-medium transition-all relative outline-none",
+              tab.disabled && "opacity-40 cursor-not-allowed",
+              !tab.disabled && "hover:bg-white dark:hover:bg-gray-700",
+              activeTab === tab.id 
+                ? "text-indigo-600 dark:text-indigo-400 bg-white dark:bg-gray-800 shadow-sm" 
+                : "text-gray-500 dark:text-gray-400"
+            )}
+          >
+            <tab.icon size={18} className={activeTab === tab.id ? "text-indigo-600" : "text-gray-400"} />
+            <span>{tab.label}</span>
+            
+            {activeTab === tab.id && (
+              <span className="absolute top-0 left-0 right-0 h-0.5 bg-indigo-600 dark:bg-indigo-400" />
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* Tělo */}
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-0 bg-white dark:bg-gray-800">
+        
+        {activeTab === 'chapters' && (
+           <div className="p-4">
+              <ChapterList 
+                chapters={chapters} 
+                // ZMĚNA: Předáváme currentTime pro zvýraznění
+                currentTime={currentTime}
+                playerRef={{ current: { seekTo: onSeek, playVideo: () => {} } } as any} 
+              />
+           </div>
+        )}
+
+        {activeTab === 'transcript' && transcript && (
+          <div className="p-2">
+            <TranscriptView
+              transcript={transcript}
+              currentTime={currentTime}
+              duration={duration}
+              onSeek={onSeek}
+            />
+          </div>
+        )}
+
+        {activeTab === 'tips' && (
+          <div className="p-4">
+            <PracticalTipsView tips={practicalTips} />
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
+```
+
+### `components/player/SmartTimeline.tsx`
+
+```typescript
+"use client";
+
+import React, { useState } from 'react';
+import { Prisma } from '@prisma/client';
+import { timeToSeconds } from '@/lib/parser'; // Použijeme existující utilitu
+
+type Chapter = Prisma.ChapterGetPayload<{}>;
+
+interface SmartTimelineProps {
+  chapters: Chapter[];
+  duration: number; // Celková délka videa v sekundách
+  currentTime: number;
+  onSeek: (time: number) => void;
+}
+
+export default function SmartTimeline({ 
+  chapters, 
+  duration, 
+  currentTime, 
+  onSeek 
+}: SmartTimelineProps) {
+  const [hoveredChapter, setHoveredChapter] = useState<string | null>(null);
+
+  if (!chapters || chapters.length === 0 || duration === 0) {
+    return null; // Pokud nejsou data, nezobrazujeme nic
+  }
+
+  // Seřadíme kapitoly podle času (pro jistotu)
+  const sortedChapters = [...chapters].sort((a, b) => a.startTime - b.startTime);
+
+  return (
+    <div className="relative w-full h-4 mt-2 mb-6 group cursor-pointer select-none">
+      {/* Kontejner lišty */}
+      <div className="flex w-full h-full rounded-full overflow-hidden shadow-sm bg-gray-200 dark:bg-gray-700">
+        
+        {sortedChapters.map((chapter, index) => {
+          // Výpočet konce kapitoly: buď začátek další, nebo konec videa
+          const nextChapterStart = sortedChapters[index + 1]?.startTime || duration;
+          const chapterEnd = chapter.endTime || nextChapterStart;
+          
+          // Ochrana proti negativní délce (pokud jsou data v DB špatně)
+          const chapterDuration = Math.max(0, chapterEnd - chapter.startTime);
+          const widthPercent = (chapterDuration / duration) * 100;
+
+          // Je tato kapitola právě aktivní?
+          const isActive = currentTime >= chapter.startTime && currentTime < chapterEnd;
+
+          // Barvy: Střídání pro lepší odlišení segmentů
+          const isEven = index % 2 === 0;
+          const baseColor = isEven 
+            ? 'bg-indigo-300 dark:bg-indigo-900' 
+            : 'bg-indigo-200 dark:bg-indigo-800';
+          
+          const activeColor = 'bg-indigo-500 dark:bg-indigo-500'; // Výraznější pro aktivní
+
+          return (
+            <div
+              key={chapter.id}
+              style={{ width: `${widthPercent}%` }}
+              className={`relative h-full transition-colors duration-200 hover:brightness-110 ${isActive ? activeColor : baseColor}`}
+              onClick={() => onSeek(chapter.startTime)}
+              onMouseEnter={() => setHoveredChapter(chapter.text)}
+              onMouseLeave={() => setHoveredChapter(null)}
+            />
+          );
+        })}
+      </div>
+
+      {/* Indikátor aktuálního času (Progress Pin) */}
+      <div 
+        className="absolute top-0 bottom-0 w-0.5 bg-red-500 pointer-events-none transition-all duration-200 ease-linear z-10"
+        style={{ left: `${(currentTime / duration) * 100}%` }}
+      />
+
+      {/* Hover Tooltip (Bublina s názvem) */}
+      {hoveredChapter && (
+        <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-black/80 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-20 pointer-events-none animate-in fade-in zoom-in-95 duration-100">
+          {hoveredChapter}
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+### `components/player/TranscriptView.tsx`
+
+```typescript
+"use client";
+
+import React, { useEffect, useState, useRef } from 'react';
+import { parseTranscript, TranscriptSegment } from '@/lib/transcriptParser';
+
+interface TranscriptViewProps {
+  transcript: string; // Surový text
+  currentTime: number;
+  duration: number; // Potřebné pro parser (dopočet posledního segmentu)
+  onSeek: (time: number) => void;
+}
+
+export default function TranscriptView({ 
+  transcript, 
+  currentTime, 
+  duration,
+  onSeek 
+}: TranscriptViewProps) {
+  const [segments, setSegments] = useState<TranscriptSegment[]>([]);
+  const activeSegmentRef = useRef<HTMLDivElement>(null);
+
+  // 1. Jednorázové parsování při načtení
+  useEffect(() => {
+    if (transcript) {
+      const parsed = parseTranscript(transcript, duration);
+      setSegments(parsed);
+    }
+  }, [transcript, duration]);
+
+  // 2. Auto-scroll efekt (když se změní aktivní segment)
+  useEffect(() => {
+    if (activeSegmentRef.current) {
+      activeSegmentRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center', // Zarovná aktivní text na střed okna
+      });
+    }
+  }, [currentTime]); // Spustí se při změně času, ale reálně jen když se změní ref
+
+  if (!transcript) {
+    return <div className="p-4 text-gray-500 text-sm italic">Přepis není k dispozici.</div>;
+  }
+
+  return (
+    <div className="space-y-4 p-1">
+      {segments.map((seg, index) => {
+        // Je tento segment aktivní?
+        const isActive = currentTime >= seg.start && currentTime < seg.end;
+
+        return (
+          <div
+            key={index}
+            // Uložíme ref na aktivní element pro auto-scroll
+            ref={isActive ? activeSegmentRef : null}
+            onClick={() => onSeek(seg.start)}
+            className={`
+              p-2 rounded cursor-pointer transition-all duration-200 text-sm leading-relaxed
+              ${isActive 
+                ? 'bg-yellow-100 dark:bg-yellow-900/30 text-gray-900 dark:text-gray-100 font-medium scale-[1.02] shadow-sm' 
+                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+              }
+            `}
+          >
+            <span className="text-xs text-gray-400 font-mono mr-2 select-none">
+              {new Date(seg.start * 1000).toISOString().substring(14, 19)}
+            </span>
+            {seg.text}
+          </div>
+        );
+      })}
+      
+      {segments.length === 0 && (
+        <p className="text-gray-500">Načítám přepis...</p>
+      )}
+    </div>
+  );
+}
+```
+
+### `components/player/PracticalTipsView.tsx`
+
+```typescript
+"use client";
+
+import React, { useState } from 'react';
+import { CheckSquare, Square } from 'lucide-react';
+
+interface PracticalTipsViewProps {
+  tips: string[];
+}
+
+export default function PracticalTipsView({ tips }: PracticalTipsViewProps) {
+  // Lokální stav pro "zaškrtnutí" (zatím jen vizuální v rámci session)
+  const [checkedState, setCheckedState] = useState<boolean[]>(
+    new Array(tips.length).fill(false)
+  );
+
+  const toggleTip = (index: number) => {
+    const updated = [...checkedState];
+    updated[index] = !updated[index];
+    setCheckedState(updated);
+  };
+
+  if (!tips || tips.length === 0) {
+    return (
+      <div className="p-4 text-center">
+        <p className="text-gray-500 italic text-sm">Pro toto video nejsou k dispozici žádné praktické tipy.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-2 p-1">
+      {tips.map((tip, index) => {
+        const isChecked = checkedState[index];
+        return (
+          <div 
+            key={index}
+            onClick={() => toggleTip(index)}
+            className={`
+              flex items-start gap-3 p-3 rounded-lg cursor-pointer border transition-all duration-200
+              ${isChecked 
+                /* STAV: POKLAD (Treasure) - Zlatavé pozadí (hodnota) + Zelená fajfka (růst) */
+                ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800 shadow-sm' 
+                /* STAV: NEVYBRÁNO */
+                : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-yellow-300 dark:hover:border-yellow-700'
+              }
+            `}
+          >
+            {/* IKONA: Zelená fajfka (Sprout) */}
+            <div className={`mt-0.5 shrink-0 transition-colors ${isChecked ? 'text-green-600 dark:text-green-500' : 'text-gray-400'}`}>
+              {isChecked ? <CheckSquare size={18} /> : <Square size={18} />}
+            </div>
+            
+            {/* TEXT: Tmavý, čitelný, zvýrazněný */}
+            <p className={`text-sm leading-relaxed transition-colors ${isChecked ? 'text-gray-900 dark:text-gray-100 font-medium' : 'text-gray-600 dark:text-gray-400'}`}>
+              {tip}
+            </p>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+```
+
+### `components/admin/VideoForm.tsx`
+
+```typescript
+"use client";
+
+import { useState, FormEvent, useEffect } from 'react';
+import { Sparkles, ExternalLink, RefreshCw } from 'lucide-react';
+
+// Definice datové struktury, se kterou formulář pracuje
+export interface VideoFormData {
+  youtubeUrl: string;
+  title: string;
+  summary: string;
+  transcript: string;
+  structuredContent: string;
+  collectionIds: string[];
+  // Fáze 12 - SEO pole
+  seoSummary: string;
+  seoKeywords: string[];
+  practicalTips: string[];
+  aiSuggestions: string[];
+}
+
+// Definice pro sbírky (pro výběr)
+interface Collection {
+  id: string;
+  name: string;
+  description?: string; // Fáze 14: Potřebujeme description pro AI kontext
+}
+
+// Props komponenty
+interface VideoFormProps {
+  initialData?: VideoFormData;
+  collections: Collection[];
+  onSubmit: (data: VideoFormData) => Promise<void>;
+  isSubmitting: boolean;
+  submitButtonText: string;
+  youtubeIdReadOnly?: boolean;
+}
+
+export default function VideoForm({
+  initialData,
+  collections,
+  onSubmit,
+  isSubmitting,
+  submitButtonText,
+  youtubeIdReadOnly = false
+}: VideoFormProps) {
+  
+  // --- 1. INICIALIZACE STAVŮ ---
+  const [youtubeInput, setYoutubeInput] = useState(initialData?.youtubeUrl || '');
+  const [title, setTitle] = useState(initialData?.title || '');
+  const [summary, setSummary] = useState(initialData?.summary || '');
+  const [transcript, setTranscript] = useState(initialData?.transcript || '');
+  const [structuredContent, setStructuredContent] = useState(initialData?.structuredContent || '');
+  
+  const [selectedCollectionIds, setSelectedCollectionIds] = useState<string[]>(initialData?.collectionIds || []);
+  
+  // SEO Stavy
+  const [seoSummary, setSeoSummary] = useState(initialData?.seoSummary || '');
+  const [seoKeywords, setSeoKeywords] = useState(initialData?.seoKeywords?.join(', ') || '');
+  const [practicalTips, setPracticalTips] = useState<string[]>(initialData?.practicalTips || []);
+  const [aiSuggestions, setAiSuggestions] = useState<string[]>(initialData?.aiSuggestions || []);
+
+  // Pomocné stavy pro UI
+  const [isFetching, setIsFetching] = useState(false);
+  const [isAiGeneratingChapters, setIsAiGeneratingChapters] = useState(false);
+  const [isAiGeneratingSeo, setIsAiGeneratingSeo] = useState(false);
+  
+  // FÁZE 14: Nové stavy pro Matchmaker
+  const [isAiMatching, setIsAiMatching] = useState(false);
+  const [aiProposals, setAiProposals] = useState<{name: string, description: string}[]>([]);
+
+  const [fetchWarning, setFetchWarning] = useState<string | null>(null);
+  
+  // Logování
+  const [debugLogs, setDebugLogs] = useState<string[]>([]);
+  const addLog = (msg: string) => {
+      const timestamp = new Date().toLocaleTimeString();
+      setDebugLogs(prev => [`[${timestamp}] ${msg}`, ...prev]);
+  };
+
+  useEffect(() => {
+    if (initialData) {
+      setYoutubeInput(initialData.youtubeUrl);
+      setTitle(initialData.title);
+      setSummary(initialData.summary);
+      setTranscript(initialData.transcript);
+      setStructuredContent(initialData.structuredContent);
+      setSelectedCollectionIds(initialData.collectionIds);
+      setSeoSummary(initialData.seoSummary);
+      setSeoKeywords(initialData.seoKeywords?.join(', ') || '');
+      setPracticalTips(initialData.practicalTips);
+      setAiSuggestions(initialData.aiSuggestions);
+    }
+  }, [initialData]);
+
+  // --- 2. LOGIKA: YouTube Fetch ---
+  const handleFetchFromYoutube = async () => {
+    if (!youtubeInput) return;
+    
+    let urlToFetch = youtubeInput;
+    if (youtubeIdReadOnly && !youtubeInput.includes('http')) {
+        urlToFetch = `https://www.youtube.com/watch?v=${youtubeInput}`;
+    }
+
+    setIsFetching(true);
+    setFetchWarning(null);
+    setDebugLogs([]); 
+    addLog(`Stahuji data pro: ${urlToFetch}`);
+
+    try {
+      const res = await fetch(`/api/youtube/fetch-data?url=${encodeURIComponent(urlToFetch)}`);
+      const data = await res.json();
+
+      if (data.debugLogs) setDebugLogs(prev => [...data.debugLogs, ...prev]);
+      if (!res.ok) throw new Error(data.message || 'Chyba při stahování');
+
+      const shouldUpdate = (field: string) => !initialData || confirm(`Chcete přepsat ${field} novými daty z YouTube?`);
+
+      if (data.title && shouldUpdate('NÁZEV')) setTitle(data.title);
+      if (data.description && shouldUpdate('SHRNUTÍ')) setSummary(data.description);
+      
+      if (data.transcript) {
+        if (shouldUpdate('PŘEPIS')) {
+             setTranscript(data.transcript);
+             addLog('Přepis aktualizován.');
+        }
+      } else {
+        setFetchWarning('Metadata stažena, ale titulky nebyly nalezeny.');
+      }
+    } catch (err: any) {
+      addLog(`Chyba: ${err.message}`);
+      alert(`Chyba: ${err.message}`);
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
+  // --- 3. LOGIKA: AI Generátory ---
+  
+  // A) Kapitoly
+  const handleAiGenerateChapters = async () => {
+    if (!transcript) return;
+    setIsAiGeneratingChapters(true);
+    setDebugLogs([]); addLog('Generuji kapitoly...');
+    try {
+      const res = await fetch('/api/ai/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ transcript }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+      if (data.content) {
+          setStructuredContent(data.content);
+          addLog('Kapitoly vygenerovány.');
+      }
+    } catch (e: any) {
+        addLog(`Chyba: ${e.message}`);
+    } finally {
+        setIsAiGeneratingChapters(false);
+    }
+  };
+
+  // B) SEO Metadata
+  const handleAiGenerateSeo = async () => {
+    if (!transcript) return;
+    setIsAiGeneratingSeo(true);
+    setDebugLogs([]); addLog('Generuji SEO metadata...');
+    try {
+      const res = await fetch('/api/ai/generate-seo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ transcript }),
+      });
+      const jsonRes = await res.json();
+      if (!res.ok) throw new Error(jsonRes.message);
+      
+      const { data } = jsonRes;
+      addLog('SEO data přijata.');
+      
+      if (data.summary) setSeoSummary(data.summary);
+      if (data.keywords) setSeoKeywords(data.keywords.join(', '));
+      if (data.practical_tips) setPracticalTips(data.practical_tips);
+      if (data.suggestions) setAiSuggestions(data.suggestions);
+      
+    } catch (e: any) {
+        addLog(`Chyba SEO: ${e.message}`);
+    } finally {
+        setIsAiGeneratingSeo(false);
+    }
+  };
+
+  // C) FÁZE 14: AI MATCHMAKER LOGIC
+  const handleAiMatchCollections = async () => {
+    if (!title && !summary && !seoSummary) {
+        alert('Pro návrh zařazení je potřeba mít vyplněný alespoň název a shrnutí (nebo vygenerované SEO).');
+        return;
+    }
+
+    setIsAiMatching(true);
+    setAiProposals([]);
+    addLog('Spouštím AI Matchmaker...');
+
+    try {
+        const payload = {
+            videoContext: {
+                title,
+                summary: seoSummary || summary, // Preferujeme SEO summary
+                keywords: seoKeywords,
+                aiSuggestions: aiSuggestions.join(', ')
+            },
+            existingCollections: collections
+        };
+
+        const res = await fetch('/api/ai/match-collections', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Chyba při párování');
+
+        // 1. Aplikace shod (Matches) - Aditivní
+        if (data.matches && Array.isArray(data.matches)) {
+            const newMatches = data.matches.filter((id: string) => !selectedCollectionIds.includes(id));
+            if (newMatches.length > 0) {
+                setSelectedCollectionIds(prev => [...prev, ...newMatches]);
+                addLog(`Automaticky zaškrtnuto: ${newMatches.length} sbírek.`);
+            } else {
+                addLog('Žádné nové shody v existujících sbírkách.');
+            }
+        }
+
+        // 2. Návrhy (Proposals)
+        if (data.new_proposals && Array.isArray(data.new_proposals) && data.new_proposals.length > 0) {
+            setAiProposals(data.new_proposals);
+            addLog(`AI navrhuje ${data.new_proposals.length} nové sbírky.`);
+        } else {
+            addLog('AI nenavrhlo žádné nové sbírky.');
+        }
+
+    } catch (e: any) {
+        addLog(`Chyba Matchmaker: ${e.message}`);
+        console.error(e);
+    } finally {
+        setIsAiMatching(false);
+    }
+  };
+
+  // --- 4. HANDLERS UI ---
+  const handleAddTip = () => setPracticalTips([...practicalTips, '']);
+  const handleRemoveTip = (index: number) => setPracticalTips(practicalTips.filter((_, i) => i !== index));
+  const handleTipChange = (index: number, val: string) => {
+      const newTips = [...practicalTips];
+      newTips[index] = val;
+      setPracticalTips(newTips);
+  };
+  const toggleCollection = (id: string) => {
+      setSelectedCollectionIds(prev => prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]);
+  };
+
+  // --- 5. ODESLÁNÍ ---
+  const handleSubmitInternal = (e: FormEvent) => {
+      e.preventDefault();
+      const keywordsArray = seoKeywords.split(',').map(k => k.trim()).filter(k => k);
+      const tipsArray = practicalTips.filter(t => t.trim());
+
+      onSubmit({
+          youtubeUrl: youtubeInput,
+          title,
+          summary,
+          transcript,
+          structuredContent,
+          collectionIds: selectedCollectionIds,
+          seoSummary,
+          seoKeywords: keywordsArray,
+          practicalTips: tipsArray,
+          aiSuggestions
+      });
+  };
+
+  return (
+    <div className="space-y-8">
+        {/* LOG PANEL */}
+        {debugLogs.length > 0 && (
+            <div className="p-3 bg-black border border-gray-700 rounded font-mono text-xs text-green-400 max-h-48 overflow-y-auto">
+                <strong className="block mb-1 text-gray-500">SYSTEM LOG:</strong>
+                {debugLogs.map((log, i) => <div key={i}>{log}</div>)}
+            </div>
+        )}
+
+        <form onSubmit={handleSubmitInternal} className="space-y-8">
+            
+            {/* SEKVENCE 1: ZÁKLADNÍ INFO */}
+            <section className="space-y-4 border-b border-gray-700 pb-6">
+                <h2 className="text-xl font-semibold text-gray-200">Základní informace</h2>
+                
+                <div>
+                    <label className="block text-sm font-medium text-gray-300">
+                        {youtubeIdReadOnly ? 'YouTube ID' : 'YouTube URL'}
+                    </label>
+                    <div className="flex gap-2 mt-1">
+                        <input 
+                            type="text" 
+                            value={youtubeInput} 
+                            onChange={e => setYoutubeInput(e.target.value)} 
+                            disabled={youtubeIdReadOnly}
+                            className={`block w-full rounded-md border-gray-600 bg-gray-800 text-white p-2 ${youtubeIdReadOnly ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            placeholder="https://www.youtube.com/watch?v=..."
+                        />
+                        <button 
+                            type="button" 
+                            onClick={handleFetchFromYoutube} 
+                            disabled={isFetching || !youtubeInput}
+                            className="shrink-0 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded disabled:opacity-50 text-sm"
+                        >
+                            {isFetching ? 'Stahuji...' : (youtubeIdReadOnly ? '↻ Aktualizovat data' : 'Načíst z YouTube')}
+                        </button>
+                    </div>
+                    {fetchWarning && <p className="text-xs text-yellow-400 mt-1">{fetchWarning}</p>}
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-300">Název videa</label>
+                    <input type="text" value={title} onChange={e => setTitle(e.target.value)} required className="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 text-white p-2" />
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-300">Shrnutí / Popis</label>
+                    <textarea rows={3} value={summary} onChange={e => setSummary(e.target.value)} required className="mt-1 block w-full rounded-md border-gray-600 bg-gray-800 text-white p-2" />
+                </div>
+            </section>
+
+            {/* SEKVENCE 2: PŘEPIS (Přesunuto nahoru) */}
+            <section className="space-y-4 border-b border-gray-700 pb-6">
+                <h2 className="text-xl font-semibold text-gray-200">Přepis (Zdroj pro AI)</h2>
+                <textarea rows={6} value={transcript} onChange={e => setTranscript(e.target.value)} className="mt-1 block w-full bg-gray-900 text-white p-2 text-sm font-mono border-gray-600 rounded-md" placeholder="Zde bude text titulků..." />
+            </section>
+
+            {/* SEKVENCE 3: KAPITOLY (Přesunuto nahoru) */}
+            <section className="space-y-4 border-b border-gray-700 pb-6">
+                 <div className="flex justify-between items-end">
+                    <h2 className="text-xl font-semibold text-gray-200">Kapitoly</h2>
+                    <button type="button" onClick={handleAiGenerateChapters} disabled={!transcript || isAiGeneratingChapters} className="text-xs bg-purple-600 hover:bg-purple-700 text-white py-1 px-3 rounded flex items-center gap-2 disabled:opacity-50">
+                        {isAiGeneratingChapters ? '⚙️ Generuji...' : '✨ Generovat kapitoly'}
+                    </button>
+                </div>
+                <textarea rows={8} value={structuredContent} onChange={e => setStructuredContent(e.target.value)} className="mt-1 block w-full bg-gray-800 text-white p-2 font-mono border-gray-600 rounded-md" />
+            </section>
+
+            {/* SEKVENCE 4: SEO A SÉMANTIKA (Nyní před sbírkami) */}
+            <section className="space-y-6 bg-gradient-to-r from-gray-900 to-indigo-900/20 p-6 rounded-lg border border-indigo-500/30">
+                 <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                        <h2 className="text-xl font-bold text-indigo-100">SEO a Sémantika</h2>
+                        <span className="text-xs bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded border border-indigo-500/30">Fáze 12</span>
+                    </div>
+                    <button type="button" onClick={handleAiGenerateSeo} disabled={!transcript || isAiGeneratingSeo} className="text-sm bg-indigo-600 hover:bg-indigo-500 text-white py-2 px-4 rounded shadow-lg flex items-center gap-2 disabled:opacity-50">
+                        {isAiGeneratingSeo ? '⚙️ Analyzuji...' : '✨ Generovat SEO'}
+                    </button>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-1">AI Abstrakt</label>
+                    <textarea rows={3} value={seoSummary} onChange={e => setSeoSummary(e.target.value)} className="w-full bg-gray-800 text-white p-3 text-sm border-gray-600 rounded-md" />
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-1">Klíčová slova</label>
+                    <input type="text" value={seoKeywords} onChange={e => setSeoKeywords(e.target.value)} className="w-full bg-gray-800 text-white p-2 text-sm border-gray-600 rounded-md" />
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Praktické tipy</label>
+                    <div className="space-y-2">
+                        {practicalTips.map((tip, index) => (
+                            <div key={index} className="flex gap-2">
+                                <span className="text-gray-500 py-2 select-none">{index + 1}.</span>
+                                <input type="text" value={tip} onChange={e => handleTipChange(index, e.target.value)} className="flex-1 bg-gray-800 text-white p-2 text-sm border-gray-600 rounded-md" />
+                                <button type="button" onClick={() => handleRemoveTip(index)} className="px-3 text-red-400 hover:bg-red-900/30 rounded">✕</button>
+                            </div>
+                        ))}
+                        <button type="button" onClick={handleAddTip} className="text-xs text-indigo-400 font-medium py-1">+ Přidat tip</button>
+                    </div>
+                </div>
+
+                {aiSuggestions.length > 0 && (
+                    <div className="bg-indigo-900/30 p-3 rounded border border-indigo-500/20">
+                        <p className="text-xs text-indigo-300 font-bold mb-2">AI Návrhy sbírek:</p>
+                        <div className="flex flex-wrap gap-2">
+                            {aiSuggestions.map((sug, i) => <span key={i} className="text-xs bg-indigo-800/50 text-indigo-200 px-2 py-1 rounded-full">{sug}</span>)}
+                        </div>
+                    </div>
+                )}
+            </section>
+
+            {/* SEKVENCE 5: SBÍRKY (Přesunuto nakonec) */}
+            <section className="bg-gray-900 p-4 rounded-md border border-gray-700 relative overflow-hidden">
+                <div className="flex justify-between items-center mb-3">
+                    <h3 className="text-sm font-medium text-gray-300">Zařadit do sbírek</h3>
+                    
+                    {/* FÁZE 14: Tlačítko Matchmaker */}
+                    <button 
+                        type="button" 
+                        onClick={handleAiMatchCollections}
+                        disabled={isAiMatching}
+                        className="text-xs bg-indigo-600 hover:bg-indigo-500 text-white py-1.5 px-3 rounded shadow-lg flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {isAiMatching ? (
+                            <RefreshCw className="w-3 h-3 animate-spin" />
+                        ) : (
+                            <Sparkles className="w-3 h-3" />
+                        )}
+                        {isAiMatching ? 'Analyzuji...' : 'Navrhnout zařazení (AI)'}
+                    </button>
+                </div>
+
+                <div className="space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar border-b border-gray-800 pb-4 mb-4">
+                    {collections.length === 0 ? <p className="text-gray-500 text-sm italic">Žádné sbírky.</p> : 
+                        collections.map((col) => (
+                        <label key={col.id} className="flex items-center space-x-3 cursor-pointer hover:bg-gray-800 p-2 rounded transition-colors">
+                            <input 
+                                type="checkbox" 
+                                checked={selectedCollectionIds.includes(col.id)} 
+                                onChange={() => toggleCollection(col.id)} 
+                                className="h-4 w-4 rounded border-gray-600 bg-gray-700 text-indigo-600 focus:ring-indigo-500" 
+                            />
+                            <span className="text-sm text-gray-200">{col.name}</span>
+                        </label>
+                    ))}
+                </div>
+
+                {/* FÁZE 14: Zobrazení Návrhů (Evoluce) */}
+                {aiProposals.length > 0 && (
+                    <div className="bg-indigo-900/20 border border-indigo-500/30 rounded p-3 animate-in slide-in-from-top-2 fade-in duration-300">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Sparkles className="w-4 h-4 text-indigo-400" />
+                            <h4 className="text-sm font-bold text-indigo-300">💡 AI navrhuje nové téma:</h4>
+                        </div>
+                        
+                        {aiProposals.map((prop, idx) => (
+                            <div key={idx} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gray-800/50 p-2 rounded">
+                                <div>
+                                    <strong className="block text-white text-sm">{prop.name}</strong>
+                                    <p className="text-xs text-gray-400">{prop.description}</p>
+                                </div>
+                                <a 
+                                    href={`/admin/collections?name=${encodeURIComponent(prop.name)}&description=${encodeURIComponent(prop.description)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="shrink-0 flex items-center gap-1 text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded transition-colors"
+                                >
+                                    Vytvořit sbírku <ExternalLink className="w-3 h-3" />
+                                </a>
+                            </div>
+                        ))}
+                        <p className="text-[10px] text-gray-500 mt-2 text-center">
+                            Po vytvoření sbírky v novém okně klikněte znovu na "Navrhnout zařazení" pro aktualizaci seznamu.
+                        </p>
+                    </div>
+                )}
+            </section>
+
+            <div className="pt-4 border-t border-gray-700">
+                <button type="submit" disabled={isSubmitting} className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-8 rounded font-bold disabled:opacity-50">
+                    {isSubmitting ? 'Ukládání...' : submitButtonText}
+                </button>
+            </div>
+        </form>
+    </div>
+  );
+}
+```
+
+### `components/admin/CollectionForm.tsx`
+
+```typescript
+"use client";
+
+import { useState, FormEvent, useEffect } from 'react';
+import { Sparkles, Save, Eye, EyeOff, LayoutGrid, ArrowUp, Copy, BookOpen, Tag, Terminal } from 'lucide-react';
+
+export interface CollectionFormData {
+  name: string;
+  description: string;
+  keywords: string[];
+  isPublic: boolean;
+  seoTitle: string;
+  seoDescription: string;
+  seoKeywords: string[];
+  videos?: { id: string; title: string; thumbnailId: string }[];
+}
+
+interface CollectionFormProps {
+  initialData?: CollectionFormData;
+  collectionId?: string;
+  onSubmit: (data: CollectionFormData) => Promise<void>;
+  isSubmitting: boolean;
+  submitButtonText: string;
+}
+
+export default function CollectionForm({
+  initialData,
+  collectionId,
+  onSubmit,
+  isSubmitting,
+  submitButtonText
+}: CollectionFormProps) {
+  
+  const [name, setName] = useState(initialData?.name || '');
+  const [description, setDescription] = useState(initialData?.description || '');
+  const [keywords, setKeywords] = useState(initialData?.keywords?.join(', ') || '');
+  const [isPublic, setIsPublic] = useState(initialData?.isPublic || false);
+
+  const [seoTitle, setSeoTitle] = useState(initialData?.seoTitle || '');
+  const [seoDescription, setSeoDescription] = useState(initialData?.seoDescription || '');
+  const [seoKeywords, setSeoKeywords] = useState(initialData?.seoKeywords?.join(', ') || '');
+  
+  const [isAiGenerating, setIsAiGenerating] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [debugLogs, setDebugLogs] = useState<string[]>([]);
+
+  const addLog = (msg: string) => {
+      const time = new Date().toLocaleTimeString();
+      setDebugLogs(prev => [`[${time}] ${msg}`, ...prev]);
+  };
+
+  useEffect(() => {
+    if (initialData) {
+      setName(initialData.name);
+      setDescription(initialData.description || '');
+      setKeywords(initialData.keywords?.join(', ') || '');
+      setIsPublic(initialData.isPublic);
+      setSeoTitle(initialData.seoTitle || '');
+      setSeoDescription(initialData.seoDescription || '');
+      setSeoKeywords(initialData.seoKeywords?.join(', ') || '');
+    }
+  }, [initialData]);
+
+  const handleAiGenerate = async () => {
+    if (!collectionId) {
+        addLog('Chyba: Chybí ID sbírky. Uložte ji prosím.');
+        return;
+    }
+    
+    setIsAiGenerating(true);
+    setAiError(null);
+    setDebugLogs([]); 
+    addLog('🚀 Spouštím AI analýzu (Zrcadlo)...');
+
+    try {
+      addLog(`Cíl: API /api/ai/generate-collection-seo`);
+      
+      const res = await fetch('/api/ai/generate-collection-seo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ collectionId }),
+      });
+
+      const json = await res.json();
+      
+      if (!res.ok) throw new Error(json.message || 'Chyba generování');
+      
+      addLog('✅ Data z AI úspěšně přijata.');
+      
+      const { data } = json;
+      
+      // DIAGNOSTIKA: Vypíšeme, co přesně přišlo
+      const receivedKeys = Object.keys(data || {}).join(', ');
+      addLog(`🔍 Přijaté klíče: [${receivedKeys}]`);
+
+      let updatedCount = 0;
+
+      if (data.title) {
+          setSeoTitle(data.title);
+          addLog(`> Title: "${data.title.substring(0, 20)}..."`);
+          updatedCount++;
+      } else {
+          addLog('⚠️ Chybí "title" v odpovědi.');
+      }
+
+      if (data.description) {
+          setSeoDescription(data.description);
+          addLog('> Description: OK');
+          updatedCount++;
+      } else {
+          addLog('⚠️ Chybí "description" v odpovědi.');
+      }
+
+      if (data.keywords && Array.isArray(data.keywords)) {
+          setSeoKeywords(data.keywords.join(', '));
+          addLog(`> Keywords: ${data.keywords.length} ks`);
+          updatedCount++;
+      } else {
+          addLog('⚠️ Chybí "keywords" nebo není pole.');
+      }
+
+      if (updatedCount === 0) {
+          addLog('❌ VAROVÁNÍ: Žádná pole nebyla aktualizována! Zkontrolujte formát AI.');
+      } else {
+          addLog('✨ Proces úspěšně dokončen.');
+      }
+
+    } catch (e: any) {
+      setAiError(e.message);
+      addLog(`❌ CHYBA: ${e.message}`);
+    } finally {
+      setIsAiGenerating(false);
+    }
+  };
+
+  const adoptTitle = () => { setName(seoTitle); addLog('Použit AI název.'); };
+  const adoptDescription = () => { setDescription(seoDescription); addLog('Použit AI popis.'); };
+  const adoptKeywords = () => { setKeywords(seoKeywords); addLog('Použita AI klíčová slova.'); };
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    onSubmit({
+      name,
+      description,
+      keywords: keywords.split(',').map(k => k.trim()).filter(k => k),
+      isPublic,
+      seoTitle,
+      seoDescription,
+      seoKeywords: seoKeywords.split(',').map(k => k.trim()).filter(k => k)
+    });
+  };
+
+  return (
+    <div className="space-y-8">
+      
+      {/* LOG PANEL */}
+      {debugLogs.length > 0 && (
+          <div className="bg-black border border-gray-700 rounded-lg p-4 font-mono text-xs shadow-xl">
+              <div className="flex items-center gap-2 text-gray-400 border-b border-gray-800 pb-2 mb-2">
+                  <Terminal className="w-4 h-4" />
+                  <span className="uppercase tracking-wider font-bold">System Log</span>
+              </div>
+              <div className="max-h-40 overflow-y-auto space-y-1 custom-scrollbar">
+                  {debugLogs.map((log, i) => (
+                      <div key={i} className={log.includes('❌') ? 'text-red-400' : (log.includes('⚠️') ? 'text-yellow-400' : (log.includes('✅') || log.includes('✨') ? 'text-green-400' : 'text-gray-300'))}>
+                          {log}
+                      </div>
+                  ))}
+              </div>
+          </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-700 pb-6">
+            <div>
+                <h2 className="text-xl font-semibold text-gray-200 flex items-center gap-2">
+                    <LayoutGrid className="w-5 h-5 text-indigo-400" /> Nastavení Sbírky
+                </h2>
+                <p className="text-sm text-gray-400 mt-1">Definujte svůj záměr a porovnejte jej s realitou.</p>
+            </div>
+            
+            {collectionId && (
+                <button 
+                    type="button" 
+                    onClick={handleAiGenerate} 
+                    disabled={isAiGenerating || !initialData?.videos?.length}
+                    className="bg-indigo-600 hover:bg-indigo-500 text-white py-2 px-4 rounded shadow-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                >
+                    {isAiGenerating ? <>⚙️ Analyzuji...</> : <><Sparkles className="w-4 h-4" /> Aktualizovat AI Zrcadlo</>}
+                </button>
+            )}
+        </div>
+
+        {aiError && <div className="text-red-400 text-sm bg-red-900/20 p-2 rounded border border-red-500/30">{aiError}</div>}
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* ZÁMĚR UŽIVATELE */}
+            <div className="space-y-6">
+                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-green-500"></span> Váš Záměr (Definice)
+                </h3>
+                <div className="bg-gray-800/50 p-4 rounded-lg border border-gray-700 hover:border-gray-600 transition-colors">
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Název sbírky</label>
+                    <input type="text" value={name} onChange={e => setName(e.target.value)} required className="w-full bg-gray-900 text-white p-3 rounded border border-gray-600 focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-colors" />
+                </div>
+                <div className="bg-gray-800/50 p-4 rounded-lg border border-gray-700 hover:border-gray-600 transition-colors">
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Popis sbírky</label>
+                    <textarea rows={5} value={description} onChange={e => setDescription(e.target.value)} placeholder="Jaký je cíl této sbírky?" className="w-full bg-gray-900 text-white p-3 rounded border border-gray-600 focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-colors text-sm" />
+                </div>
+                <div className="bg-gray-800/50 p-4 rounded-lg border border-gray-700 hover:border-gray-600 transition-colors">
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Klíčová slova</label>
+                    <div className="relative">
+                        <Tag className="absolute left-3 top-3 w-4 h-4 text-gray-500" />
+                        <input type="text" value={keywords} onChange={e => setKeywords(e.target.value)} placeholder="věda, zdraví, historie..." className="w-full bg-gray-900 text-white p-3 pl-10 rounded border border-gray-600 focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-colors" />
+                    </div>
+                </div>
+                <div className="pt-2">
+                    <label className="flex items-center space-x-3 cursor-pointer bg-gray-800/50 px-4 py-3 rounded border border-gray-700 w-full hover:bg-gray-800 transition-colors">
+                        <input type="checkbox" checked={isPublic} onChange={e => setIsPublic(e.target.checked)} className="h-5 w-5 rounded border-gray-500 bg-gray-700 text-green-500 focus:ring-green-500" />
+                        <div className="flex items-center gap-2">
+                            {isPublic ? <Eye className="w-4 h-4 text-green-400" /> : <EyeOff className="w-4 h-4 text-gray-400" />}
+                            <span className={`font-medium ${isPublic ? 'text-green-400' : 'text-gray-400'}`}>
+                                {isPublic ? 'Veřejná sbírka' : 'Soukromá sbírka'}
+                            </span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            {/* AI ZRCADLO */}
+            <div className="space-y-6">
+                <h3 className="text-sm font-bold text-indigo-300 uppercase tracking-wider flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-indigo-400" /> AI Zrcadlo (Realita)
+                </h3>
+                
+                {!seoTitle && !seoDescription ? (
+                    <div className="h-full flex flex-col items-center justify-center p-8 border-2 border-dashed border-gray-700 rounded-lg text-center min-h-[300px]">
+                        <p className="text-gray-500 mb-2">Zatím nebylo provedeno srovnání.</p>
+                        <p className="text-xs text-gray-600">Klikněte na "Aktualizovat AI Zrcadlo" pro analýzu videí.</p>
+                    </div>
+                ) : (
+                    <>
+                        <div className="bg-indigo-900/10 p-4 rounded-lg border border-indigo-500/20 hover:border-indigo-500/40 transition-colors relative group">
+                            <label className="block text-xs font-bold text-indigo-300 mb-2 uppercase">AI Návrh Názvu</label>
+                            <p className="text-white font-medium p-2">{seoTitle}</p>
+                            {name !== seoTitle && (
+                                <button onClick={adoptTitle} title="Použít tento název" type="button" className="absolute top-3 right-3 p-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded shadow-sm opacity-0 group-hover:opacity-100 transition-all transform hover:scale-105">
+                                    <ArrowUp className="w-4 h-4 rotate-[-45deg] lg:rotate-[-90deg]" /> 
+                                </button>
+                            )}
+                        </div>
+                        <div className="bg-indigo-900/10 p-4 rounded-lg border border-indigo-500/20 hover:border-indigo-500/40 transition-colors relative group">
+                            <label className="block text-xs font-bold text-indigo-300 mb-2 uppercase">AI Syntéza Popisu</label>
+                            <p className="text-gray-300 text-sm p-2 leading-relaxed">{seoDescription}</p>
+                            {description !== seoDescription && (
+                                <button onClick={adoptDescription} title="Použít tento popis" type="button" className="absolute top-3 right-3 p-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded shadow-sm opacity-0 group-hover:opacity-100 transition-all transform hover:scale-105">
+                                    <Copy className="w-4 h-4" />
+                                </button>
+                            )}
+                        </div>
+                        <div className="bg-indigo-900/10 p-4 rounded-lg border border-indigo-500/20 hover:border-indigo-500/40 transition-colors relative group">
+                            <label className="block text-xs font-bold text-indigo-300 mb-2 uppercase">AI Tagy</label>
+                            <div className="flex flex-wrap gap-2 p-2">
+                                {seoKeywords.split(',').map((k, i) => k.trim() && (
+                                    <span key={i} className="text-xs bg-indigo-900/40 text-indigo-200 px-2 py-1 rounded border border-indigo-500/30">{k}</span>
+                                ))}
+                            </div>
+                            {keywords !== seoKeywords && (
+                                <button onClick={adoptKeywords} title="Použít tato klíčová slova" type="button" className="absolute top-3 right-3 p-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded shadow-sm opacity-0 group-hover:opacity-100 transition-all transform hover:scale-105">
+                                    <Copy className="w-4 h-4" />
+                                </button>
+                            )}
+                        </div>
+                    </>
+                )}
+            </div>
+        </div>
+
+        {/* KONTEXT */}
+        {initialData?.videos && initialData.videos.length > 0 && (
+            <section className="border-t border-gray-700 pt-6">
+                <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <BookOpen className="w-4 h-4" /> Obsah Sbírky ({initialData.videos.length})
+                </h2>
+                <div className="flex gap-3 overflow-x-auto pb-4 custom-scrollbar">
+                    {initialData.videos.map(v => (
+                        <div key={v.id} className="shrink-0 w-40 group cursor-default">
+                            <div className="aspect-video bg-gray-800 rounded-md overflow-hidden relative shadow-md">
+                                <img src={`https://img.youtube.com/vi/${v.thumbnailId}/mqdefault.jpg`} alt="" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                            </div>
+                            <p className="text-xs text-gray-400 mt-2 line-clamp-2 leading-tight group-hover:text-gray-200 transition-colors">{v.title}</p>
+                        </div>
+                    ))}
+                </div>
+            </section>
+        )}
+
+        <div className="pt-6 border-t border-gray-700 flex justify-end sticky bottom-0 bg-gray-900/90 p-4 -mx-4 backdrop-blur-sm">
+            <button type="submit" disabled={isSubmitting} className="bg-green-600 hover:bg-green-700 text-white py-3 px-8 rounded font-bold disabled:opacity-50 flex items-center gap-2 shadow-lg hover:shadow-green-500/20 transition-all">
+                <Save className="w-5 h-5" />
+                {isSubmitting ? 'Ukládám změny...' : submitButtonText}
+            </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+```
+
+### `app/admin/dashboard/page.tsx`
+
+```typescript
+import { PrismaClient } from '@prisma/client';
+import { getServerSession } from 'next-auth';
+import { redirect } from 'next/navigation';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import Link from 'next/link';
+// 1. Importujeme naši novou sdílenou komponentu
+import VideoGrid from '@/components/VideoGrid';
+
+const prisma = new PrismaClient();
+
+export const dynamic = 'force-dynamic';
+
+export default async function AdminDashboardPage() {
+  // 1. Bezpečnostní kontrola na serveru (zůstává)
+  const session = await getServerSession(authOptions);
+
+  if (!session || session.user?.role !== 'ADMIN') {
+    redirect('/');
+  }
+
+  // 2. Načtení dat z databáze
+  // AKTUALIZACE: Ponecháváme načítání autora, jak je ve vašem souboru.
+  // To je důležité pro VideoGrid.
+  const videos = await prisma.video.findMany({
+    orderBy: {
+      createdAt: 'desc',
+    },
+    include: {
+      author: {
+        select: {
+            email: true
+        }
+      },
+      // PŘIDÁNO: Načtení názvů a ID přiřazených sbírek
+      collections: {
+        select: {
+          id: true,
+          name: true
+        }
+      }
+    }
+  });
+
+  // 3. Vykreslení UI
+  return (
+    <main className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold">Přehled Obsahu (Admin Dashboard)</h1>
+        <Link
+          href="/admin/add"
+          className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition-colors"
+        >
+          + Přidat nové video
+        </Link>
+      </div>
+
+      {/* AKTUALIZACE: Celý původní blok (<div className="grid...">...</div>) 
+        je nyní nahrazen touto jedinou komponentou.
+      */}
+      <VideoGrid videos={videos} baseHref="/video" showEditButton={true} />
+      
+    </main>
+  );
+}
+```
+
+### `app/admin/manage/page.tsx`
+
+```typescript
+import { PrismaClient } from '@prisma/client';
+import { getServerSession } from 'next-auth';
+import { redirect } from 'next/navigation';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import Link from 'next/link';
+import DeleteButton from '@/components/DeleteButton'; // Importujeme novou komponentu
+
+const prisma = new PrismaClient();
+
+// Zajistí, že se stránka při každém načtení přegeneruje (dynamické)
+export const dynamic = 'force-dynamic'; 
+
+export default async function AdminManagePage() {
+  const session = await getServerSession(authOptions);
+
+  // Ochrana stránky
+  if (!session || session.user?.role !== 'ADMIN') {
+    redirect('/');
+  }
+
+  // Načítání dat na základě role (příprava na budoucí roli KURATOR)
+  // OPRAVA CHYBY: Musíme sestavit argumenty a zavolat findMany jen jednou.
+     
+  // 1. Definujeme 'where' podmínku na základě role
+  const whereCondition = 
+    session.user.role === 'ADMIN' 
+    ? {} // Admin vidí vše (prázdná podmínka)
+    : { authorId: session.user.id }; // Ostatní jen své
+
+  // 2. Zavoláme findMany POUZE JEDNOU s finálními argumenty
+  const videos = await prisma.video.findMany({
+    where: whereCondition, // Aplikujeme podmínku
+    orderBy: {
+      createdAt: 'desc',
+    },
+    select: {
+      id: true,
+      title: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  return (
+    <main className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold">Správa Obsahu</h1>
+        <Link
+          href="/admin/add"
+          className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition-colors"
+        >
+          + Přidat nové video
+        </Link>
+      </div>
+
+      <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead className="bg-gray-50 dark:bg-gray-700">
+            <tr>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Název
+              </th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Datum přidání
+              </th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Posl. úprava
+              </th>
+              <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Akce
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            {videos.length === 0 ? (
+              <tr>
+                <td colSpan={4} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                  Nebyla nalezena žádná videa.
+                </td>
+              </tr>
+            ) : (
+              videos.map((video) => (
+                <tr key={video.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900 dark:text-white">{video.title}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                    {new Date(video.createdAt).toLocaleDateString('cs-CZ')}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                    {new Date(video.updatedAt).toLocaleDateString('cs-CZ')}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
+                    <Link
+                      href={`/admin/edit/${video.id}`}
+                      className="text-indigo-500 hover:text-indigo-700 hover:underline"
+                    >
+                      Editovat
+                    </Link>
+                    <DeleteButton videoId={video.id} />
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </main>
+  );
+}
+```
+
+### `app/admin/add/page.tsx`
+
+```typescript
+"use client";
+
+import { useState, useEffect } from 'react';
+import VideoForm, { VideoFormData } from '@/components/admin/VideoForm';
+import { useRouter } from 'next/navigation';
+
+export default function AddVideoPage() {
+  const router = useRouter();
+  const [collections, setCollections] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Načtení seznamu sbírek pro výběr
+  useEffect(() => {
+    fetch('/api/collections').then(res => res.json()).then(data => setCollections(data));
+  }, []);
+
+  const handleSubmit = async (data: VideoFormData) => {
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/videos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.message || 'Chyba při ukládání');
+      }
+
+      router.push('/admin/manage');
+    } catch (err: any) {
+      setError(err.message);
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
+      <h1 className="text-2xl font-bold mb-6">Přidat nové video</h1>
+      
+      {error && <div className="mb-4 p-3 bg-red-900/30 border border-red-500 rounded text-red-400">{error}</div>}
+      
+      <VideoForm 
+        collections={collections} 
+        onSubmit={handleSubmit} 
+        isSubmitting={isSubmitting} 
+        submitButtonText="Uložit video" 
+      />
+    </div>
+  );
+}
+```
+
+### `app/admin/edit/[id]/page.tsx`
+
+```typescript
+"use client";
+
+import { useState, useEffect } from 'react';
+import VideoForm, { VideoFormData } from '@/components/admin/VideoForm';
+import { useRouter, useParams } from 'next/navigation';
+
+export default function EditVideoPage() {
+  const router = useRouter();
+  const params = useParams();
+  const id = params.id as string;
+
+  const [initialData, setInitialData] = useState<VideoFormData | undefined>(undefined);
+  const [collections, setCollections] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Načtení dat videa a sbírek
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const [vidRes, colRes] = await Promise.all([
+          fetch(`/api/videos/${id}`),
+          fetch('/api/collections')
+        ]);
+        
+        if (!vidRes.ok) throw new Error('Chyba načítání videa');
+        
+        const v = await vidRes.json();
+        const c = await colRes.json();
+
+        setCollections(c);
+        
+        // Transformace dat z DB do formátu VideoFormData
+        setInitialData({
+          youtubeUrl: v.youtubeId, // Zde předáváme ID, komponenta to pozná díky youtubeIdReadOnly
+          title: v.title,
+          summary: v.summary,
+          transcript: v.transcript || '',
+          structuredContent: v.chapters?.map((ch: any) => ch.text).join('\n') || '',
+          collectionIds: v.collections?.map((col: any) => col.id) || [],
+          seoSummary: v.seoSummary || '',
+          seoKeywords: v.seoKeywords || [],
+          practicalTips: v.practicalTips || [],
+          aiSuggestions: v.aiSuggestions || []
+        });
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    load();
+  }, [id]);
+
+  const handleSubmit = async (data: VideoFormData) => {
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/videos/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.message || 'Chyba aktualizace');
+      }
+
+      router.push('/admin/manage');
+    } catch (err: any) {
+      setError(err.message);
+      setIsSubmitting(false);
+    }
+  };
+
+  if (isLoading) return <p className="text-center p-8">Načítám...</p>;
+
+  return (
+    <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
+      <h1 className="text-2xl font-bold mb-6">Upravit video</h1>
+      
+      {error && <div className="mb-4 p-3 bg-red-900/30 border border-red-500 rounded text-red-400">{error}</div>}
+      
+      {initialData && (
+        <VideoForm 
+          initialData={initialData}
+          collections={collections} 
+          onSubmit={handleSubmit} 
+          isSubmitting={isSubmitting} 
+          submitButtonText="Uložit změny"
+          youtubeIdReadOnly={true} // V editaci neměníme ID videa
+        />
+      )}
+    </div>
+  );
+}
+```
+
+### `app/admin/collections/page.tsx`
+
+```typescript
+import { PrismaClient } from '@prisma/client';
+import { getServerSession } from 'next-auth';
+import { redirect } from 'next/navigation';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import Link from 'next/link';
+import { Plus, Edit, Eye, EyeOff, Trash2 } from 'lucide-react';
+
+const prisma = new PrismaClient();
+
+export const dynamic = 'force-dynamic';
+
+export default async function CollectionsPage() {
+  const session = await getServerSession(authOptions);
+
+  if (!session || session.user?.role !== 'ADMIN') {
+    redirect('/');
+  }
+
+  // Načtení sbírek včetně počtu videí a SEO statusu
+  const collections = await prisma.collection.findMany({
+    orderBy: { updatedAt: 'desc' },
+    include: {
+      _count: {
+        select: { videos: true }
+      }
+    }
+  });
+
+  return (
+    <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+      <div className="flex justify-between items-center mb-8">
+        <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Správa Sbírek</h1>
+            <p className="text-gray-500 mt-1">Ekosystém vašich tématických knihoven</p>
+        </div>
+        <Link
+          href="/admin/collections/add"
+          className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-5 rounded-lg transition-colors flex items-center gap-2 shadow-sm"
+        >
+          <Plus className="w-5 h-5" /> Nová Sbírka
+        </Link>
+      </div>
+
+      <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead className="bg-gray-50 dark:bg-gray-900/50">
+            <tr>
+              <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                Název Sbírky
+              </th>
+              <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                Obsah
+              </th>
+              <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                Viditelnost
+              </th>
+              <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                SEO Status
+              </th>
+              <th scope="col" className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                Akce
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            {collections.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
+                  <p className="mb-2">Zatím zde nejsou žádné sbírky.</p>
+                  <p className="text-sm">Vytvořte první pomocí tlačítka "Nová Sbírka".</p>
+                </td>
+              </tr>
+            ) : (
+              collections.map((col) => (
+                <tr key={col.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                  <td className="px-6 py-4">
+                    <div className="text-sm font-bold text-gray-900 dark:text-white mb-0.5">{col.name}</div>
+                    <div className="text-xs text-gray-500 line-clamp-1">{col.description || 'Bez popisu'}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                      {col._count.videos} videí
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {col.isPublic ? (
+                        <div className="flex items-center text-green-500 text-sm gap-1.5">
+                            <Eye className="w-4 h-4" /> <span className="font-medium">Veřejná</span>
+                        </div>
+                    ) : (
+                        <div className="flex items-center text-gray-400 text-sm gap-1.5">
+                            <EyeOff className="w-4 h-4" /> <span>Soukromá</span>
+                        </div>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {col.seoDescription ? (
+                        <span className="text-xs text-green-500 flex items-center gap-1">● Vyplněno</span>
+                    ) : (
+                        <span className="text-xs text-yellow-500 flex items-center gap-1">○ Chybí</span>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <Link
+                      href={`/admin/collections/edit/${col.id}`}
+                      className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 inline-flex items-center gap-1"
+                    >
+                      <Edit className="w-4 h-4" /> Upravit
+                    </Link>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+```
+
+### `app/admin/collections/add/page.tsx`
+
+```typescript
+"use client";
+
+import { useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import CollectionForm, { CollectionFormData } from '@/components/admin/CollectionForm';
+
+// 1. Oddělená komponenta pro logiku, která potřebuje URL parametry
+function AddCollectionContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Předvyplnění z URL (pokud přicházíme z AI Matchmakeru)
+  const prefilledName = searchParams.get('name') || '';
+  const prefilledDesc = searchParams.get('description') || '';
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const initialData: CollectionFormData = {
+      name: prefilledName,
+      description: prefilledDesc, // Pokud AI navrhla popis, dáme ho do user description jako start
+      keywords: [],
+      isPublic: false,
+      
+      // AI pole necháme prázdná, dokud neproběhne "Zrcadlo"
+      seoTitle: '',
+      seoDescription: '',
+      seoKeywords: [],
+      
+      videos: []
+  };
+
+  const handleSubmit = async (data: CollectionFormData) => {
+    setIsSubmitting(true);
+    try {
+      const res = await fetch('/api/collections', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (!res.ok) throw new Error('Chyba při vytváření');
+
+      router.push('/admin/collections');
+      router.refresh();
+    } catch (err: any) {
+      alert(err.message);
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold">Nová Sbírka</h1>
+        <p className="text-gray-500 text-sm">Vytvořte novou tématickou sbírku.</p>
+        
+        {prefilledName && (
+            <div className="mt-4 bg-indigo-900/20 border border-indigo-500/30 p-3 rounded text-sm text-indigo-300">
+                ✨ Tato sbírka byla navržena umělou inteligencí. Údaje byly předvyplněny.
+            </div>
+        )}
+      </div>
+      
+      <CollectionForm 
+        initialData={initialData}
+        onSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
+        submitButtonText="Vytvořit sbírku"
+      />
+    </div>
+  );
+}
+
+// 2. Hlavní exportovaná stránka, která zajišťuje Suspense boundary
+export default function AddCollectionPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-gray-500">Načítám formulář...</div>}>
+      <AddCollectionContent />
+    </Suspense>
+  );
+}
+```
+
+### `app/admin/collections/edit/[id]/page.tsx`
+
+```typescript
+"use client";
+
+import { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
+import CollectionForm, { CollectionFormData } from '@/components/admin/CollectionForm';
+
+export default function EditCollectionPage() {
+  const router = useRouter();
+  const params = useParams();
+  const id = params.id as string;
+
+  const [initialData, setInitialData] = useState<CollectionFormData | undefined>(undefined);
+  const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await fetch(`/api/collections/${id}`);
+        if (!res.ok) throw new Error('Sbírka nenalezena');
+        const data = await res.json();
+
+        // OPRAVA: Mapování všech polí (Záměr + Zrcadlo)
+        setInitialData({
+          // 1. Záměr Uživatele
+          name: data.name,
+          description: data.description || '', // <--- PŘIDÁNO
+          keywords: data.keywords || [],       // <--- PŘIDÁNO
+          isPublic: data.isPublic,
+          
+          // 2. AI Zrcadlo
+          seoTitle: data.seoTitle || '',       // <--- PŘIDÁNO
+          seoDescription: data.seoDescription || '',
+          seoKeywords: data.seoKeywords || [],
+
+          // 3. Kontext
+          videos: data.videos?.map((v: any) => ({
+             id: v.id,
+             title: v.title,
+             thumbnailId: v.youtubeId
+          })) || []
+        });
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, [id]);
+
+  const handleSubmit = async (data: CollectionFormData) => {
+    setIsSubmitting(true);
+    try {
+      const res = await fetch(`/api/collections/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (!res.ok) throw new Error('Chyba při ukládání');
+
+      router.push('/admin/collections');
+      router.refresh();
+    } catch (err: any) {
+      alert(err.message);
+      setIsSubmitting(false);
+    }
+  };
+
+  if (loading) return <div className="p-8 text-center text-gray-500">Načítám editor sbírky...</div>;
+  if (error) return <div className="p-8 text-center text-red-500">Chyba: {error}</div>;
+
+  return (
+    <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold">Editace Sbírky</h1>
+        <p className="text-gray-500 text-sm">Spravujte metadata a generujte AI popis z obsahu.</p>
+      </div>
+      
+      <CollectionForm 
+        initialData={initialData}
+        collectionId={id} 
+        onSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
+        submitButtonText="Uložit změny"
+      />
+    </div>
+  );
+}
+```
+
+### `app/api/auth/[...nextauth]/route.ts`
+
+```typescript
+import NextAuth, { AuthOptions } from "next-auth"; // <-- Importujeme AuthOptions
+import { PrismaClient } from "@prisma/client";
+import CredentialsProvider from "next-auth/providers/credentials";
+import * as bcrypt from "bcrypt";
+
+const prisma = new PrismaClient();
+
+// Explicitně typujeme naše volby, aby TypeScript mohl odvodit
+// typy pro všechny callbacky (tím se zbavíme chyby 'any').
+export const authOptions: AuthOptions = {
+  providers: [
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email },
+        });
+
+        if (!user) {
+          return null;
+        }
+
+        const isPasswordValid = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
+
+        if (!isPasswordValid) {
+          return null;
+        }
+
+        // Vracíme objekt, který odpovídá naší rozšířené definici 'User'
+        // (viz types/next-auth.d.ts)
+        return {
+          id: user.id,
+          email: user.email,
+          role: user.role, // Prisma enum (USER/ADMIN) je kompatibilní se stringem
+        };
+      },
+    }),
+  ],
+  session: {
+    strategy: "jwt",
+  },
+  callbacks: {
+    // Díky AuthOptions a typovému souboru již TypeScript ví,
+    // že 'token' je JWT a 'user' je náš rozšířený User.
+    async jwt({ token, user }) {
+      // Při prvním přihlášení (kdy 'user' existuje) přeneseme data do tokenu
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+      }
+      return token;
+    },
+    // Zde přeneseme data z tokenu (který je v cookie) do session
+    // (kterou vidí klient)
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id;
+        session.user.role = token.role;
+      }
+      return session;
+    },
+  },
+  pages: {
+    signIn: "/login",
+  },
+};
+
+const handler = NextAuth(authOptions);
+
+export { handler as GET, handler as POST };
+
+```
+
+### `app/api/videos/route.ts`
+
+```typescript
+import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { parseStructuredContent } from '@/lib/parser';
+
+const globalForPrisma = global as unknown as { prisma: PrismaClient };
+const prisma = globalForPrisma.prisma || new PrismaClient();
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+
+function extractYouTubeId(url: string): string | null {
+  const regex =
+    /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+  const match = url.match(regex);
+  return match ? match[1] : null;
+}
+
+export async function POST(request: Request) {
+  try {
+    // 1. Ověření sezení a role
+    const session = await getServerSession(authOptions);
+
+    if (!session || session.user?.role !== 'ADMIN') {
+      return new NextResponse(JSON.stringify({ message: 'Unauthorized' }), {
+        status: 403,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    // 2. Zpracování požadavku
+    const body = await request.json();
+    // NOVÉ: Přijímáme i 'transcript'
+    const { youtubeUrl, title, summary, structuredContent, transcript } = body;
+
+    if (!youtubeUrl || !title || !summary) {
+      return new NextResponse(JSON.stringify({ message: 'Missing required fields' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    const youtubeId = extractYouTubeId(youtubeUrl);
+    if (!youtubeId) {
+      return new NextResponse(JSON.stringify({ message: 'Invalid YouTube URL' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    // 3. Parsování kapitol
+    const parsedChapters = parseStructuredContent(structuredContent || '');
+
+    // 4. Transakce (Video + Transcript + Kapitoly)
+    const newVideo = await prisma.$transaction(async (tx) => {
+      // A. Vytvoření videa
+      const video = await tx.video.create({
+        data: {
+          youtubeId: youtubeId,
+          title: title,
+          summary: summary,
+          authorId: session.user.id,
+        },
+      });
+
+      // B. Uložení přepisu (pokud existuje) - NOVÉ
+      if (transcript && transcript.trim() !== '') {
+        await tx.transcript.create({
+          data: {
+            videoId: video.id,
+            content: transcript,
+            language: 'cs', // Defaultně předpokládáme češtinu, nebo dle detekce
+          }
+        });
+      }
+
+      // C. Vytvoření kapitol
+      if (parsedChapters.length > 0) {
+        const chapterData = parsedChapters.map((chapter, index) => ({
+          ...chapter,
+          order: index,
+          videoId: video.id,
+        }));
+
+        await tx.chapter.createMany({
+          data: chapterData,
+        });
+      }
+
+      return video;
+    });
+
+    return new NextResponse(JSON.stringify(newVideo), {
+      status: 201,
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message.startsWith('Neplatný formát řádku')) {
+        return new NextResponse(JSON.stringify({ message: error.message }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+      if ((error as any).code === 'P2002') {
+        return new NextResponse(JSON.stringify({ message: 'Video with this ID already exists' }), {
+          status: 409,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
+    console.error('API_VIDEOS_POST_ERROR', error);
+    return new NextResponse(JSON.stringify({ message: 'Internal Server Error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+}
+```
+
+### `app/api/videos/[id]/route.ts`
+
+```typescript
+import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { parseStructuredContent } from '@/lib/parser';
+
+const prisma = new PrismaClient();
+
+async function checkPermissions(
+  videoId: string,
+  session: any
+): Promise<{ allowed: boolean; video: any; error?: NextResponse }> {
+  if (!session) {
+    return {
+      allowed: false,
+      video: null,
+      error: new NextResponse(JSON.stringify({ message: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    };
+  }
+
+  const video = await prisma.video.findUnique({
+    where: { id: videoId },
+    include: { 
+      chapters: { orderBy: { order: 'asc' } },
+      collections: true,
+      transcript: true 
+    },
+  });
+
+  if (!video) {
+    return {
+      allowed: false,
+      video: null,
+      error: new NextResponse(JSON.stringify({ message: 'Video not found' }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    };
+  }
+
+  const isOwner = video.authorId === session.user.id;
+  const isAdmin = session.user.role === 'ADMIN';
+
+  if (!isOwner && !isAdmin) {
+    return {
+      allowed: false,
+      video: video,
+      error: new NextResponse(JSON.stringify({ message: 'Forbidden' }), {
+        status: 403,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    };
+  }
+
+  const videoResponse = {
+    ...video,
+    transcript: video.transcript?.content || null 
+  };
+
+  return { allowed: true, video: videoResponse };
+}
+
+export async function GET(
+  request: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await getServerSession(authOptions);
+    const params = await context.params;
+    const { id } = params; 
+
+    const { allowed, video, error } = await checkPermissions(id, session);
+    if (!allowed) return error;
+
+    return NextResponse.json(video);
+  } catch (error) {
+    console.error('API_VIDEOS_GET_ERROR', error);
+    return new NextResponse(JSON.stringify({ message: 'Internal Server Error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+}
+
+export async function PUT(
+  request: Request,
+  context: { params: Promise<{ id:string }> }
+) {
+  try {
+    const session = await getServerSession(authOptions);
+    const params = await context.params;
+    const { id } = params;
+
+    const { allowed, error } = await checkPermissions(id, session);
+    if (!allowed) return error;
+
+    const body = await request.json();
+    
+    const { 
+      title, 
+      summary, 
+      structuredContent, 
+      collectionIds, 
+      transcript,
+      seoSummary,
+      seoKeywords,
+      practicalTips,
+      aiSuggestions
+    } = body;
+
+    const parsedChapters = parseStructuredContent(structuredContent || '');
+
+    const updatedVideo = await prisma.$transaction(async (tx) => {
+      
+      // --- FIX P2025: SANITIZACE SBÍREK ---
+      // Před pokusem o update ověříme, která ID skutečně existují v databázi.
+      // Tím předejdeme chybě "Expected X records, found Y".
+      let validCollectionIds: string[] = [];
+      
+      if (collectionIds && Array.isArray(collectionIds) && collectionIds.length > 0) {
+        const existingCollections = await tx.collection.findMany({
+          where: {
+            id: { in: collectionIds }
+          },
+          select: { id: true }
+        });
+        
+        validCollectionIds = existingCollections.map(c => c.id);
+        
+        // Volitelné: Logování, pokud se počty neshodují (pro debug)
+        if (validCollectionIds.length !== collectionIds.length) {
+           console.warn(`Warning: Attempted to link ${collectionIds.length} collections, but only ${validCollectionIds.length} exist.`);
+        }
+      }
+
+      // 1. Aktualizace videa
+      const video = await tx.video.update({
+        where: { id: id },
+        data: {
+          title,
+          summary,
+          // Nová pole Fáze 12
+          seoSummary,
+          seoKeywords: seoKeywords || [],
+          practicalTips: practicalTips || [],
+          aiSuggestions: aiSuggestions || [],
+          // --------------
+          updatedAt: new Date(),
+          collections: {
+            // Použijeme POUZE existující ID
+            set: validCollectionIds.map((cid) => ({ id: cid }))
+          },
+        },
+      });
+
+      // 2. Aktualizace Přepisu
+      if (transcript !== undefined) {
+        await tx.transcript.upsert({
+          where: { videoId: id },
+          create: {
+            videoId: id,
+            content: transcript,
+          },
+          update: {
+            content: transcript,
+          },
+        });
+      }
+
+      // 3. Aktualizace kapitol
+      await tx.chapter.deleteMany({
+        where: { videoId: id },
+      });
+
+      if (parsedChapters.length > 0) {
+        const chapterData = parsedChapters.map((chapter, index) => ({
+          ...chapter,
+          order: index,
+          videoId: id,
+        }));
+        await tx.chapter.createMany({
+          data: chapterData,
+        });
+      }
+
+      return video;
+    });
+
+    return NextResponse.json(updatedVideo);
+  } catch (error: any) {
+    if (error.message.startsWith('Neplatný formát řádku')) {
+      return new NextResponse(JSON.stringify({ message: error.message }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    console.error('API_VIDEOS_PUT_ERROR', error);
+    // Vracíme error i s detailem pro snazší debug na klientovi
+    return new NextResponse(JSON.stringify({ message: 'Internal Server Error', detail: error.message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+}
+
+export async function DELETE(
+  request: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await getServerSession(authOptions);
+    const params = await context.params;
+    const { id } = params;
+
+    const { allowed, error } = await checkPermissions(id, session);
+    if (!allowed) return error;
+
+    await prisma.video.delete({
+      where: { id: id },
+    });
+
+    return new NextResponse(null, { status: 204 });
+  } catch (error) {
+    console.error('API_VIDEOS_DELETE_ERROR', error);
+    return new NextResponse(JSON.stringify({ message: 'Internal Server Error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+}
+```
+
+### `app/api/collections/route.ts`
+
+```typescript
+import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+
+const prisma = new PrismaClient();
+
+// POST: Vytvoření nové sbírky
+export async function POST(request: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || session.user?.role !== 'ADMIN') { 
+      return new NextResponse(JSON.stringify({ message: 'Unauthorized' }), { status: 403 });
+    }
+
+    const body = await request.json();
+    const { name, description } = body;
+
+    if (!name) {
+      return new NextResponse(JSON.stringify({ message: 'Name is required' }), { status: 400 });
+    }
+
+    const collection = await prisma.collection.create({
+      data: {
+        name,
+        description,
+        authorId: session.user.id,
+        isPublic: false,
+      },
+    });
+
+    return NextResponse.json(collection, { status: 201 });
+  } catch (error) {
+    console.error('API_COLLECTIONS_POST_ERROR', error);
+    return new NextResponse(JSON.stringify({ message: 'Internal Error' }), { status: 500 });
+  }
+}
+
+// GET: Seznam sbírek (Respektuje RBAC)
+export async function GET(request: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return new NextResponse(JSON.stringify({ message: 'Unauthorized' }), { status: 401 });
+    }
+
+    const where = session.user.role === 'ADMIN' ? {} : { authorId: session.user.id };
+
+    const collections = await prisma.collection.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      include: { _count: { select: { videos: true } } } 
+    });
+
+    return NextResponse.json(collections);
+  } catch (error) {
+    console.error('API_COLLECTIONS_GET_ERROR', error);
+    return new NextResponse(JSON.stringify({ message: 'Internal Error' }), { status: 500 });
+  }
+}
+
+```
+
+### `app/api/collections/[id]/route.ts`
+
+```typescript
+import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+
+export const dynamic = 'force-dynamic';
+const prisma = new PrismaClient();
+
+async function checkPermissions(collectionId: string, session: any) {
+  if (!session) return { allowed: false, code: 401, message: 'No session' };
+  try {
+    const collection = await prisma.collection.findUnique({ where: { id: collectionId } });
+    if (!collection) return { allowed: false, code: 404, message: 'Not found' };
+    if (collection.authorId !== session.user.id && session.user.role !== 'ADMIN') return { allowed: false, code: 403, message: 'Forbidden' };
+    return { allowed: true, collection };
+  } catch (e) { return { allowed: false, code: 500, message: 'DB Error' }; }
+}
+
+export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
+    const session = await getServerSession(authOptions);
+    const { id } = await context.params;
+    const { allowed, code, message } = await checkPermissions(id, session);
+    if (!allowed) return new NextResponse(JSON.stringify({ message }), { status: code });
+
+    const collection = await prisma.collection.findUnique({
+        where: { id },
+        include: { videos: { select: { id: true, title: true, youtubeId: true } } }
+    });
+    return NextResponse.json(collection);
+}
+
+export async function PUT(request: Request, context: { params: Promise<{ id: string }> }) {
+  try {
+    const session = await getServerSession(authOptions);
+    const { id } = await context.params;
+    const { allowed, code, message } = await checkPermissions(id, session);
+    if (!allowed) return new NextResponse(JSON.stringify({ message }), { status: code });
+
+    const body = await request.json();
+    
+    // Zde je důležité, abychom četli všechna pole
+    const { 
+        name, 
+        description, 
+        keywords, // User intent
+        isPublic, 
+        seoTitle, 
+        seoDescription, 
+        seoKeywords // AI mirror
+    } = body;
+
+    const updated = await prisma.collection.update({
+      where: { id },
+      data: { 
+          name, 
+          description: description || '',
+          keywords: keywords || [],
+          isPublic,
+          
+          seoTitle: seoTitle || '',
+          seoDescription: seoDescription || '',
+          seoKeywords: seoKeywords || [],
+      },
+    });
+
+    return NextResponse.json(updated);
+  } catch (error) {
+    console.error('Update Error', error);
+    return new NextResponse(JSON.stringify({ message: 'Internal Error' }), { status: 500 });
+  }
+}
+
+export async function DELETE(request: Request, context: { params: Promise<{ id: string }> }) {
+    const session = await getServerSession(authOptions);
+    const { id } = await context.params;
+    const { allowed, code, message } = await checkPermissions(id, session);
+    if (!allowed) return new NextResponse(JSON.stringify({ message }), { status: code });
+    await prisma.collection.delete({ where: { id } });
+    return new NextResponse(null, { status: 204 });
+}
+```
+
+### `app/api/youtube/fetch-data/route.ts`
+
+```typescript
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { Innertube, UniversalCache } from 'youtubei.js';
+import he from 'he';
+
+// --- LOGOVACÍ ÚLOŽIŠTĚ ---
+let debugLogs: string[] = [];
+function log(msg: string) {
+  const timestamp = new Date().toLocaleTimeString();
+  console.log(`[${timestamp}] ${msg}`);
+  debugLogs.push(`[${timestamp}] ${msg}`);
+}
+
+function extractYouTubeId(url: string): string | null {
+  const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+  const match = url.match(regex);
+  return match ? match[1] : null;
+}
+
+function formatTime(ms: number): string {
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `[${minutes}:${seconds.toString().padStart(2, '0')}]`;
+}
+
+// Pomocná funkce pro stažení obsahu s hlavičkami prohlížeče (pro titulky)
+async function fetchWithBrowserHeaders(url: string) {
+    return fetch(url, {
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept-Language': 'cs-CZ,cs;q=0.9,en;q=0.8', 
+            'Cookie': 'SOCS=CAI; CONSENT=YES+cb.20210328-17-p0.en+FX+417'
+        }
+    });
+}
+
+// VTT Parser
+function parseVttToPlain(vtt: string): string {
+    const lines = vtt.split('\n');
+    const result = [];
+    for(let i=0; i<lines.length; i++) {
+        const line = lines[i].trim();
+        if(line.includes('-->')) {
+            const startTime = line.split('-->')[0].trim();
+            let text = '';
+            let j = i + 1;
+            while(j < lines.length && lines[j].trim() !== '' && !lines[j].includes('-->')) {
+                text += lines[j].trim() + ' ';
+                j++;
+            }
+            const timeParts = startTime.split(':');
+            let timeStr = '';
+            if(timeParts.length === 3) {
+                const h = parseInt(timeParts[0]);
+                const m = parseInt(timeParts[1]);
+                const s = parseInt(timeParts[2].split('.')[0]);
+                if(h > 0) timeStr = `[${h}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}]`;
+                else timeStr = `[${m}:${s.toString().padStart(2,'0')}]`;
+            }
+            if(text) {
+                const cleanText = text.replace(/<[^>]*>/g, '');
+                result.push(`${timeStr} ${he.decode(cleanText).trim()}`);
+            }
+            i = j - 1;
+        }
+    }
+    return result.join('\n');
+}
+
+// --- FALLBACKS (Metody pro získání dat) ---
+
+// 1. HTML Scraping jako GOOGLEBOT (Klíčové pro Metadata na Vercelu)
+async function scrapeMetadataFromHtml(videoId: string) {
+    try {
+        log('Fallback (HTML/Googlebot): Stahuji stránku...');
+        const url = `https://www.youtube.com/watch?v=${videoId}`;
+        
+        // Googlebot hlavička - YouTube mu servíruje čisté meta tagy
+        const res = await fetch(url, {
+            headers: {
+                'User-Agent': 'Googlebot/2.1 (+http://www.google.com/bot.html)',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            }
+        });
+        
+        if (!res.ok) throw new Error(`HTML fetch status ${res.status}`);
+        const html = await res.text();
+        
+        const titleMatch = html.match(/<meta property="og:title" content="(.*?)"/);
+        const descMatch = html.match(/<meta property="og:description" content="(.*?)"/);
+        
+        const title = titleMatch ? he.decode(titleMatch[1]) : '';
+        const description = descMatch ? he.decode(descMatch[1]) : '';
+        
+        if (title) log(`HTML Scraping úspěšný! Title: "${title.substring(0, 20)}..."`);
+        
+        return { title, description };
+    } catch (e: any) {
+        log(`HTML Scraping selhal: ${e.message}`);
+        return { title: '', description: '' };
+    }
+}
+
+async function fetchOEmbedMetadata(videoId: string) {
+    try {
+        log('Fallback (oEmbed): Volám oficiální API...');
+        const res = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`, {
+             headers: { 'User-Agent': 'Googlebot/2.1 (+http://www.google.com/bot.html)' }
+        });
+        if (!res.ok) throw new Error(`Status ${res.status}`);
+        const json = await res.json();
+        log(`oEmbed úspěšný! Title: "${json.title}"`);
+        return { title: json.title || '', description: '' };
+    } catch (e: any) {
+        log(`oEmbed selhal: ${e.message}`);
+        return { title: '', description: '' };
+    }
+}
+
+async function fetchInvidiousMetadata(videoId: string) {
+    const instances = ['https://inv.tux.pizza', 'https://vid.puffyan.us'];
+    for (const instance of instances) {
+        try {
+            const controller = new AbortController();
+            setTimeout(() => controller.abort(), 3000);
+            const res = await fetch(`${instance}/api/v1/videos/${videoId}`, {
+                 headers: { 'User-Agent': 'Mozilla/5.0' },
+                 signal: controller.signal
+            });
+            if (res.ok) {
+                const json = await res.json();
+                return { title: json.title || '', description: json.description || '' };
+            }
+        } catch (e) {}
+    }
+    return { title: '', description: '' };
+}
+
+async function fetchInvidiousTranscript(videoId: string): Promise<string | null> {
+    const instances = [
+        'https://inv.tux.pizza',
+        'https://vid.puffyan.us',
+        'https://invidious.drgns.space',
+        'https://invidious.fdn.fr',
+        'https://yt.artemislena.eu'
+    ];
+    for (const instance of instances) {
+        try {
+            log(`Zkouším Invidious: ${instance}...`);
+            const res = await fetch(`${instance}/api/v1/videos/${videoId}`, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+            if (res.ok) {
+                const json = await res.json();
+                const captions = json.captions;
+                if (Array.isArray(captions) && captions.length > 0) {
+                    let track = captions.find((t: any) => t.languageCode === 'sk' || t.languageCode === 'cs');
+                    if (!track) track = captions.find((t: any) => t.languageCode === 'en');
+                    if (!track) track = captions[0]; 
+                    const capRes = await fetch(instance + track.url);
+                    if (capRes.ok) {
+                        const vttText = await capRes.text();
+                        return parseVttToPlain(vttText);
+                    }
+                }
+            }
+        } catch (e) {}
+    }
+    return null;
+}
+
+async function fetchManualTranscript(baseUrl: string): Promise<string | null> {
+    try {
+        const res = await fetchWithBrowserHeaders(baseUrl);
+        const xml = await res.text();
+        const regex = /<text[^>]*start="([\d.]+)"[^>]*>([\s\S]*?)<\/text>/g;
+        let match;
+        const parts = [];
+        while ((match = regex.exec(xml)) !== null) {
+            const startSec = parseFloat(match[1]);
+            const content = he.decode(match[2].replace(/<[^>]*>/g, '')); 
+            if (content.trim()) {
+                parts.push(`${formatTime(startSec * 1000)} ${content}`);
+            }
+        }
+        if (parts.length > 0) return parts.join('\n');
+    } catch (e) {
+        console.error('Manual fetch error:', e);
+    }
+    return null;
+}
+
+async function scrapeTranscriptUrlFromHtml(videoId: string): Promise<string | null> {
+    try {
+        log('Scraping HTML pro titulky...');
+        const res = await fetchWithBrowserHeaders(`https://www.youtube.com/watch?v=${videoId}`);
+        const html = await res.text();
+
+        const playerResponseRegex = /var\s+ytInitialPlayerResponse\s*=\s*({.+?});/;
+        const playerMatch = html.match(playerResponseRegex);
+        let tracks = null;
+
+        if (playerMatch && playerMatch[1]) {
+            try {
+                const playerResponse = JSON.parse(playerMatch[1]);
+                tracks = playerResponse?.captions?.playerCaptionsTracklistRenderer?.captionTracks;
+            } catch (e) {}
+        }
+
+        if (!tracks) {
+            const directRegex = /(?:\"|\\")captionTracks(?:\"|\\")\s*:\s*(\[.*?\])/;
+            const directMatch = html.match(directRegex);
+            if (directMatch && directMatch[1]) {
+                try {
+                    const cleanJson = directMatch[1].replace(/\\"/g, '"');
+                    tracks = JSON.parse(cleanJson);
+                } catch (e) {}
+            }
+        }
+
+        if (Array.isArray(tracks) && tracks.length > 0) {
+            log('Nalezeny stopy titulků v HTML (JSON/Regex).');
+            let track = tracks.find((t: any) => t.languageCode === 'sk' || t.languageCode === 'cs');
+            if (!track) track = tracks.find((t: any) => t.languageCode === 'en');
+            if (!track) track = tracks[0];
+            if (track && track.baseUrl) return track.baseUrl;
+        }
+
+        const dirtyRegex = /"baseUrl":"(https:\/\/www\.youtube\.com\/api\/timedtext[^"]*)"/g;
+        let dirtyMatch;
+        let bestUrl = null;
+        let enUrl = null;
+        let anyUrl = null;
+
+        while ((dirtyMatch = dirtyRegex.exec(html)) !== null) {
+            let url = dirtyMatch[1].replace(/\\u0026/g, '&').replace(/\\/g, '');
+            if (url.includes('lang=cs') || url.includes('lang=sk')) { bestUrl = url; break; }
+            if (url.includes('lang=en')) enUrl = url;
+            if (!anyUrl) anyUrl = url;
+        }
+
+        if (bestUrl || enUrl || anyUrl) {
+            log('Nalezeno URL titulků přes Dirty Regex.');
+            return bestUrl || enUrl || anyUrl;
+        }
+        
+    } catch (e) {}
+    return null;
+}
+
+// --- HLAVNÍ HANDLER ---
+
+export async function GET(request: Request) {
+  debugLogs = [];
+  
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || session.user?.role !== 'ADMIN') {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const url = searchParams.get('url');
+    if (!url) return NextResponse.json({ message: 'Missing URL' }, { status: 400 });
+
+    const videoId = extractYouTubeId(url);
+    if (!videoId) return NextResponse.json({ message: 'Invalid ID' }, { status: 400 });
+
+    log(`Start Ultimate Scraper pro ID: ${videoId}`);
+
+    // --- FÁZE A: METADATA ---
+    let title = '';
+    let description = '';
+    
+    // 1. InnerTube WEB (Metadata)
+    let yt = null;
+    let ytInfo = null;
+    try {
+        // Používáme výchozí nastavení z původního stabilního kódu (US/en), protože na metadata to může být spolehlivější
+        // Ale ponecháme cache vypnutou
+        yt = await Innertube.create({ cache: new UniversalCache(false), generate_session_locally: true, lang: 'en', location: 'US' });
+        ytInfo = await yt.getInfo(videoId);
+        title = ytInfo?.basic_info?.title || '';
+        description = ytInfo?.basic_info?.short_description || '';
+    } catch (e) {}
+
+    // 2. HTML Scraping (Googlebot Fallback - NÁVRAT KE STABILNÍMU KÓDU)
+    // Pokud InnerTube nezískal metadata, nasadíme Googlebota
+    if (!title || !description) {
+        const htmlData = await scrapeMetadataFromHtml(videoId);
+        if (!title && htmlData.title) title = htmlData.title;
+        if (!description && htmlData.description) description = htmlData.description;
+    }
+
+    // 3. Další fallbacky (Invidious, oEmbed)
+    if (!description) {
+        const invData = await fetchInvidiousMetadata(videoId);
+        if (invData.description) description = invData.description;
+        if (!title && invData.title) title = invData.title;
+    }
+
+    if (!title) {
+        const oembedData = await fetchOEmbedMetadata(videoId);
+        if (oembedData.title) title = oembedData.title;
+    }
+
+    log(`Metadata - Title: "${title.substring(0, 20)}..."`);
+
+    // --- FÁZE B: TITULKY (Ultimate Sequence) ---
+    let transcript = '';
+    let strategyUsed = '';
+
+    // POKUS 1: InnerTube WEB Client (Standard)
+    if (!transcript && ytInfo) {
+        try {
+            log('Pokus 1: InnerTube (WEB Client)...');
+            const tData = await ytInfo.getTranscript();
+            if (tData?.transcript?.content?.body?.initial_segments) {
+                transcript = tData.transcript.content.body.initial_segments.map((seg: any) => 
+                    `${formatTime(parseInt(seg.start_ms || '0', 10))} ${seg.snippet?.text || ''}`
+                ).join('\n');
+                strategyUsed = 'InnerTube (WEB)';
+            }
+        } catch (e: any) { 
+            log(`Pokus 1 selhal: ${e.message}`); 
+        }
+    }
+
+    // POKUS 2: InnerTube Caption Tracks (Raw Data)
+    if (!transcript && ytInfo) {
+        try {
+            log('Pokus 2: InnerTube Caption Tracks...');
+            const captions = (ytInfo as any).captions?.caption_tracks;
+            if (captions?.[0]?.base_url) {
+                const txt = await fetchManualTranscript(captions[0].base_url);
+                if (txt) { transcript = txt; strategyUsed = 'InnerTube (Raw XML)'; }
+            }
+        } catch (e) {}
+    }
+
+    // POKUS 3: HTML Scraping (Deep Search & Dirty Regex)
+    if (!transcript) {
+        log('Pokus 3: HTML Scraping (Deep & Dirty)...');
+        const baseUrl = await scrapeTranscriptUrlFromHtml(videoId);
+        if (baseUrl) {
+            const txt = await fetchManualTranscript(baseUrl);
+            if (txt) { transcript = txt; strategyUsed = 'HTML Scraping'; }
+        } else {
+            log('HTML Scraping nenašel URL.');
+        }
+    }
+
+    // POKUS 4: Invidious Proxy (Poslední záchrana)
+    if (!transcript) {
+        log('Pokus 4: Invidious Proxy...');
+        const txt = await fetchInvidiousTranscript(videoId);
+        if (txt) { transcript = txt; strategyUsed = 'Invidious Proxy'; }
+    }
+
+    if (transcript) {
+        log(`✅ ÚSPĚCH! Titulky staženy pomocí: ${strategyUsed}`);
+    } else {
+        log('❌ Všechny metody selhaly.');
+    }
+
+    return NextResponse.json({
+      title,
+      description,
+      transcript,
+      warning: !transcript ? 'Titulky se nepodařilo získat.' : null,
+      debugLogs 
+    });
+
+  } catch (error: any) {
+    log(`CRITICAL ERROR: ${error.message}`);
+    return NextResponse.json({ message: 'Error', error: error.message, debugLogs }, { status: 500 });
+  }
+}
+```
+
+### `app/api/ai/generate/route.ts`
+
+```typescript
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+export async function POST(request: Request) {
+  try {
+    // 1. Diagnostika API Klíče
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      console.error('CRITICAL: GEMINI_API_KEY is missing');
+      return NextResponse.json({ message: 'Server Error: API Key not configured' }, { status: 500 });
+    }
+
+    // 2. Bezpečnostní kontrola
+    const session = await getServerSession(authOptions);
+    if (!session || session.user?.role !== 'ADMIN') {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 403 });
+    }
+
+    // 3. Získání dat
+    const body = await request.json();
+    const { transcript } = body;
+
+    if (!transcript || typeof transcript !== 'string') {
+      return NextResponse.json({ message: 'Chybí přepis videa (transcript).' }, { status: 400 });
+    }
+
+    // 4. Příprava Finálního Promptu (Robustní verze dle vašeho zadání)
+    const systemPrompt = `
+Jsi expertní analytik video obsahu a editor. Tvým úkolem je provést hloubkovou sémantickou analýzu přiloženého přepisu a vytvořit strukturovaný, hierarchický obsah v češtině.
+
+[===ZÁMĚR===] Rozložit obsah videa na logické celky (Kapitola > Sekce > Detail) s přesným časovým vymezením. Cílem je vytvořit přehlednou mapu videa, kde každá část má svůj jasný začátek a konec. Struktura musí být vyvážená – žádná větev hierarchie nesmí končit osamoceným bodem (tzv. "orphan rule").
+
+[=== PŘÍSNÁ PRAVIDLA SYNTAXE (Musí být dodržena na 100 %) ===]
+
+Formát řádku: {Hierarchické_číslo}. {Název} [{Popis_obsahu}] ({Čas_Od}-{Čas_Do})
+
+Číslo: Na začátku řádku (např. 1., 1.1., 1.1.1.).
+
+Název: Stručný titulek (max 7 slov).
+
+Popis: Vždy v hranatých závorkách [...].
+
+Čas: Vždy v kulatých závorkách (...) na úplném konci řádku. Formát MM:SS. Časy na sebe musí plynule navazovat bez mezer.
+
+Pravidlo větvení (Kritické):
+
+Pokud se rozhodneš vytvořit nižší úroveň (např. podkapitolu 1.1.), musí následovat minimálně ještě jedna položka stejné úrovně (1.2.).
+
+ZAKÁZÁNO: Mít položku 1., která má pouze podpoložku 1.1. a nic dalšího.
+
+POVOLENO: Položka 1. má podpoložky 1.1. a 1.2., nebo položka 1. nemá žádné podpoložky.
+
+Jazyk a styl:
+
+Výstup vždy v češtině, bez ohledu na jazyk vstupu.
+
+Pouze prostý text (žádné Markdown formátování jako tučné písmo či kurzíva).
+
+[=== INSTRUKCE PRO ZPRACOVÁNÍ ===]
+
+Analýza: Přečti celý text a identifikuj hlavní tematické bloky.
+
+Segmentace: Rozděl bloky na menší celky. Vždy kontroluj, zda má smysl dělit dál – pokud nemůžeš najít alespoň dva různé aspekty (podbody) daného tématu, nevytvářej pro ně novou úroveň, ale zahrň je do popisu nadřazeného bodu.
+
+Časování: Přiřaď přesné časy startu a konce každé myšlenky. Konec jedné sekce je začátkem druhé.
+
+Překlad: Názvy a popisy formuluj přirozenou češtinou.
+
+Kontrola: Před vypsáním ověř, že žádné hierarchické číslo nezůstalo osamocené (např. pokud existuje X.1., musí existovat i X.2.).
+
+ZDE JE PŘEPIS K ANALÝZE:
+    `.trim();
+
+    const fullPrompt = `${systemPrompt}\n${transcript}`;
+
+    // 5. Inicializace a volání AI
+    const genAI = new GoogleGenerativeAI(apiKey);
+    
+    // Konfigurace modelu
+    const model = genAI.getGenerativeModel({ 
+        model: 'gemini-2.0-flash',
+        generationConfig: {
+            temperature: 0.1, // Nízká teplota pro dodržování striktních pravidel
+            maxOutputTokens: 8192,
+        }
+    });
+
+    console.log('🤖 Generuji obsah pomocí modelu gemini-2.0-flash (Robustní Prompt s Orphan Rule)...');
+    
+    const result = await model.generateContent(fullPrompt);
+    const response = await result.response;
+    const text = response.text();
+
+    console.log('✅ AI obsah úspěšně vygenerován.');
+
+    return NextResponse.json({ 
+      content: text,
+      message: 'Obsah úspěšně vygenerován.' 
+    });
+
+  } catch (error: any) {
+    console.error('AI_GENERATE_ERROR', error);
+    return NextResponse.json({ 
+      message: 'Chyba při komunikaci s AI: ' + (error.message || 'Unknown error') 
+    }, { status: 500 });
+  }
+}
+```
+
+### `app/api/ai/generate-seo/route.ts`
+
+```typescript
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+export async function POST(request: Request) {
+  try {
+    // 1. Validace API klíče
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json({ message: 'Server Error: API Key not configured' }, { status: 500 });
+    }
+
+    // 2. Bezpečnostní kontrola
+    const session = await getServerSession(authOptions);
+    if (!session || session.user?.role !== 'ADMIN') {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 403 });
+    }
+
+    // 3. Získání dat
+    const body = await request.json();
+    const { transcript } = body;
+
+    if (!transcript || typeof transcript !== 'string') {
+      return NextResponse.json({ message: 'Chybí přepis videa (transcript).' }, { status: 400 });
+    }
+
+    // 4. Adaptivní Prompt (Dle zadání Fáze 12)
+    const systemPrompt = `
+Jsi expertní analytik vzdělávacího obsahu a kurátor. Tvým úkolem je vytvořit strukturovaná metadata z přepisu videa pro webovou aplikaci Mediathek.
+
+**INSTRUKCE PRO ANALÝZU:**
+1.  **Zoom Out (Kontext):** Pochop hlavní myšlenku a teoretický rámec videa.
+2.  **Zoom In (Entity):** Identifikuj konkrétní látky, metody a termíny.
+3.  **Filtr Praktičnosti (Prioritizace - Adaptivní logika):**
+      * **Priorita A (Taktické / Skóre 8-10):** Hledej primárně explicitní instrukce (dávkování, recepty, konkrétní cvičení).
+      * **Priorita B (Strategické / Skóre 5-7):** Pokud chybí A, hledej strategická doporučení (např. 'zaměřte se na spánek', 'vyhněte se stresu').
+      * **Priorita C (Konceptuální / Skóre 1-4):** Pokud je video čistě teoretické, extrahuj klíčové principy nutné k pochopení tématu.
+
+**POŽADOVANÝ VÝSTUP (Strict JSON):**
+Musíš vrátit POUZE validní JSON objekt bez markdown formátování (\`\`\`json).
+Výstup musí být vždy v **ČEŠTINĚ**.
+
+Struktura JSON:
+{
+  "summary": "Bohatý odstavec (2-3 věty), který spojuje teoretický kontext videa s navrhovaným řešením. Musí být atraktivní pro čtenáře.",
+  "keywords": ["Pole", "5-10", "nejdůležitějších", "pojmů", "entit", "látek"],
+  "practical_tips": ["Pole 3-6 konkrétních bodů. Seřaď je od nejpraktičtějších (recepty) po strategické (principy). Formátuj jako imperativ (např. 'Užívejte...', 'Pozorujte...')."],
+  "suggestions": ["Pole 3-5 stručných návrhů názvů sbírek, kam video tématicky zapadá."]
+}
+
+**PŘEPIS VIDEA:**
+    `.trim();
+
+    const fullPrompt = `${systemPrompt}\n${transcript}`;
+
+    // 5. Inicializace AI
+    const genAI = new GoogleGenerativeAI(apiKey);
+    
+    // Používáme gemini-2.0-flash (nebo 1.5-flash) s nastavením pro JSON
+    const model = genAI.getGenerativeModel({ 
+        model: 'gemini-2.0-flash', // Pokud není dostupný, fallback na gemini-1.5-flash
+        generationConfig: {
+            temperature: 0.2, // Nízká teplota pro přesnost faktů
+            responseMimeType: "application/json", // Vynucení JSON odpovědi
+        }
+    });
+
+    console.log('🤖 Generuji SEO metadata pomocí Gemini (Adaptivní Prompt)...');
+    
+    const result = await model.generateContent(fullPrompt);
+    const response = await result.response;
+    const text = response.text();
+
+    console.log('✅ AI SEO vygenerováno.');
+
+    // 6. Validace a parsování
+    // I když vynucujeme JSON, pro jistotu ho zkusíme parsovat
+    let jsonData;
+    try {
+        jsonData = JSON.parse(text);
+    } catch (e) {
+        console.error("JSON Parse Error:", text);
+        return NextResponse.json({ message: 'AI nevrátila validní JSON.' }, { status: 500 });
+    }
+
+    return NextResponse.json({ 
+      data: jsonData,
+      message: 'Metadata úspěšně vygenerována.' 
+    });
+
+  } catch (error: any) {
+    console.error('AI_GENERATE_SEO_ERROR', error);
+    return NextResponse.json({ 
+      message: 'Chyba při komunikaci s AI: ' + (error.message || 'Unknown error') 
+    }, { status: 500 });
+  }
+}
+```
+
+### `app/api/ai/match-collections/route.ts`
+
+```typescript
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+export async function POST(request: Request) {
+  try {
+    // 1. Validace API klíče
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) return NextResponse.json({ message: 'API Key missing' }, { status: 500 });
+
+    const session = await getServerSession(authOptions);
+    if (!session || session.user?.role !== 'ADMIN') {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 403 });
+    }
+
+    // 2. Data z requestu
+    const body = await request.json();
+    const { videoContext, existingCollections } = body;
+
+    if (!videoContext || !existingCollections) {
+      return NextResponse.json({ message: 'Missing data' }, { status: 400 });
+    }
+
+    // 3. Prompt Engineering (Hybridní model)
+    // Minimalizujeme data sbírek pro úsporu tokenů (jen ID, Název a max 100 znaků popisu)
+    const collectionsMinified = existingCollections.map((c: any) => ({
+      id: c.id,
+      name: c.name,
+      desc: c.description ? c.description.substring(0, 100) : ''
+    }));
+
+    const systemPrompt = `
+Jsi expertní kurátor digitální knihovny. Tvým úkolem je analyzovat video a zařadit ho do kontextu sbírek.
+
+VSTUPNÍ DATA:
+1. VIDEO (Kontext):
+   - Název: "${videoContext.title}"
+   - Shrnutí: "${videoContext.summary}"
+   - Klíčová slova: "${videoContext.keywords}"
+   - AI Návrhy témat: "${videoContext.aiSuggestions}"
+
+2. EXISTUJÍCÍ SBÍRKY (ID, Název, Popis):
+   ${JSON.stringify(collectionsMinified)}
+
+INSTRUKCE:
+1. ÚKOL KLASIFIKACE (Pořádek): Projdi existující sbírky. Pokud video sémanticky zapadá do tématu sbírky, přidej její ID do pole "matches". Buď velkorysý - pokud to tam aspoň trochu patří, zařaď to.
+2. ÚKOL EVOLUCE (Růst): Pokud video obsahuje silné, specifické téma, které není dobře pokryto žádnou existující sbírkou, navrhni 1 novou sbírku. Vygeneruj pro ni výstižný Název a Popis. Pokud video dobře zapadá do starých, nové nenavrhuj.
+
+VÝSTUPNÍ FORMÁT (JSON):
+{
+  "matches": ["id_sbirky_1", "id_sbirky_2"],
+  "new_proposals": [
+    { "name": "Název Nové Sbírky", "description": "Popis nové sbírky..." }
+  ]
+}
+Odpověz POUZE validním JSON objektem.
+`.trim();
+
+    // 4. Volání AI
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ 
+        model: 'gemini-2.0-flash',
+        generationConfig: { responseMimeType: "application/json", temperature: 0.3 }
+    });
+
+    const result = await model.generateContent(systemPrompt);
+    const response = await result.response;
+    const text = response.text();
+
+    // 5. Zpracování
+    let jsonResponse;
+    try {
+        jsonResponse = JSON.parse(text);
+    } catch (e) {
+        // Fallback pro případné formátovací chyby
+        const cleanText = text.replace(/```json/g, '').replace(/```/g, '');
+        jsonResponse = JSON.parse(cleanText);
+    }
+
+    return NextResponse.json(jsonResponse);
+
+  } catch (error: any) {
+    console.error('AI_MATCH_ERROR', error);
+    return NextResponse.json({ message: error.message }, { status: 500 });
+  }
+}
+```
+
+### `app/api/ai/generate-collection-seo/route.ts`
+
+```typescript
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+export async function POST(request: Request) {
+  try {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) return NextResponse.json({ message: 'API Key missing' }, { status: 500 });
+
+    const session = await getServerSession(authOptions);
+    if (!session || session.user?.role !== 'ADMIN') return NextResponse.json({ message: 'Unauthorized' }, { status: 403 });
+
+    const body = await request.json();
+    const { collectionId } = body;
+
+    const collection = await prisma.collection.findUnique({
+        where: { id: collectionId },
+        include: {
+            videos: {
+                take: 20,
+                select: { title: true, seoSummary: true, summary: true, seoKeywords: true }
+            }
+        }
+    });
+
+    if (!collection || collection.videos.length === 0) {
+        return NextResponse.json({ message: 'Sbírka je prázdná.' }, { status: 400 });
+    }
+
+    // Příprava kontextu pro AI
+    const videosContext = collection.videos.map(v => `
+- VIDEO: "${v.title}"
+  OBSAH: ${v.seoSummary || v.summary}
+  TAGY: ${v.seoKeywords.join(', ')}
+    `).join('\n\n');
+
+    // --- KLÍČOVÁ ZMĚNA: PROMPT PRO SYNTÉZU ---
+    const systemPrompt = `
+Jsi šéfredaktor vzdělávacího portálu. Máš před sebou seznam videí, která tvoří jednu tematickou sbírku.
+
+[VSTUPNÍ DATA - OBSAH SBÍRKY]:
+${videosContext}
+
+[TVŮJ ÚKOL]:
+Vytvoř JEDNOTNOU anotaci pro celou tuto skupinu videí.
+Hledej společné téma, které všechna videa spojuje. Ignoruj detaily jednotlivých videí, pokud nejsou důležité pro celek.
+Nedeskriptuj videa jedno po druhém. Syntetizuj je do jednoho narativu.
+
+[VÝSTUPNÍ FORMÁT]:
+Vrať POUZE jeden JSON objekt (nikoliv pole!).
+{
+  "title": "Vymysli jeden výstižný název, který zastřešuje všechna videa (max 6 slov).",
+  "description": "Napiš 2-3 věty o tom, co se divák v této sbírce dozví jako celek. Použij formulace jako 'Tato sbírka nabízí...', 'Série se zaměřuje na...'.",
+  "keywords": ["5-10", "klíčových", "slov", "pro", "celou", "kategorii"]
+}
+    `.trim();
+
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ 
+        model: 'gemini-2.0-flash',
+        generationConfig: { responseMimeType: "application/json", temperature: 0.3 }
+    });
+
+    console.log(`[AI] Generuji SEO Syntézu pro sbírku: ${collection.name} (${collection.videos.length} videí)`);
+    
+    const result = await model.generateContent(systemPrompt);
+    const text = result.response.text();
+    
+    console.log(`[AI] Raw response: ${text.substring(0, 100)}...`);
+
+    // Čištění a parsování
+    let cleanText = text.replace(/```json|```/g, '').trim();
+    let jsonData;
+    
+    try {
+        jsonData = JSON.parse(cleanText);
+    } catch (e) {
+        console.error('[AI] JSON Parse Error:', cleanText);
+        return NextResponse.json({ message: 'AI vrátila neplatný JSON' }, { status: 500 });
+    }
+
+    // Bezpečnostní pojistka: Pokud by AI i přes zákaz vrátila pole, 
+    // pokusíme se najít objekt, který vypadá jako shrnutí, nebo vezmeme první a upravíme ho v logice (zde jen bereme první).
+    if (Array.isArray(jsonData)) {
+        console.log('[AI] Varování: AI vrátila pole. Beru první prvek.');
+        jsonData = jsonData[0];
+    }
+
+    const normalizedData = {
+        title: jsonData.title || jsonData.name || jsonData.seoTitle || jsonData.nazev || '',
+        description: jsonData.description || jsonData.summary || jsonData.seoDescription || jsonData.popis || '',
+        keywords: jsonData.keywords || jsonData.tags || jsonData.seoKeywords || jsonData.klicova_slova || []
+    };
+
+    return NextResponse.json({ data: normalizedData });
+
+  } catch (error: any) {
+    console.error('AI_ERROR', error);
+    return NextResponse.json({ message: error.message }, { status: 500 });
+  }
+}
+```
+
+### `lib/parser.ts`
+
+```typescript
+// Definujeme typ pro návratovou hodnotu
+export interface ParsedChapter {
+  text: string;
+  startTime: number;
+  endTime: number | null;
+  level: number;
+}
+
+/**
+ * Převede časový řetězec (MM:SS nebo HH:MM:SS) na sekundy.
+ * Nyní exportováno pro použití v transcriptParser.ts (Fáze 13).
+ */
+export function timeToSeconds(timeStr: string): number {
+  // Odstraníme případné závorky nebo whitespace, pokud by tam byly (pro robustnost)
+  const cleanTime = timeStr.replace(/[\[\]\(\)]/g, '').trim();
+  
+  const parts = cleanTime.split(':').map(Number);
+  
+  // Formát MM:SS
+  if (parts.length === 2) {
+    return parts[0] * 60 + parts[1];
+  }
+  
+  // Formát HH:MM:SS
+  if (parts.length === 3) {
+    return parts[0] * 3600 + parts[1] * 60 + parts[2];
+  }
+  
+  // Fallback nebo sekundy
+  if (parts.length === 1 && !isNaN(parts[0])) {
+    return parts[0];
+  }
+  
+  return 0;
+}
+
+/**
+ * Parsování strukturovaného obsahu z formátu MTF-H [cite: 185]
+ */
+export function parseStructuredContent(
+  rawText: string
+): Omit<ParsedChapter, 'order'>[] {
+  const lines = rawText.split('\n').filter((line) => line.trim() !== ''); // Ignoruj prázdné řádky [cite: 218]
+  const chapters: Omit<ParsedChapter, 'order'>[] = [];
+
+  for (const line of lines) {
+    const trimmedLine = line.trim();
+
+    // 1. Extrakce časové značky na konci [cite: 201]
+    const timeRegex = /\((\d{1,2}:\d{2})(?:\s*-\s*(\d{1,2}:\d{2}))?\)$/;
+    const timeMatch = trimmedLine.match(timeRegex);
+
+    if (!timeMatch) {
+      throw new Error(
+        `Neplatný formát řádku: Chybí časová značka (MM:SS) na konci. Řádek: "${trimmedLine}"`
+      );
+    }
+
+    const startTime = timeToSeconds(timeMatch[1]);
+    const endTime = timeMatch[2] ? timeToSeconds(timeMatch[2]) : null;
+
+    // 2. Extrakce základu (vše před časem) [cite: 202]
+    const baseText = trimmedLine.substring(0, timeMatch.index).trim();
+
+    // 3. Extrakce číslování a výpočet úrovně [cite: 203]
+    const numberingRegex = /^(\d+(?:\.\d+)*)\.?\s+/;
+    const numberingMatch = baseText.match(numberingRegex);
+
+    if (!numberingMatch) {
+      throw new Error(
+        `Neplatný formát řádku: Chybí hierarchické číslování (např. 1.1.) na začátku. Řádek: "${trimmedLine}"`
+      );
+    }
+
+    // 4. Výpočet úrovně [cite: 204]
+    // "1." -> level 0
+    // "1.1." -> level 1
+    // "1.1.1." -> level 2
+    const level = numberingMatch[1].split('.').length - 1;
+
+    // 5. Uložení textu (ZMĚNA: Ukládáme celý původní řádek) [cite: 205]
+    const text = trimmedLine; // Celý řádek včetně časové značky
+
+    chapters.push({ text, startTime, endTime, level });
+  }
+
+  return chapters;
+}
+```
+
+### `lib/transcriptParser.ts`
+
+```typescript
+import { timeToSeconds } from './parser';
+
+// Definice struktury jednoho segmentu přepisu
+export interface TranscriptSegment {
+  start: number;
+  end: number;
+  text: string;
+}
+
+/**
+ * Parsuje surový text přepisu do strukturovaného pole objektů.
+ * Očekávaný vstupní formát: "[MM:SS] Text..." nebo "[HH:MM:SS] Text..."
+ * * @param rawText Surový text z databáze (Transcript.content)
+ * @param totalDuration (Volitelné) Celková délka videa v sekundách pro výpočet konce posledního segmentu.
+ */
+export function parseTranscript(rawText: string, totalDuration: number = 0): TranscriptSegment[] {
+  if (!rawText || !rawText.trim()) {
+    return [];
+  }
+
+  const segments: TranscriptSegment[] = [];
+  
+  // Regex vysvětlení:
+  // \[?              -> Volitelná otevírací hranatá závorka (pro robustnost)
+  // (\d{1,2}:\d{2}(?::\d{2})?) -> CAPTURE GROUP 1: Čas (MM:SS nebo HH:MM:SS)
+  // \]?              -> Volitelná uzavírací hranatá závorka
+  // \s+              -> Whitespace
+  // ([\s\S]*?)       -> CAPTURE GROUP 2: Text segmentu (non-greedy, bere vše včetně nových řádků)
+  // (?=\[?\d{1,2}:\d{2}|$)-> Lookahead: Zastav se před dalším časem nebo na konci stringu
+  const regex = /\[?(\d{1,2}:\d{2}(?::\d{2})?)\]?\s+([\s\S]*?)(?=\[?\d{1,2}:\d{2}|$)/g;
+
+  let match;
+  while ((match = regex.exec(rawText)) !== null) {
+    const timeStr = match[1];
+    const textContent = match[2].trim();
+
+    const startTime = timeToSeconds(timeStr);
+
+    // Přidáme segment zatím bez koncového času (doplníme v dalším kroku)
+    // Trik: 'end' dočasně nastavíme na startTime, opravíme níže
+    segments.push({
+      start: startTime,
+      end: startTime, 
+      text: textContent
+    });
+  }
+
+  // Druhý průchod: Dopočítání časů 'end'
+  for (let i = 0; i < segments.length; i++) {
+    if (i < segments.length - 1) {
+      // Konec aktuálního segmentu je začátek toho následujícího
+      segments[i].end = segments[i + 1].start;
+    } else {
+      // Poslední segment
+      if (totalDuration > segments[i].start) {
+        // Pokud známe délku videa, použijeme ji
+        segments[i].end = totalDuration;
+      } else {
+        // Fallback: Odhadneme délku podle délky textu (cca 15 znaků za sekundu pro čtení)
+        // nebo minimálně 5 sekund
+        const estimatedDuration = Math.max(5, segments[i].text.length / 15);
+        segments[i].end = segments[i].start + estimatedDuration;
+      }
+    }
+  }
+
+  return segments;
+}
+
+```
+
+### `app/video/[id]/page.tsx`
+
+```typescript
+import { PrismaClient } from '@prisma/client';
+import { notFound } from 'next/navigation';
+import VideoDetailClientWrapper from '@/components/VideoDetailClientWrapper';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { getServerSession } from 'next-auth';
+
+const prisma = new PrismaClient();
+
+interface VideoDetailPageProps {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
+export const dynamic = 'force-dynamic';
+
+export default async function VideoDetailPage({ params }: VideoDetailPageProps) {
+  const { id } = await params;
+  const session = await getServerSession(authOptions);
+  const isAdmin = session?.user?.role === 'ADMIN';
+
+  const video = await prisma.video.findUnique({
+    where: { id: id },
+    include: {
+      chapters: { orderBy: { order: 'asc' } },
+      transcript: { select: { content: true } },
+      collections: { select: { id: true, name: true, isPublic: true } },
+      author: { select: { email: true } }
+    },
+  });
+
+  if (!video) notFound();
+
+  const isPublic = video.collections.some(col => col.isPublic);
+  if (!isPublic && !isAdmin) notFound();
+
+  return (
+    <main className="w-full min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8">
+        <VideoDetailClientWrapper
+          youtubeId={video.youtubeId}
+          title={video.title}
+          chapters={video.chapters}
+          transcript={video.transcript?.content || null}
+          practicalTips={video.practicalTips}
+          seoSummary={video.seoSummary || video.summary}
+          seoKeywords={video.seoKeywords}
+          // PŘIDÁNO: Předáváme AI návrhy sbírek
+          aiSuggestions={video.aiSuggestions}
+          collections={video.collections}
+          originalDescription={video.summary}
+        />
+      </div>
+    </main>
+  );
+}
+```
+
