@@ -1,0 +1,308 @@
+JÁ_PROMPT:
+V příloze jsou dokumenty z vývojového cyklu webové aplikace resp. z posledních 5 vývojových cyklů resp. dokument z vývoje zadání a dokument z realizace tohoto zadání. Vývojový cyklus začíná diskuzí nad dalším vývojem aplikace, dohodou nad novým zadáním, vytvoření plánu realizace a samotné implementace zadání. Během tohoto procesu vznikají různé nápady,náměty, možnosti a varianty dalšího vývoje této aplikace. Z těchto posledních pěti vývojových cyklů lze rovněž odhadnout aktuální vývoj aplikace. Prosím o vytvoření z těchto dokumentů aktuální priotitizaci dalšího zadání. resp. prosím o posbírání těchto podnětů k dalšímu vývoji této aplikace z těchto dokumentů a přidání případně nového inovativního podnětu k dalšímu vývoji aplikace a poté jejich prioritazici resp. jejich seřazení jakou mají prioritu k realizaci. jde o to abychom respektovali organický rozvoj této aplikace a aby daná aplikace byla robustní s potenciálem rozvíjet se potřebným směrem. Aplikace by měla mít mnoho možností rozvinout se jistým směrem. Tímto způsobem obdržíme životaschopnou aplikaci rozvíjet se ve své prostředí zájmu - zde je to kategorizace informací resp. videí z internetu a aplikace bude schopna vytvářet strukturu která umožní poznávání internetového obsahu pro jejího uživatele. Pojdme se podívat na tyto dokumenty a pojdme vytvořit podnětný prioritizovaný seznam vlastností k další implementaci. Tento seznam může posloužit pro pár dalšícvh vývojových cyklů aplikace. V příloze jsou tyto dokumenty z posledních pěti vývovojových cyklů této webové aplikace pro správu internetového obsahu resp. nyní zatím videí z youtube v budoucnu obecného materiálu jako jsou články a pod ...  [README_12_01ZADANI][README_12_02REALIZACE][README_13_01ZADANI][README_13_02REALIZACE][README_14_01ZADANI][README_14_02REALIZACE][README_15_01ZADANI][README_15_02REALIZACE][README_1_01ZADANI][README_16_02REALIZACE]
+
+AI_RESPONZE:
+Prostudoval jsem dokumentaci posledních 5 vývojových cyklů (Fáze 12–16). Je fascinující sledovat, jak se aplikace organicky proměňuje:
+
+
+
+
+
+
+Fáze 12: Naučila se "číst a chápat" obsah (SEO, Tipy).
+
+
+Fáze 13: Vytvořila prostředí pro studium ("Studovna", Timeline).
+
+
+Fáze 14: Začala se sama organizovat (AI Matchmaker).
+
+
+Fáze 15: Nastavila si zrcadlo a definovala identitu sbírek (AI Zrcadlo).
+
+
+Fáze 16: Otevřela se světu (Veřejný Katalog, Živé obálky).
+
+Nyní stojíme na prahu, kdy aplikace má "chytrý mozek" a "krásnou tvář", ale uživatel je stále spíše pasivní návštěvník galerie. Chybí mu paměť a nástroje pro vlastní tvorbu.
+
+Zde je Prioritizovaný plán rozvoje (Roadmapa), sestavený na základě "nedokončených myšlenek" v dokumentaci a logické návaznosti architektury.
+
+🏛️ Strategická Roadmapa: Od "Galerie" k "Laboratoři"
+Seznam je seřazen podle priority realizace tak, aby každá fáze stavěla na té předchozí (organický růst).
+
+1. Priorita: Homepage 2.0 (Showcase & Kurátorský výběr)
+Navržená Fáze 17
+
+
+Zdroj: Vyplynulo z diskuze ve Fázi 16, kde jsme oddělili Katalog (/collections) od Domovské stránky (Home), která zůstala jako "zastaralý seznam videí".
+
+
+Koncept: Hlavní stránka (/) musí být výkladní skříní. Nemůže to být jen seznam. Musí to být dynamický "Dashboard".
+
+Funkcionality:
+
+Hero Sekce: "Sbírka týdne" (velký banner s 'Living Cover').
+
+Strip: "Nejnovější přírůstky" (horizontální scroller nových videí).
+
+Strip: "Populární témata" (výběr z katalogu).
+
+Proč teď: Máme krásný Katalog (Fáze 16), ale úvodní stránka aplikace tomu neodpovídá. Je to logický krok pro dokončení "Veřejné tváře".
+
+2. Priorita: Aktivní Student (Persistence & "My Library")
+Navržená Fáze 18
+
+
+Zdroj: Zmíněno ve Fázi 13 ("ukládání stavu odškrtnutí checkboců se neukládá na server").
+
+
+Koncept: Povýšení uživatele z diváka na studenta. Pokud si ve Studovně (F13) odškrtnu "Praktický tip", chci, aby zůstal odškrtnutý, až se vrátím zítra.
+
+Funkcionality:
+
+Uživatelský profil: Možnost "Moje Knihovna".
+
+Persistence Tipů: Ukládání stavu checkboxů u practicalTips.
+
+Bookmarks: Možnost uložit si video do "Přehrát později" nebo "Oblíbené".
+
+Proč teď: Máme bohatá data (tipy, kapitoly), ale uživatel s nimi může pracovat jen v daný moment. Persistence zvýší retenci uživatelů (budou se vracet ke "svému").
+
+3. Priorita: Sémantické Vyhledávání (The Oracle)
+Navržená Fáze 19
+
+
+Zdroj: Zmíněno v README_12_01ZADANI jako "budoucí vyhledávání a průvodce".
+
+Koncept: Aplikace nyní "ví" o obsahu všechno. Uživatel by měl mít možnost se zeptat: "Jak zlepšit spánek?" a aplikace by neměla najít jen videa se slovem "Spánek" v názvu, ale konkrétní pasáž ve videu o hořčíku, kde se o spánku mluví.
+
+Funkcionality:
+
+Fulltextové (případně vektorové) vyhledávání napříč seoSummary, practicalTips a transcript.
+
+Výsledky vyhledávání odkazují přímo na časovou značku ve videu.
+
+Proč teď: S rostoucím množstvím videí a sbírek se "proklikávání" stane neefektivní. Vyhledávání je nutnost pro velkou knihovnu.
+
+4. Priorita: Meta-Struktura (Sbírky Sbírek / Témata)
+Navržená Fáze 20
+
+
+Zdroj: README_14_01ZADANI zmiňuje "Taxonomii" a evoluci struktury.
+
+
+Koncept: Uspořádání "Zoo". Až budeme mít 50 sbírek, bude Katalog nepřehledný. Potřebujeme vyšší entitu.
+
+Funkcionality:
+
+Entita Téma (Topic): Sdružuje více sbírek (např. Téma "Výživa" obsahuje sbírky "Keto", "Vegan", "Půsty").
+
+Hierarchická navigace v Katalogu.
+
+Proč teď: Příprava na škálování obsahu.
+
+💡 Inovativní "Wildcard" Podnět (Pro budoucí cykly)
+Na základě vaší vize "vytvářet nové věci pouhým pozorováním internetu"  navrhuji zcela novou funkcionalitu, která by aplikaci radikálně odlišila od konkurence.
+
+✨ Návrh: "AI Syntetizátor" (Generátor Průvodců)
+Myšlenka: Máme sbírku 10 videí o "Otužování". Každé má AI metadata, přepisy a tipy. Proč nutit uživatele sledovat 10 hodin videa?
+
+Funkce: Tlačítko [Vytvořit Skripta].
+
+Co to udělá: AI vezme metadata všech 10 videí ve sbírce a napíše jeden souvislý článek (nebo PDF e-book), který syntetizuje poznatky.
+
+Kapitola 1: Historie (zdroj: video A)
+
+Kapitola 2: Metody (zdroj: video B, C)
+
+Kapitola 3: Rizika (zdroj: video D)
+
+Hodnota: Aplikace se stává "továrnou na obsah". Z konzumace videí vzniká nový, autorský textový materiál. To je skutečné "tvůrčí pozorování".
+
+Doporučení pro nejbližší krok (Fáze 17)
+Doporučuji se zaměřit na Prioritu 1: Homepage 2.0 (Showcase).
+
+Důvod:
+
+Je to logické dokončení Fáze 16. Máme "veřejnou tvář", ale "vstupní hala" (Home) je stále staveniště.
+
+Je to technicky přímočaré (Frontend, využití existujících komponent CollectionCard z F16).
+
+Okamžitě to zvedne vizuální úroveň celé aplikace.
+
+Zadání pro Fázi 17 by mohlo znít:
+
+"Transformace domovské stránky na 'Showcase Dashboard', který kombinuje 'Hero' prezentaci vybraných sbírek a dynamické přehledy nejnovějšího obsahu, s využitím komponent Živých obálek."
+
+------------------------------------------------------------------------
+
+JÁ_PROMPT:
+Ano souhlasím zaměřit se nyní na Homepage 2.0 - to je jisté završení této webové aplikace - její prezentace - a také to souvisí s mým záměrem revidovat prezentační vrstvu aplikace v souladu s UX kritérii. Inspiraci pro tuto revizi prezentační vrstvy, které by jsme se mohli věnovat právě v souvislosti nyní s revizi Homepage jsou tyto návody právě z youtube videí které jsem zařadil v aplikaci do sbírky věnující se IT designu. Tyto přepisy by mohli být vhodným podnětem pro strukturalizaci tohoto zadání které by jsme poté realizovali v rámci realizační fáze - nyní v rámci zadání půjde o formulaci bodů které by jsme poté revidovali v rámci realizační fáze při znalosti kompletního kodu prezentační vrstvy aplikace. K dispozici jsou tyto přepisy z těchto tématických videí o profesionálůním web designu 
+[PŘESTAŇ DĚLAT WEBY JAKO AMATÉR! Stačí když zhlédneš tohle video...
+O čem to je
+Toto video shrnuje klíčové principy efektivního web designu s důrazem na konverzi. Od rozvržení a barev až po typografii, video poskytuje praktické rady, jak vytvořit web, který nejen dobře vypadá, ale především plní svůj účel a generuje zisk. Důraz je kladen na uživatelskou přívětivost, jasnou navigaci a využití AI pro zefektivnění práce designéra]
+[PROČ MÉ WEBY VŽDY VYPADAJÍ O ÚROVEŇ VÝŠ?
+O čem to je
+Video se zaměřuje na klíčové prvky, které odlišují prémiové webové designy od průměrných. Ukazuje, jak pomocí vizuální konzistence, silných vizuálů a detailů dosáhnout profesionálního a atraktivního vzhledu webu, který zaujme návštěvníky a podpoří prodej.]
+[Umíš tohle? 5 jediných dovedností ve webdesignu, které potřebuješ!
+O čem to je
+Video se zaměřuje na pět klíčových dovedností, které odlišují profesionální web designéry od začátečníků. Ukazuje, že web design není jen o estetice, ale především o strategickém přístupu, který vede k ziskovosti webu. Naučte se, jak pomocí správných fontů, textů, barev, rozvržení a UX výzkumu vytvořit web, který nejen dobře vypadá, ale i efektivně prodává.]
+[5 LŽÍ o Web Designu, kterým pravděpodobně pořád věříš!
+O čem to je
+Video odhaluje pět rozšířených mýtů, které brzdí designéry v dosahování vyšších příjmů a sebedůvěry. Autor na základě vlastní zkušenosti s vyhořením radí, jak se těmto mylným představám vyhnout a zaměřit se na prodej hodnoty a výsledků, nikoli pouze na estetiku a dokonalost.]
+ - výstupem by měla být tedy formulace zadání pro 17 fázi aplikace věnující se profesionálnímu designu této webové aplikace včetně tedy formulace zadání pro novou Homepage této aplikace pro správu videí uživatele a jeho sbírek .... 
+
+AI_RESPONZE:
+To je vynikající zdroj dat! Přepisy videí od profesionálního designéra nám poskytují konkrétní, hmatatelný checklist pro UX/UI revizi. Nejde jen o "pocit", ale o pravidla (60-30-10, KCP, hierarchie).
+
+Zanalyzoval jsem přepisy a extrahoval z nich klíčové principy, které aplikujeme na Fázi 17.
+
+Zde je Zadání pro Fázi 17, které transformuje aplikaci z "funkčního nástroje" na "profesionální produkt".
+
+README_17_01ZADANI
+📜 Zpráva o genezi zadání (Design Audit Report)
+Téma: Fáze 17 – Homepage 2.0 & Profesionální UX/UI Facelift Datum vzniku: 6. prosince 2025 Kontext: Aplikace je funkčně robustní (Fáze 1–16), ale prezentační vrstva vznikala organicky. Nyní, před vstupem veřejnosti, musí web působit důvěryhodně a vést uživatele k akci. Zdroje: Analýza přepisů "Web Design Hero" (viz příloha promptu).
+
+1. Aplikované principy z analýzy (Design Rules)
+Na základě dodaných materiálů jsme definovali tato pravidla pro Fázi 17:
+
+Pravidlo "Terminátor" (Vizuální hierarchie): Uživatelé nečtou, ale skenují.
+
+Důsledek: Musíme zvětšit kontrasty mezi nadpisy (H1/H2) a textem. Hlavní prvky musí "bouchnout do očí".
+
+Pravidlo KCP (Kdo, Co, Proč): Hero sekce musí okamžitě odpovědět: Kdo jsme? Co děláme? Proč by to mělo uživatele zajímat?.
+
+Zákaz: Generické fráze typu "Jsme moderní knihovna".
+
+Příkaz: Mluvit o benefitu uživatele ("Získej přehled v chaosu internetu").
+
+Pravidlo "Žádné Ghost Buttons": Pro hlavní akci (CTA) je zakázáno používat tlačítka, která mají jen obrys.
+
+
+Důsledek: Hlavní tlačítko "Začít studovat" musí mít plnou výplň (Solid) a vysoký kontrast.
+
+Pravidlo 60-30-10 (Barvy):
+
+60 % Neutrální pozadí (u nás tmavé/dark mode).
+
+30 % Brandová barva (naše Indigo).
+
+10 % Akcent (Výzva k akci/CTA) – Zde musíme vybrat barvu, která svítí (např. Amber/Teal).
+
+Mikrotexty: Tlačítka nesmí mít text "Odeslat". Musí mít text "Chci získat přístup" nebo "Objevit sbírky".
+
+📄 Zadání projektu: Webová aplikace Mediathek (Fáze 17 - Showcase & Design System)
+Datum: 6. prosince 2025 Verze: 17.0 Navazuje na: Fáze 16 (Veřejný Katalog), Fáze 13 (Studovna)
+
+1. Název projektu
+Mediathek – Design Facelift & Homepage 2.0
+
+2. 🎯 Cíl Fáze
+Cílem není přidávat nové funkce, ale prodat ty stávající.
+
+Vytvořit novou Domovskou stránku (Homepage), která funguje jako Landing Page (přistávací stránka) s vysokým konverzním potenciálem.
+
+Provést UX/UI Revizi celé aplikace podle pravidel profesionálního designu (hierarchie, typografie, barvy), aby aplikace nepůsobila jako "projekt z devítky", ale jako prémiová služba.
+
+3. Rozsah pro Fázi 17
+3.1. Homepage 2.0 (app/page.tsx)
+Nahrazení stávajícího seznamu videí novou strukturou:
+
+Sekce A: Hero (KCP Princip)
+
+H1 (Claim): Velký, tučný nadpis definující hodnotu (např. "Přestaň scrollovat, začni studovat").
+
+H2 (Sub-claim): Vysvětlení ("Tvůj osobní ostrov v moři internetového obsahu. Kurátorské sbírky videí bez šumu.").
+
+CTA (Call to Action): Plné, kontrastní tlačítko s mikrotextem "Prozkoumat knihovnu" (vede na /collections). Žádné ghost buttons.
+
+Visual: Využití "ambientního pozadí" nebo ukázky rozhraní aplikace (mockup).
+
+Sekce B: Showcase (Důkaz)
+
+Pruh "Doporučené sbírky".
+
+Použití komponenty CollectionCard (Living Cover) z Fáze 16.
+
+Ukázka, že aplikace "žije".
+
+Sekce C: Feature Grid (Proč my?)
+
+3 karty vysvětlující benefity:
+
+Struktura: "Místo chaosu témata."
+
+AI Insight: "Neztrácej čas, AI ti řekne to podstatné."
+
+Klid: "Design bez reklam a algoritmů."
+
+3.2. Design System Audit (Global CSS & Components)
+Aplikace pravidel napříč celým webem:
+
+Typografie:
+
+Zvětšení základního písma (Body) na min. 16px-18px.
+
+Kontrola řádkování (Line-height 140-150%).
+
+Hierarchie nadpisů: H1 musí být dominantní.
+
+Barvy (60-30-10):
+
+Definice jasné Akcentní barvy pro primární tlačítka (nesmí splývat s brandovou barvou).
+
+Kontrola kontrastu (Accessibility).
+
+Interakce:
+
+Sjednocení rádiusů (zaoblení) a stínů pro konzistenci.
+
+4. 🏛️ Návrh Řešení (Technická Specifikace)
+4.1. Nová Homepage (app/page.tsx)
+Bude to Server Component.
+
+Načte data: prisma.collection.findMany({ take: 3, where: { isPublic: true } ... }) pro sekci Showcase.
+
+Použije Grid a Flex layouty pro vzdušnost (Whitespace).
+
+4.2. Global Styles (app/globals.css)
+Implementace proměnných pro barvy podle pravidla 60-30-10.
+
+--color-bg-primary (60%)
+
+--color-brand (30%)
+
+--color-accent (10% - např. jasná žlutá/oranžová do tmavého režimu, nebo sytá teal).
+
+4.3. Komponenta Button (components/ui/Button.tsx)
+Refactoring stávajícího tlačítka.
+
+Varianty: primary (Solid, Accent color), secondary (Outline/Ghost - povoleno jen pro vedlejší akce jako "Zpět"), ghost (pro menu).
+
+Enforcement: Výchozí varianta bude vždy primary.
+
+5. 🚦 Funkční Požadavky (FR)
+FR1 (Konverze): Homepage musí obsahovat jasnou výzvu k akci (CTA) v prvním viewportu (bez nutnosti scrollování).
+
+FR2 (Hierarchie): Nadpis H1 musí být vizuálně nejvýraznějším prvkem stránky.
+
+FR3 (Čitelnost): Základní text na desktopu nesmí být menší než 1rem (16px).
+
+6. ✅ Akceptační Kriteria (Definice "Hotovo")
+Uživatel přijde na hlavní stránku (/).
+
+Neuvidí "seznam videí", ale Landing Page.
+
+Během 3 vteřin pochopí: KDO jsme (Mediathek), CO děláme (Kurátorské sbírky) a PROČ tu být (Klid a struktura).
+
+Hlavní tlačítko "Vstoupit do knihovny" je nepřehlédnutelné (vysoký kontrast).
+
+Web působí "dražším" dojmem díky konzistentním mezerám a typografii.
+
+Další krok: Mám připravit Realizační plán, kde definujeme konkrétní CSS proměnné (tu paletu 60-30-10) a navrhneme texty pro Hero sekci?
+
+------------------------------------------------------------------------
+
+id_chat: 
+https://gemini.google.com/u/1/app/ef9324c82adbcc3f
+
