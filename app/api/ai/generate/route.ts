@@ -26,49 +26,37 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'Chybí přepis videa (transcript).' }, { status: 400 });
     }
 
-    // 4. Příprava Promptu (Návrat k ověřené detailní verzi)
+    // 4. Příprava Promptu (Agresivní hierarchie)
     const systemPrompt = `
-Jsi expertní analytik video obsahu a editor. Tvým úkolem je provést hloubkovou sémantickou analýzu přiloženého přepisu a vytvořit strukturovaný, hierarchický obsah v češtině.
+Jsi expertní analytik a editor. Tvým úkolem je vytvořit **hluboce strukturovaný** obsah z přepisu videa.
 
-[===ZÁMĚR===] Rozložit obsah videa na logické celky (Kapitola > Sekce > Detail) s přesným časovým vymezením. Cílem je vytvořit přehlednou mapu videa, kde každá část má svůj jasný začátek a konec. Struktura musí být vyvážená – žádná větev hierarchie nesmí končit osamoceným bodem (tzv. "orphan rule").
+[=== CÍL ===]
+Nechci jen seznam bodů. Chci detailní taxonomii obsahu.
+Tvým úkolem je najít logické celky (Kapitoly) a ty **rozebrat na prvočinitele** (Podkapitoly).
 
-[=== PŘÍSNÁ PRAVIDLA SYNTAXE (Musí být dodržena na 100 %) ===]
+[=== POVINNÁ STRUKTURA ===]
+Výstup musí striktně dodržovat tento formát:
+{Číslo}. {Název} [{Detailní popis v závorce}] ({Čas_Od}-{Čas_Do})
 
-Formát řádku: {Hierarchické_číslo}. {Název} [{Popis_obsahu}] ({Čas_Od}-{Čas_Do})
+Příklady číslování:
+1. Hlavní téma
+1.1. Podtéma (detail)
+1.2. Další aspekt
+2. Další téma
 
-Číslo: Na začátku řádku (např. 1., 1.1., 1.1.1.).
+[=== PRAVIDLA (CRITICAL) ===]
+1. **VYNUCENÁ HIERARCHIE:** Snaž se, aby alespoň 50 % hlavních bodů mělo podbody (X.1, X.2). Plochý seznam je selhání.
+2. **ORPHAN RULE:** Pokud vytvoříš 1.1, musí následovat 1.2. (Podkapitola nesmí být sama).
+3. **ČASOVÁNÍ:** Časy musí na sebe navazovat. Konec 1.1 je začátek 1.2.
+4. **JAZYK:** Čeština. Žádný Markdown (*, **).
 
-Název: Stručný titulek (max 7 slov).
-
-Popis: Vždy v hranatých závorkách [...].
-
-Čas: Vždy v kulatých závorkách (...) na úplném konci řádku. Formát MM:SS. Časy na sebe musí plynule navazovat bez mezer.
-
-Pravidlo větvení (Kritické):
-
-Pokud se rozhodneš vytvořit nižší úroveň (např. podkapitolu 1.1.), musí následovat minimálně ještě jedna položka stejné úrovně (1.2.).
-
-ZAKÁZÁNO: Mít položku 1., která má pouze podpoložku 1.1. a nic dalšího.
-
-POVOLENO: Položka 1. má podpoložky 1.1. a 1.2., nebo položka 1. nemá žádné podpoložky.
-
-Jazyk a styl:
-
-Výstup vždy v češtině, bez ohledu na jazyk vstupu.
-
-Pouze prostý text (žádné Markdown formátování jako tučné písmo či kurzíva).
-
-[=== INSTRUKCE PRO ZPRACOVÁNÍ ===]
-
-Analýza: Přečti celý text a identifikuj hlavní tematické bloky.
-
-Segmentace: Rozděl bloky na menší celky. Vždy kontroluj, zda má smysl dělit dál – pokud nemůžeš najít alespoň dva různé aspekty (podbody) daného tématu, nevytvářej pro ně novou úroveň, ale zahrň je do popisu nadřazeného bodu.
-
-Časování: Přiřaď přesné časy startu a konce každé myšlenky. Konec jedné sekce je začátkem druhé.
-
-Překlad: Názvy a popisy formuluj přirozenou češtinou.
-
-Kontrola: Před vypsáním ověř, že žádné hierarchické číslo nezůstalo osamocené (např. pokud existuje X.1., musí existovat i X.2.).
+[=== PŘÍKLAD VÝSTUPU (TAKTO TO MUSÍ VYPADAT) ===]
+1. Úvod do problematiky [Definice základních pojmů a představení kontextu] (00:00-02:15)
+1.1. Historický kontext [Jak se problém vyvíjel v čase] (00:00-01:10)
+1.2. Současný stav [Aktuální data a statistiky] (01:10-02:15)
+2. Analýza příčin [Rozbor důvodů, proč situace nastala] (02:15-05:00)
+2.1. Vnější faktory [Vliv prostředí a okolností] (02:15-03:45)
+2.2. Vnitřní faktory [Psychologické aspekty] (03:45-05:00)
 
 ZDE JE PŘEPIS K ANALÝZE:
     `.trim();
@@ -78,16 +66,17 @@ ZDE JE PŘEPIS K ANALÝZE:
     // 5. Inicializace a volání AI
     const genAI = new GoogleGenerativeAI(apiKey);
     
-    // Konfigurace modelu - Návrat k osvědčenému modelu a mírné zvýšení teploty
+    // Použijeme gemini-2.0-flash, který fungoval (nezpůsoboval 404),
+    // ale s vyšší teplotou pro větší kreativitu při hledání struktury.
     const model = genAI.getGenerativeModel({ 
-        model: 'gemini-1.5-flash', // Změna z 2.0 na 1.5 pro stabilitu
+        model: 'gemini-2.0-flash', 
         generationConfig: {
-            temperature: 0.2, // Mírně zvýšeno z 0.1 pro lepší kreativitu při strukturování
+            temperature: 0.4, // Zvýšeno pro podporu větvení myšlenek
             maxOutputTokens: 8192,
         }
     });
 
-    console.log('🤖 Generuji obsah pomocí modelu gemini-1.5-flash (Restored Original Prompt)...');
+    console.log('🤖 Generuji obsah pomocí modelu gemini-2.0-flash (Aggressive Hierarchy Prompt)...');
     
     const result = await model.generateContent(fullPrompt);
     const response = await result.response;
