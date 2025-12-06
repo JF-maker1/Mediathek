@@ -1,55 +1,85 @@
 @import "tailwindcss";
 
-/* V Tailwind v4 se definice témat dělají přes @theme nebo přímo v CSS proměnných.
-  Zde definujeme základní barvy a chování.
+/* FÁZE 17: DESIGN SYSTEM (60-30-10)
+  Barvy jsou definovány jako RGB pro možnost opacity modifikátorů v Tailwindu.
 */
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 248, 250, 252;
-  --background-end-rgb: 255, 255, 255;
+  /* 60% - Neutrální Pozadí (Slate/White) */
+  --bg-primary: 248, 250, 252;   /* slate-50 */
+  --bg-secondary: 255, 255, 255; /* white */
+  --text-primary: 15, 23, 42;    /* slate-900 */
+  --text-secondary: 71, 85, 105; /* slate-600 */
+
+  /* 30% - Brand (Indigo) - Důvěra, struktura, navigace */
+  --brand: 79, 70, 229;          /* indigo-600 */
+  --brand-foreground: 255, 255, 255;
+
+  /* 10% - Akcent (Amber) - Konverze, CTA, Pozornost */
+  /* Volíme Amber/Orange pro maximální kontrast k Indigu */
+  --accent: 245, 158, 11;        /* amber-500 */
+  --accent-hover: 217, 119, 6;   /* amber-600 */
+  --accent-foreground: 255, 255, 255;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 15, 23, 42;
-    --background-end-rgb: 0, 0, 0;
+    /* 60% - Dark Mode (Slate Deep) */
+    --bg-primary: 15, 23, 42;    /* slate-900 */
+    --bg-secondary: 30, 41, 59;  /* slate-800 */
+    --text-primary: 248, 250, 252; /* slate-50 */
+    --text-secondary: 148, 163, 184; /* slate-400 */
+
+    /* 30% - Brand Dark */
+    --brand: 99, 102, 241;       /* indigo-500 */
+    --brand-foreground: 255, 255, 255;
+
+    /* 10% - Akcent Dark (Svítivější žlutá pro tmavé pozadí) */
+    --accent: 251, 191, 36;      /* amber-400 */
+    --accent-hover: 245, 158, 11; /* amber-500 */
+    --accent-foreground: 15, 23, 42; /* Tmavý text na žluté pro čitelnost */
   }
 }
 
+/* RESET & TYPOGRAFIE */
 html {
   scroll-behavior: smooth;
+  font-size: 16px; /* Zvětšení základu (bylo často 14px user-agent) */
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-start-rgb));
+  color: rgb(var(--text-primary));
+  background: rgb(var(--bg-primary));
+  line-height: 1.6; /* Vzdušnější text */
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
-/* Custom Scrollbar - Kompatibilní s v4 */
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.025em; /* Moderní "tight" nadpisy */
+  color: rgb(var(--text-primary));
+}
+
+/* UTILITIES */
 @layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  /* Custom Scrollbar */
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
-
   .custom-scrollbar::-webkit-scrollbar-track {
     background: transparent; 
   }
-
   .custom-scrollbar::-webkit-scrollbar-thumb {
     background-color: rgba(156, 163, 175, 0.3);
     border-radius: 20px;
   }
-
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background-color: rgba(107, 114, 128, 0.6);
-  }
-
-  /* Firefox */
-  .custom-scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(156, 163, 175, 0.3) transparent;
   }
 }
