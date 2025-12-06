@@ -26,7 +26,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'Chybí přepis videa (transcript).' }, { status: 400 });
     }
 
-    // 4. Příprava Finálního Promptu (Robustní verze dle vašeho zadání)
+    // 4. Příprava Promptu (Návrat k ověřené detailní verzi)
     const systemPrompt = `
 Jsi expertní analytik video obsahu a editor. Tvým úkolem je provést hloubkovou sémantickou analýzu přiloženého přepisu a vytvořit strukturovaný, hierarchický obsah v češtině.
 
@@ -78,16 +78,16 @@ ZDE JE PŘEPIS K ANALÝZE:
     // 5. Inicializace a volání AI
     const genAI = new GoogleGenerativeAI(apiKey);
     
-    // Konfigurace modelu
+    // Konfigurace modelu - Návrat k osvědčenému modelu a mírné zvýšení teploty
     const model = genAI.getGenerativeModel({ 
-        model: 'gemini-2.0-flash',
+        model: 'gemini-1.5-flash', // Změna z 2.0 na 1.5 pro stabilitu
         generationConfig: {
-            temperature: 0.1, // Nízká teplota pro dodržování striktních pravidel
+            temperature: 0.2, // Mírně zvýšeno z 0.1 pro lepší kreativitu při strukturování
             maxOutputTokens: 8192,
         }
     });
 
-    console.log('🤖 Generuji obsah pomocí modelu gemini-2.0-flash (Robustní Prompt s Orphan Rule)...');
+    console.log('🤖 Generuji obsah pomocí modelu gemini-1.5-flash (Restored Original Prompt)...');
     
     const result = await model.generateContent(fullPrompt);
     const response = await result.response;
