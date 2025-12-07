@@ -11,8 +11,19 @@ export async function POST(request: Request) {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) return NextResponse.json({ message: 'API Key missing' }, { status: 500 });
 
+    // 1. Ověření sezení a role
     const session = await getServerSession(authOptions);
-    if (!session || session.user?.role !== 'ADMIN') return NextResponse.json({ message: 'Unauthorized' }, { status: 403 });
+
+    // Definice rolí, které mají právo provádět tuto akci (Admin i Kurátor)
+    const allowedRoles = ['ADMIN', 'KURATOR'];
+
+    // Pokud uživatel nemá session, nemá roli, nebo jeho role není v seznamu povolených -> 403
+    if (!session || !session.user?.role || !allowedRoles.includes(session.user.role)) {
+      return new NextResponse(JSON.stringify({ message: 'Unauthorized: Insufficient permissions' }), {
+        status: 403,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
 
     const body = await request.json();
     const { collectionId } = body;

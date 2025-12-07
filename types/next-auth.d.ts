@@ -1,40 +1,28 @@
-import 'next-auth';
+import { DefaultSession } from 'next-auth';
 import 'next-auth/jwt';
 
 /**
- * Rozšiřujeme standardní typy NextAuth, abychom TypeScriptu
- * řekli, že budeme do session a tokenu přidávat vlastní data.
+ * Rozšiřujeme standardní typy NextAuth o naši striktní roli.
+ * Tím zajistíme, že všude v aplikaci (session.user.role) bude TypeScript
+ * očekávat jen 'USER', 'ADMIN' nebo 'KURATOR'.
  */
 
 declare module 'next-auth' {
-  /**
-   * Toto je objekt, který vidí klient (např. přes useSession())
-   */
   interface Session {
     user: {
       id: string;
-      role: string;
-    } & DefaultSession['user']; // Zachováme i standardní vlastnosti (name, email, image)
+      role: 'USER' | 'ADMIN' | 'KURATOR'; // <-- Striktní typ
+    } & DefaultSession['user'];
   }
 
-  /**
-   * Toto je objekt 'user', který vracíme z providera (authorize)
-   * a dostáváme v JWT callbacku.
-   */
   interface User {
-    // Výchozí User již má id, name, email, image.
-    // My přidáváme pouze naši roli.
-    role: string;
+    role: 'USER' | 'ADMIN' | 'KURATOR'; // <-- Striktní typ
   }
 }
 
-/**
- * Rozšíření JWT tokenu.
- */
 declare module 'next-auth/jwt' {
-  /** Toto je obsah našeho JWT tokenu v cookie. */
   interface JWT {
     id: string;
-    role: string;
+    role: 'USER' | 'ADMIN' | 'KURATOR'; // <-- Striktní typ
   }
 }

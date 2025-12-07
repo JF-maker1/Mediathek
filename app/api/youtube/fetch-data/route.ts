@@ -254,9 +254,15 @@ export async function GET(request: Request) {
   debugLogs = [];
   
   try {
+    // 1. Ověření sezení a role
     const session = await getServerSession(authOptions);
-    if (!session || session.user?.role !== 'ADMIN') {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+
+    // Definice rolí, které mají právo provádět tuto akci (Admin i Kurátor)
+    const allowedRoles = ['ADMIN', 'KURATOR'];
+
+    // Pokud uživatel nemá session, nemá roli, nebo jeho role není v seznamu povolených -> 403
+    if (!session || !session.user?.role || !allowedRoles.includes(session.user.role)) {
+      return NextResponse.json({ message: 'Unauthorized: Insufficient permissions' }, { status: 403 });
     }
 
     const { searchParams } = new URL(request.url);

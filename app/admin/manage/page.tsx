@@ -3,7 +3,8 @@ import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import Link from 'next/link';
-import DeleteButton from '@/components/DeleteButton'; // Importujeme novou komponentu
+import DeleteButton from '@/components/DeleteButton';
+import { getAuthFilter } from '@/lib/auth-utils';
 
 const prisma = new PrismaClient();
 
@@ -13,23 +14,20 @@ export const dynamic = 'force-dynamic';
 export default async function AdminManagePage() {
   const session = await getServerSession(authOptions);
 
-  // Ochrana stránky
-  if (!session || session.user?.role !== 'ADMIN') {
+  // Povolené role pro přístup na tuto stránku
+  const allowedRoles = ['ADMIN', 'KURATOR'];
+  
+  // Ochrana stránky - nyní povoluje ADMIN i KURATOR
+  if (!session || !session.user?.role || !allowedRoles.includes(session.user.role)) {
     redirect('/');
   }
 
-  // Načítání dat na základě role (příprava na budoucí roli KURATOR)
-  // OPRAVA CHYBY: Musíme sestavit argumenty a zavolat findMany jen jednou.
-     
-  // 1. Definujeme 'where' podmínku na základě role
-  const whereCondition = 
-    session.user.role === 'ADMIN' 
-    ? {} // Admin vidí vše (prázdná podmínka)
-    : { authorId: session.user.id }; // Ostatní jen své
+  // Získání autentizačního filtru pomocí importované funkce
+  const whereFilter = await getAuthFilter();
 
-  // 2. Zavoláme findMany POUZE JEDNOU s finálními argumenty
+  // Načítání videí s aplikovaným filtrem
   const videos = await prisma.video.findMany({
-    where: whereCondition, // Aplikujeme podmínku
+    where: whereFilter, // Aplikujeme autentizační filtr
     orderBy: {
       createdAt: 'desc',
     },

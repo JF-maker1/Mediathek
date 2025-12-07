@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import Link from 'next/link';
 import { Plus, Edit, Eye, EyeOff, Trash2 } from 'lucide-react';
+import { getAuthFilter } from '@/lib/auth-utils';
 
 const prisma = new PrismaClient();
 
@@ -12,12 +13,20 @@ export const dynamic = 'force-dynamic';
 export default async function CollectionsPage() {
   const session = await getServerSession(authOptions);
 
-  if (!session || session.user?.role !== 'ADMIN') {
+  // Povolené role: ADMIN a KURATOR
+  const allowedRoles = ['ADMIN', 'KURATOR'];
+  
+  // Pokud uživatel není přihlášen nebo nemá povolenou roli, přesměrovat
+  if (!session || !session.user?.role || !allowedRoles.includes(session.user.role)) {
     redirect('/');
   }
 
-  // Načtení sbírek včetně počtu videí a SEO statusu
+  // Získání autentizačního filtru
+  const whereFilter = await getAuthFilter();
+
+  // Načtení sbírek včetně počtu videí a SEO statusu s aplikací filtru
   const collections = await prisma.collection.findMany({
+    where: whereFilter, // Filtr aplikován zde
     orderBy: { updatedAt: 'desc' },
     include: {
       _count: {

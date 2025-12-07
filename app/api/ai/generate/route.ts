@@ -3,30 +3,137 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
+// --- 1. KONFIGURACE ---
+
+const rawKeys = process.env.GEMINI_API_KEY || process.env.GOOGLE_AI_API_KEY || '';
+const allKeys = rawKeys.split(',').map(k => k.trim()).filter(Boolean);
+
+// OPRAVA: Seznam modelů přesně podle vaší diagnostiky z logu.
+// 1.5-flash tam nebyl, proto používáme 'latest' aliasy a verzi 2.5
+const AVAILABLE_MODELS = [
+  'gemini-flash-latest',          // Alias, který by měl fungovat
+  'gemini-pro-latest',            // Stabilní alias
+  'gemini-2.5-flash',             // Nejnovější dostupná verze ve vašem seznamu
+  'gemini-2.0-flash-lite-preview-02-05' // Lite verze mívají lepší limity
+];
+
+let executionLogs: string[] = [];
+
+function logStep(msg: string) {
+  const time = new Date().toLocaleTimeString();
+  const logMsg = `[${time}] ${msg}`;
+  console.log(logMsg);
+  executionLogs.push(logMsg);
+}
+
+// Diagnostika (ponechána pro jistotu)
+async function listAvailableModels(apiKey: string) {
+  try {
+    logStep(`🔍 DIAGNOSTIKA: Ptám se Google API na modely...`);
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+    const data = await response.json();
+    if (data.models) {
+      const modelNames = data.models.map((m: any) => m.name.replace('models/', ''));
+      logStep(`📋 DOSTUPNÉ: ${modelNames.slice(0, 5).join(', ')}...`); // Výpis jen prvních 5 pro přehlednost
+    }
+  } catch (e: any) {
+    logStep(`❌ Chyba diagnostiky: ${e.message}`);
+  }
+}
+
+if (allKeys.length === 0) {
+    console.error(`[AI SYSTEM] CHYBA: Žádné API klíče nenalezeny!`);
+}
+
+function getRandomKey(excludeKey: string = '') {
+  if (allKeys.length === 0) return '';
+  const availableKeys = allKeys.length > 1 
+    ? allKeys.filter(k => k !== excludeKey) 
+    : allKeys;
+  return availableKeys[Math.floor(Math.random() * availableKeys.length)];
+}
+
+function getRandomModel() {
+  return AVAILABLE_MODELS[Math.floor(Math.random() * AVAILABLE_MODELS.length)];
+}
+
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// --- 2. FUNKCE GENEROVÁNÍ ---
+
+async function generateWithRetry(prompt: string, retries = 6) {
+  let lastUsedKey = '';
+  executionLogs = []; 
+
+  logStep(`Startuji generování. Modely: ${AVAILABLE_MODELS.join(', ')}`);
+
+  for (let i = 0; i < retries; i++) {
+    const currentKey = getRandomKey(lastUsedKey);
+    const currentModelName = getRandomModel();
+    
+    lastUsedKey = currentKey;
+    const keyId = `...${currentKey.slice(-4)}`;
+
+    try {
+      logStep(`Pokus ${i + 1}/${retries} | Klíč: ${keyId} | Model: ${currentModelName}`);
+      
+      const genAI = new GoogleGenerativeAI(currentKey);
+      
+      const model = genAI.getGenerativeModel({ 
+        model: currentModelName, 
+        generationConfig: {
+          temperature: 0.4,
+          maxOutputTokens: 8192,
+        }
+      });
+
+      const result = await model.generateContent(prompt);
+      logStep(`✅ ÚSPĚCH! Model ${currentModelName} odpověděl.`);
+      return result;
+
+    } catch (error: any) {
+      const errorMsg = error.message || '';
+      const isRateLimit = errorMsg.includes('429') || errorMsg.includes('Quota');
+      const isNotFound = errorMsg.includes('404') || errorMsg.includes('not found');
+
+      logStep(`❌ CHYBA (${isNotFound ? '404' : 'Limit/Jiná'}) na ${currentModelName}: ${errorMsg.substring(0, 50)}...`);
+      
+      if (i < retries - 1) {
+          const waitTime = isRateLimit ? 2000 : 1000;
+          logStep(`⏳ Zkouším jinou kombinaci za ${waitTime/1000}s...`);
+          await delay(waitTime);
+          continue;
+      }
+      
+      // Při posledním pokusu spustíme diagnostiku
+      if (i === retries - 1) await listAvailableModels(currentKey);
+      throw error;
+    }
+  }
+  throw new Error('Vyčerpány všechny pokusy.');
+}
+
 export async function POST(request: Request) {
   try {
-    // 1. Diagnostika API Klíče
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      console.error('CRITICAL: GEMINI_API_KEY is missing');
+    if (allKeys.length === 0) {
       return NextResponse.json({ message: 'Server Error: API Key not configured' }, { status: 500 });
     }
 
-    // 2. Bezpečnostní kontrola
     const session = await getServerSession(authOptions);
-    if (!session || session.user?.role !== 'ADMIN') {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 403 });
+    const allowedRoles = ['ADMIN', 'KURATOR'];
+
+    if (!session || !session.user?.role || !allowedRoles.includes(session.user.role)) {
+      return new NextResponse(JSON.stringify({ message: 'Unauthorized' }), { status: 403 });
     }
 
-    // 3. Získání dat
     const body = await request.json();
-    const { transcript } = body;
+    const { transcript, title } = body; 
 
-    if (!transcript || typeof transcript !== 'string') {
-      return NextResponse.json({ message: 'Chybí přepis videa (transcript).' }, { status: 400 });
+    if (!transcript) {
+      return NextResponse.json({ message: 'Chybí přepis videa.' }, { status: 400 });
     }
 
-    // 4. Příprava Promptu (Agresivní hierarchie)
+    // PŮVODNÍ PROMPT
     const systemPrompt = `
 Jsi expertní analytik a editor. Tvým úkolem je vytvořit **hluboce strukturovaný** obsah z přepisu videa.
 
@@ -58,41 +165,26 @@ Příklady číslování:
 2.1. Vnější faktory [Vliv prostředí a okolností] (02:15-03:45)
 2.2. Vnitřní faktory [Psychologické aspekty] (03:45-05:00)
 
-ZDE JE PŘEPIS K ANALÝZE:
+ZDE JE PŘEPIS K ANALÝZE: (Video: "${title}")
     `.trim();
 
-    const fullPrompt = `${systemPrompt}\n${transcript}`;
+    const fullPrompt = `${systemPrompt}\n${transcript.substring(0, 30000)}`;
 
-    // 5. Inicializace a volání AI
-    const genAI = new GoogleGenerativeAI(apiKey);
-    
-    // Použijeme gemini-2.0-flash, který fungoval (nezpůsoboval 404),
-    // ale s vyšší teplotou pro větší kreativitu při hledání struktury.
-    const model = genAI.getGenerativeModel({ 
-        model: 'gemini-2.0-flash', 
-        generationConfig: {
-            temperature: 0.4, // Zvýšeno pro podporu větvení myšlenek
-            maxOutputTokens: 8192,
-        }
-    });
-
-    console.log('🤖 Generuji obsah pomocí modelu gemini-2.0-flash (Aggressive Hierarchy Prompt)...');
-    
-    const result = await model.generateContent(fullPrompt);
+    const result = await generateWithRetry(fullPrompt);
     const response = await result.response;
     const text = response.text();
-
-    console.log('✅ AI obsah úspěšně vygenerován.');
-
+    
     return NextResponse.json({ 
       content: text,
-      message: 'Obsah úspěšně vygenerován.' 
+      message: 'Obsah úspěšně vygenerován.',
+      debug_logs: executionLogs
     });
 
   } catch (error: any) {
-    console.error('AI_GENERATE_ERROR', error);
+    console.error('[AI FINAL ERROR]:', error.message);
     return NextResponse.json({ 
-      message: 'Chyba při komunikaci s AI: ' + (error.message || 'Unknown error') 
-    }, { status: 500 });
+      message: 'Chyba AI: ' + (error.message || 'Neznámá chyba'),
+      debug_logs: executionLogs 
+    }, { status: error.message?.includes('429') ? 429 : 500 });
   }
 }

@@ -20,7 +20,11 @@ export async function POST(request: Request) {
     // 1. Ověření sezení a role
     const session = await getServerSession(authOptions);
 
-    if (!session || session.user?.role !== 'ADMIN') {
+    // ZMĚNA: Definujeme seznam rolí, které mají právo přidávat videa
+    const allowedRoles = ['ADMIN', 'KURATOR'];
+
+    // Pokud uživatel nemá session, nemá roli, nebo jeho role není v seznamu povolených -> 403
+    if (!session || !session.user?.role || !allowedRoles.includes(session.user.role)) {
       return new NextResponse(JSON.stringify({ message: 'Unauthorized' }), {
         status: 403,
         headers: { 'Content-Type': 'application/json' },

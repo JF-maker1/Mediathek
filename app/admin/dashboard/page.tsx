@@ -3,32 +3,34 @@ import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import Link from 'next/link';
-// 1. Importujeme naši novou sdílenou komponentu
 import VideoGrid from '@/components/VideoGrid';
+import { getAuthFilter } from '@/lib/auth-utils';
 
 const prisma = new PrismaClient();
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminDashboardPage() {
-  // 1. Bezpečnostní kontrola na serveru (zůstává)
+  // 1. Bezpečnostní kontrola na serveru - POVOLENO PRO ADMIN I KURATOR
   const session = await getServerSession(authOptions);
 
-  if (!session || session.user?.role !== 'ADMIN') {
+  const allowedRoles = ['ADMIN', 'KURATOR'];
+  if (!session || !session.user?.role || !allowedRoles.includes(session.user.role)) {
     redirect('/');
   }
 
-  // 2. Načtení dat z databáze
-  // AKTUALIZACE: Ponecháváme načítání autora, jak je ve vašem souboru.
-  // To je důležité pro VideoGrid.
+  // 2. Načtení dat z databáze S POUŽITÍM AUTH FILTROVÁNÍ
+  const whereFilter = await getAuthFilter(); // Získáme filtr ({ authorId: ... } nebo {})
+
   const videos = await prisma.video.findMany({
+    where: whereFilter, // <-- Zde filtr aplikujeme
     orderBy: {
       createdAt: 'desc',
     },
     include: {
       author: {
         select: {
-            email: true
+          email: true
         }
       },
       // PŘIDÁNO: Načtení názvů a ID přiřazených sbírek
@@ -55,7 +57,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* AKTUALIZACE: Celý původní blok (<div className="grid...">...</div>) 
-        je nyní nahrazen touto jedinou komponentou.
+        je nyní nahrazen toutou jedinou komponentou.
       */}
       <VideoGrid videos={videos} baseHref="/video" showEditButton={true} />
       

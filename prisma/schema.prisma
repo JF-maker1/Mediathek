@@ -11,6 +11,7 @@ datasource db {
 enum Role {
   USER
   ADMIN
+  KURATOR  // <-- Nová role (Fáze 18)
 }
 
 // Datový model pro uživatele

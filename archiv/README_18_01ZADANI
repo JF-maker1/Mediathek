@@ -1,0 +1,331 @@
+JÁ_PROMPT:
+V příloze jsou dokumenty z posledních 10 fází realizace jedné webové aplikace zabývající se správou internetového obsahu resp. videí z youtube. Principem je že uživatel této aplikace si vytváří vlastní knihovnu videí, videa analyzuje, třídí jejich obsah a vytváří si sbírky témat s těmito videi. Aplikace je ve fázi kdy je aplikaci v předchozí fázi poskytnut základní UX design resp. design pro získávání uživatelů této aplikace - v této fázi jsou zatím k dispozici uživatelská práva z jedné strany pro admina z druhé strany pro usera resp. admin může přidávat videa a vytvářet sbírky a user může pouze prohlížet zveřejněný obsah resp. sbírky a videa zařazená do veřejných sbírek. Tato aplikace předpokládá vytvoření uživatele s právy "Kurator" což bude uživatel, který bude moci vytvářet rovněž obsah resp. přidávat videa a vytvářet sbírky stejně jako nyní Admin. Admin ovšem bude moci rovněž spravovat uživatele resp. bude moci uživatelům s právy user přidělovat práva "Kurator" či vytvářet uživatele User. Resp. tato fáze vávoje aplikace číslo 18 se bude zabývat vytvořením prostředí pro vznik práv "Kurator" v této aplikaci. To bude spojeno s potřebou vytvořit adminovi spránku pro Správu uživatelů, kde bude seznam uživatelů s uvedením jejich práv, přičemž tato práva bude možné editovat tím že bude možné vytvářet nové uživatele nejprve jako uživatel s právy user kterému poté bude možné přidat právo i "Kurator". Poté v aplikaci bude nadefinováno resp. implementováno toto právo "Kurator", který bude moci přidávat videa (tlačítko přidat video "+ Video"), bude moci vidět stránku "Přehled obsahu", kde budou ovšem pouze videa přidaná títmo uživatelem s právy "Kurátor" (resp. ADMIN může na této stránce vidět videa všech uživatelů), bude moci vidět stránku "Správa obsahu", kde budou v seznamu rovněž pouze videa tohoto uživatele resp Kurátora (resp. admin vidí všechny videa) a bude moci vidět stránku "Sbirky" ale opět pouze se svými sbírkami (resp. Admin vidí opět sbírky všech uživatelů) ... resp. Kurator vidí stejné stránky jako admin ale s obsahem který patří jen Kurátorovi. Rovněž Kurátor neuvidí novou stránku "Správa uživatelů", která bude zůstávat zatím pouze adminovi (do budoucna je možné že tuto stránku uvidí i kurátoři kteří budou moci přidávat i své uživatele resp. kurátory). Resp. jako USER se může zaregistrovat kdokoliv, ale zatím pouze admin bude moci přidávat USERům i práva Kurator. Takto se tato webová stránka stane onou aplikací kde kurátoři budou vytvářet své ostrovy sledovaného obsahu na internetu a ten i sdílet s ostatními. Pojdme prosím nyní nejprve prodiskutovat tyto požadavky na toto nové zadání č. 18 zda neskýtají tyto  požadavky nějaká slabá místa vzhledem k postavení a vystavění současné aplikace tak abychom vytvořili kvalitní zadání i s ohledem na best practice v oblasti řízení práv v aplikaci. Výsledkem by mělo být zadání které jednak bude implementovat tuto možnost vytvořit práva Kurator v této apluikaci fakticky ale i sled úkonů jakým tato práva mají být v aplikaci realizována. nejprve pojdme prodiskutovat a vytvořit toto zadání a teprve po vytvoření tohoto zadání se bude diskutovat a realizovat realizační plán pro toto zadání který se teprve poté bude také samostatně realizovat resp. pojdme postupovat v souladu s naším vývojovým cyklem v této aplikaci. Pro účely vytvoření tohoto dalšího zadání jsou v příloze tedy k dispozici předchozích deset zadání této aplikace. [README_08_01ZADANI][README_09_01ZADANI][README_10_01ZADANI][README_11_01ZADANI][README_12_01ZADANI][README_13_01ZADANI][README_14_01ZADANI][README_15_01ZADANI][README_16_01ZADANI][README_17_01ZADANI]
+
+
+AI_RESPONZE:
+To je naprosto zásadní moment v životě aplikace. 🚀 Přecházíme z "Single-Player" režimu (kde jste byl jediným tvůrcem vy) do "Multi-Player" režimu (platforma pro komunitu kurátorů).
+
+To s sebou nese nutnost změnit myšlení z "Já vidím všechno" na "Každý vidí jen své pískoviště, ale Admin vidí celé hřiště".
+
+Předtím, než sepíšu finální zadání, pojďme prodiskutovat tři klíčová místa (Best Practices), která musíme v zadání ošetřit, aby to bylo bezpečné a robustní:
+
+1. Princip "Server-Side Data Isolation" (Bezpečnost)
+Nestačí jen skrýt tlačítka v menu.
+
+Riziko: Pokud by Kurátor uhodl URL /admin/edit/VIDEO_ID_JINEHO_KURATORA, nesmí se mu stránka otevřít.
+
+Best Practice: Všechny databázové dotazy (Prisma queries) pro Kurátora musí mít "natvrdo" přidanou podmínku where: { authorId: session.user.id }.
+
+Admin: Admin tuto podmínku nemá (vidí vše).
+
+Závěr do zadání: Musíme explicitně definovat, že filtrace obsahu probíhá na backendu, nikoliv jen na frontendu.
+
+2. Správa Uživatelů (User Management)
+Admin potřebuje jednoduchý nástroj na "povyšování".
+
+Návrh: Jednoduchá tabulka: Jméno | Email | Role (Dropdown) | Akce.
+
+Proces: Uživatel se zaregistruje sám (jako USER). Vy ho v tabulce uvidíte a změníte roli na KURATOR.
+
+Best Practice: Je dobré zabránit tomu, abyste si omylem odebral roli ADMIN sám sobě (tzv. "suicide prevention check" v kódu).
+
+3. Viditelnost ve veřejné části (Katalog)
+Otázka: Když Kurátor vytvoří sbírku a dá jí isPublic: true, objeví se automaticky na Homepage?
+
+Předpoklad: Ano, platforma má být demokratická. "Ostrov" kurátora je jeho soukromá správa, ale jeho veřejné sbírky jsou součástí společného "Moře".
+
+Pokud s těmito body souhlasíte, zde je připravené kompletní zadání pro Fázi 18. Je koncipováno tak, aby zavedlo robustní RBAC (Role-Based Access Control).
+
+README_18_01ZADANI
+📜 Zpráva o genezi zadání (Development Report)
+Téma: Fáze 18 – Správa Uživatelů a Role Kurátor (Multi-tenancy) Datum vzniku: 6. prosince 2025 Kontext: Dosud byla aplikace systémem pro jednoho správce (Admina). Aby se mohla stát komunitní platformou ("Ostrovem vědění"), je nutné umožnit tvorbu obsahu i dalším důvěryhodným uživatelům (Kurátorům), aniž by měli plný přístup k systému.
+
+1. Definice Rolí (RBAC Matrix)
+Během analýzy byly definovány čtyři úrovně přístupu:
+
+VISITOR (Návštěvník): Prohlíží veřejný katalog a videa. Nemá účet.
+
+USER (Uživatel): Má účet. Může si (v budoucnu) ukládat oblíbené. Nemůže tvořit obsah.
+
+KURATOR (Tvůrce): Má přístup do Admin sekce. Může přidávat videa a tvořit sbírky. Vidí a edituje POUZE svůj vlastní obsah.
+
+ADMIN (Správce): Má plný přístup. Vidí obsah všech Kurátorů. Spravuje uživatele a přiděluje role.
+
+2. Architektonická výzva: Izolace dat
+Klíčovým bodem zadání není jen UI, ale bezpečnost dat.
+
+Byl přijat princip "Author Ownership".
+
+Každý dotaz do databáze v sekci /admin (kromě Admina) musí být filtrován podle authorId.
+
+3. Workflow povyšování
+Byl zvolen manuální model:
+
+Registrace je otevřená (default = USER).
+
+Povýšení na KURATORA provádí Admin ručně v nové sekci "Správa uživatelů". Tím je zajištěna kontrola kvality kurátorů.
+
+📄 Zadání projektu: Webová aplikace Mediathek (Fáze 18 - Role Kurátor a Správa uživatelů)
+Datum: 6. prosince 2025 Verze: 18.0 Navazuje na: Fáze 17 (Showcase), Fáze 9 (Příprava rolí - zmíněno)
+
+1. Název projektu
+Mediathek – Implementace Kurátorských Práv
+
+2. 🎯 Cíl Fáze
+Cílem je transformovat aplikaci na multi-uživatelskou platformu. Zavedeme roli KURATOR, která umožní vybraným uživatelům spravovat vlastní videa a sbírky, a vytvoříme rozhraní pro ADMINA pro správu těchto rolí. Zásadním principem je izolace obsahu: Kurátor v administraci vidí jen to, co sám vytvořil, zatímco Admin má globální přehled.
+
+3. Rozsah pro Fázi 18
+Databáze: Ověření/Úprava modelu User (pole role musí podporovat enum KURATOR).
+
+Backend (RBAC): Úprava API endpointů a Server Actions pro videa a sbírky.
+
+Implementace podmínky: IF Role != ADMIN THEN Filter by AuthorID.
+
+Frontend (Admin - Správa uživatelů):
+
+Nová stránka /admin/users.
+
+Tabulka uživatelů s možností změny role.
+
+Frontend (Dashboard a Seznamy):
+
+Úprava stránek /admin/dashboard, /admin/videos, /admin/collections.
+
+Filtrování zobrazených dat podle role přihlášeného uživatele.
+
+Frontend (Navigace):
+
+Skrytí položky "Uživatelé" v menu pro ne-adminy.
+
+4. 🏛️ Návrh Řešení a Architektura
+4.1. Správa Uživatelů (/admin/users)
+Přístup: POUZE role ADMIN.
+
+UI: Tabulka (Data Grid).
+
+Sloupce: Avatar, Jméno, Email, Role (Select/Dropdown), Datum registrace.
+
+Akce: Změna role v dropdownu okamžitě (nebo po potvrzení) volá API updateUserRole.
+
+Validace: Admin nesmí (omylem) odebrat roli Admin sám sobě.
+
+4.2. Logika izolace dat (Dashboard & Lists)
+Logika načítání dat (např. v prisma.video.findMany) se změní následovně:
+
+TypeScript
+
+// Pseudo-kód logiky na serveru
+const session = await getServerSession();
+const userRole = session.user.role;
+const userId = session.user.id;
+
+let whereCondition = {};
+
+if (userRole === 'KURATOR') {
+  // Kurátor vidí jen své
+  whereCondition = { authorId: userId };
+} 
+// Admin má whereCondition prázdnou (vidí vše)
+
+const videos = await prisma.video.findMany({
+  where: whereCondition
+});
+Tato logika musí být aplikována na:
+
+/admin/dashboard (přehled videí)
+
+/admin/collections (přehled sbírek)
+
+/admin/videos (správa videí)
+
+4.3. Editace a Mazání (Security)
+Stránky /admin/edit/[id] a /admin/collections/edit/[id] musí ověřit vlastnictví.
+
+Pokud se Kurátor pokusí přistoupit na ID, které mu nepatří (např. přes URL), musí dostat chybu 403 Forbidden nebo 404 Not Found.
+
+5. 🚦 Funkční Požadavky (FR)
+FR1 (User Management): Admin vidí seznam všech registrovaných uživatelů a může měnit jejich roli (USER <-> KURATOR <-> ADMIN).
+
+FR2 (Curator View): Kurátor po přihlášení do adminu vidí v seznamech videí a sbírek pouze položky, kde authorId == curatorId.
+
+FR3 (Admin View): Admin vidí v seznamech položky všech autorů. (Ideálně s informací ve sloupci "Autor", aby poznal, čí to je).
+
+FR4 (Creation): Kurátor může vytvářet nová videa a sbírky. Tyto položky se automaticky uloží s jeho authorId.
+
+FR5 (Menu Protection): Položka menu "Uživatelé" je viditelná pouze pro roli ADMIN.
+
+6. 🔒 Nefunkční Požadavky (NFR)
+NFR1 (Bezpečnost): API endpointy pro změnu role musí striktně vyžadovat session s rolí ADMIN.
+
+NFR2 (Konzistence): UI pro Kurátora vypadá stejně jako pro Admina (stejný layout), jen s méně daty a méně položkami v menu.
+
+7. ✅ Akceptační Kriteria (Definice "Hotovo")
+Scénář: Povýšení
+
+Uživatel "Jan" se zaregistruje. Má roli USER. Nemůže do /admin.
+
+Admin jde na /admin/users, najde Jana a změní roli na KURATOR.
+
+Jan se odhlásí/přihlásí (nebo refreshne) a nyní má přístup do /admin.
+
+Scénář: Izolace
+
+Kurátor Jan přidá video "Moje Káva".
+
+Admin přidá video "Adminův Čaj".
+
+Jan v seznamu vidí jen "Moje Káva".
+
+Admin v seznamu vidí "Moje Káva" i "Adminův Čaj".
+
+Scénář: Ochrana
+
+Jan zkusí do adresního řádku zadat ID videa "Adminův Čaj".
+
+Aplikace mu zobrazí chybu "Nemáte oprávnění" nebo ho přesměruje.
+
+Je tento návrh v souladu s vaší vizí? Pokud ano, můžeme to považovat za schválené zadání pro Fázi 18 a přejít k plánování realizace.
+
+
+------------------------------------------------------------------------
+
+JÁ_PROMPT:
+Pojdme toto zadání ještě raději zrevidovat v kontextu předchozích zadání 00 až 07, tak abychom jasně zformulovali toto zadání v kontextu řešení práv ve všech fázích vývoje této aplikace a zkušeností s nimi. [README_00_01ZADANI][README_01_01ZADANI][README_02_01ZADANI][README_03_01ZADANI][README_04_01ZADANI][README_05_01ZADANI][README_06_01ZADANI][README_07_01ZADANI]
+
+
+AI_RESPONZE:
+To je velmi moudrý krok. Podívat se zpětně na "genetický kód" aplikace (Fáze 00–07) nám zajistí, že Fáze 18 nebude "cizím tělesem", ale logickým vyvrcholením dosavadní architektury.
+
+Prošel jsem detailně historii řešení práv a bezpečnosti v dokumentech 00–07. Zde je **analýza kontextu** a následně **revidované zadání**.
+
+### 🔍 Analýza vývoje práv (Poučení z Fází 00–07)
+
+Když se podíváme na historii, vidíme jasnou evoluci, kterou Fáze 18 musí respektovat:
+
+1.  **Fáze 1 (Identita):** Zavedli jsme `NextAuth` a model `User`.
+      * *Poučení:* Identita je vyřešena. Fáze 18 nesmí měnit *jak* se přihlašujeme, jen *co* s tou identitou děláme.
+2.  **Fáze 2 (Ochrana tras):** Zavedli jsme `middleware.ts`, který chrání `/admin`.
+      * *Poučení:* Ochrana je na úrovni URL. Fáze 18 musí zajistit, aby Kurátor *mohl* do `/admin`, ale neviděl to co Admin.
+3.  **Fáze 3+4 (Server-Side Fetching):** Zavedli jsme RSC (React Server Components).
+      * *Poučení:* Data se filtrují na serveru. Fáze 18 nesmí filtrovat data jen v prohlížeči (skrýt tlačítko), ale musí upravit Prisma dotazy (`where: { authorId: ... }`).
+4.  **Fáze 6+7 (Zlomový bod - Vlastnictví):** Zde jsme zavedli logiku `isOwner || isAdmin` a pole `authorId` u Videí a Sbírek.
+      * *Klíčový moment:* **Technologie pro Kurátora už v aplikaci existuje.** Byla vyvinuta v Fázi 7, jen nebyla aktivní, protože všichni autoři byli zároveň Admini.
+      * *Cíl Fáze 18:* Pouze "zapnout" tuto existující logiku pro novou roli.
+
+-----
+
+### 🏛️ Revidované Zadání (S důrazem na kontinuitu)
+
+Toto zadání je preciznější v tom, že nedefinuje věci znovu, ale odkazuje na mechanismy vytvořené v minulých fázích.
+
+# README\_18\_01ZADANI
+
+## 📜 Zpráva o genezi zadání (Development Report)
+
+**Téma:** Fáze 18 – Aktivace Multi-tenant architektury (Role Kurátor)
+**Kontext:** Aplikace technicky dospěla. V Fázích 6 a 7 jsme implementovali "vlastnictví dat" (`authorId`). Nyní tuto architekturu využijeme pro zavedení delegované správy obsahu.
+
+### 1\. Kontinuita práv (Best Practices z Fází 0-7)
+
+Při revizi jsme identifikovali, že není třeba psát nový bezpečnostní systém.
+
+  * **Autorizace:** Využijeme existující RBAC logiku (`isOwner`) z Fáze 7.
+  * **Ochrana:** Využijeme existující Middleware z Fáze 2, pouze rozšíříme definici "oprávněného uživatele" pro `/admin` sekci.
+
+### 2\. Upřesnění "Životního cyklu uživatele"
+
+Definovali jsme tok povyšování, aby byl bezpečný:
+
+  * Registrace -\> `USER` (vidí jen veřejné).
+  * Admin akce -\> `KURATOR` (vidí `/admin`, ale jen svá data).
+  * Admin akce -\> `ADMIN` (vidí vše).
+
+-----
+
+## 📄 Zadání projektu: Webová aplikace Mediathek (Fáze 18 - Správa rolí a Uživatelů)
+
+**Datum:** 6. prosince 2025
+**Verze:** 18.1 (Revidovaná)
+**Navazuje na:** Fáze 7 (Implementace Sbírek a authorId), Fáze 17 (Showcase)
+
+### 1\. Název projektu
+
+Mediathek – Implementace Kurátorských Práv (Multi-tenancy)
+
+### 2\. 🎯 Cíl Fáze
+
+Cílem je aktivovat **multi-uživatelský režim** aplikace.
+Využijeme databázové vztahy `authorId` zavedené ve Fázi 7 k tomu, abychom umožnili roli **KURATOR** spravovat vlastní "ostrov" obsahu v rámci sdílené administrace, aniž by viděl nebo mohl ovlivnit obsah ostatních nebo systémová nastavení.
+
+### 3\. Rozsah pro Fázi 18
+
+  * **Backend (RBAC Logic):** Úprava databázových dotazů (Prisma) na stránkách Dashboardu a Správy obsahu tak, aby dynamicky filtrovaly data podle role.
+  * **Middleware:** Úprava ochrany tras `/admin`, aby pustila dovnitř i roli `KURATOR`.
+  * **Frontend (Admin - Správa uživatelů):** Nová stránka `/admin/users` pro povyšování rolí (exkluzivně pro roli `ADMIN`).
+  * **Frontend (UX):** Skrytí globálních prvků (např. odkaz "Uživatelé") pro roli `KURATOR`.
+
+### 4\. 🏛️ Návrh Řešení a Architektura
+
+#### 4.1. Správa Uživatelů (`/admin/users`)
+
+  * **Technologie:** Využije tabulkový layout definovaný ve **Fázi 6** (stránka `/admin/manage`).
+  * **Funkce:** Seznam uživatelů s dropdown menu pro změnu role.
+  * **Bezpečnost (Critical):** API endpoint pro změnu role musí obsahovat kontrolu: `if (targetUser.id === session.user.id) throw Error("Cannot change own role");`. To zabrání tomu, aby si Admin omylem odebral práva (zkušenost z Fáze 2 - bezpečnostní pojistky).
+
+#### 4.2. Izolace Dat (The "Author Filter")
+
+Zde aplikujeme logiku z **Fáze 7**.
+V souborech `app/admin/dashboard/page.tsx`, `/manage/page.tsx` a `/collections/page.tsx` upravíme načítání dat:
+
+```typescript
+// Pseudo-kód (Best Practice z Fáze 3 - Server Side Fetching)
+const whereClause = session.user.role === 'ADMIN' 
+  ? {} // Admin vidí vše
+  : { authorId: session.user.id }; // Kurátor vidí jen své
+
+const data = await prisma.video.findMany({ where: whereClause });
+```
+
+#### 4.3. API Ochrana (CRUD)
+
+Existující API endpointy (`/api/videos/[id]`, `/api/collections`) vytvořené ve **Fázi 6 a 7** již obsahují kontrolu:
+`if (!isOwner && !isAdmin) return 403;`
+**Úkol:** Pouze ověřit, že tato logika funguje správně i pro nově definovanou roli `KURATOR` v `next-auth` session.
+
+### 5\. 🚦 Funkční Požadavky (FR)
+
+  * **FR1 (Hierarchie rolí):**
+      * **USER:** Nemá přístup do `/admin`.
+      * **KURATOR:** Má přístup do `/admin`, může vytvářet `Video` a `Collection`. Vidí pouze data, kde `authorId == me`.
+      * **ADMIN:** Má přístup do `/admin`, vidí všechna data. Má přístup do `/admin/users`.
+  * **FR2 (Povýšení):** Pouze ADMIN může na stránce `/admin/users` změnit roli jiného uživatele.
+  * **FR3 (Vlastnictví):** Při vytvoření obsahu (POST) Kurátorem se systém automaticky nastaví `authorId` na ID Kurátora (toto již zajišťuje logika z Fáze 7).
+
+### 6\. 🔒 Nefunkční Požadavky (NFR)
+
+  * **NFR1 (Middleware Security):** Konfigurace v `middleware.ts` (zavedená ve Fázi 2) musí být aktualizována, aby podmínka `token.role === 'ADMIN'` byla rozšířena na `['ADMIN', 'KURATOR'].includes(token.role)`.
+  * **NFR2 (Prevence sebevraždy účtu):** UI i API musí znemožnit snížení role vlastního účtu (Admin se nemůže degradovat na Usera).
+
+### 7\. ✅ Akceptační Kriteria (Definice "Hotovo")
+
+1.  **Test izolace:**
+      * Přihlásím se jako Kurátor A. Vytvořím sbírku "A".
+      * Přihlásím se jako Kurátor B. Vytvořím sbírku "B".
+      * Kurátor A vidí v administraci jen "A". Kurátor B vidí jen "B".
+      * Admin vidí "A" i "B".
+2.  **Test bezpečnosti:**
+      * Kurátor A zkusí ručně zadat URL pro editaci sbírky "B" (`/admin/collections/edit/ID_B`).
+      * Systém vyhodí chybu 403 nebo 404 (díky logice z Fáze 7).
+3.  **Test správy:**
+      * Admin vidí v menu položku "Uživatelé".
+      * Kurátor v menu položku "Uživatelé" nevidí.
+
+-----
+
+**Je tato revidovaná verze, která explicitně staví na mechanismech z Fází 2, 6 a 7, v souladu s vaší představou?**
+------------------------------------------------------------------------
+
+id_chat: 
+https://gemini.google.com/u/1/app/98b6fcb93cab23ce
+
+
