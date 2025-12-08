@@ -1,0 +1,1219 @@
+JÁ_PROMPT:
+V příloze je aktuální snímek webové aplikace zabývající se správou internetového obsahu resp. videí z youtube. Uživatel může do aplikace přidávat videa a ty přiřazovat do sbírek. Aplikace má již zpracován mechanismus tvorby SEO obsahu pomocí promptů na službu AI jak na úrovni jednotlivého videa (strukturovaný obsah, SEO shrnutí, SEO klíčová slova) tak na úrovni sbírky (SEO název sbírky, SEO shrnutí sbírky a SEO klíčová slova sbírky). Nyní bychom se zaměřili na analýzu stávajícího stavu generování tohoto SEO obsahu na úrovni videa i sbírky v aktuální implementaci této aplikace a na základě této analýzy poté hledali robustnější řešení, které by vycházelo z best pracis pro tyto úlohy a poskytlo této aplikaci robustní mechanismus pro generování SEO obsahu videí a sbírek. Resp. uživatel bude vybírat videa na internetu a tato aplikace jej bude podporovat v třídění tohoto obsahu. Takto bude moci vytvářet uživatel rešerše témat napříč internetem a tyto pak právě sdílet pomocí této aplikace resp. aplikace má vytvořit jistý ostrov či loď pro uživatele v moři internetu což je podtitul této aplikace. Nyní bychom se tedy zaměřili na analýzu stávajícího výchozího stavu tvorby SEO obsahu v této aplikaci a tento restrukturalizovali do nějakého robustního systému pro tvorbu tohoto SEO obsahu který bude základem pro jeho další rozvoj. Pojdme se podívat jak aplikace nyní v této oblasti pracuje a pojdme se zamyslet jak tento výchozí stav posunout do stavu pro rozvoj této funkcionality aplikace. Defacto se jedná o návrh systému práce s primárními daty této aplikace což jsou vlastně jednotlivé přepisy přidávaných voideí do této aplikace a jedná se o to nalézt sytém jak s těmito přepisy pracovat takto postupně přidávaných videí resp. přepisů a tak diferenciálně hledat zařazení pro tato nová videa v rámci již existující knihovně uživatlele v této aplikaci. Resp. jak příchozí video zpracovat a zapracovat do stávající knihovny. Příklad takového přepisu přichozího videa je např. tento [[0:00] Heute habe ich für dich eine gute
+[0:01] Nachricht oder eine schlechte Nachricht.
+[0:02] Die gute Nachricht zuerst: Wir haben
+[0:04] einen sehr potenten Vitamin B12 Speicher
+[0:06] in der Leber etwa 2,5 mg, was bis zu 3
+[0:09] Jahre halten kann. Die schlechte
+[0:10] Nachrichte werden immer noch von
+[0:11] Kriminellen regiert. Blackrock März,
+[0:13] Komxandale, alles bleibt gleich. Nein,
+[0:15] Spaß. Heute geht's darum, ob der Vitamin
+[0:17] B12 fehlt. Die schlechte Nachricht: Die
+[0:19] Unterversorgung an Vitamin B12 bleibt
+[0:21] sehr, sehr lange unentdeckt, weil der
+[0:22] Vitamin B12 Mangel sich langsam
+[0:24] einschleicht. Nach diesem Video wirst du
+[0:26] verstehen, ob du vielleicht eine Vitamin
+[0:28] B12 Mangel hast, woran du ihn erkennst,
+[0:29] was die besten Lebensmittel sind, um
+[0:31] dein Vitamin B12 Spatus rasant unter die
+[0:33] Decke hochzubringen. Typische Symptome
+[0:35] für den Vitamin B12 Mangel treten erst
+[0:36] auf, nach Monaten der Unterversorgung,
+[0:38] wenn es also bereits zu spät ist,
+[0:40] ähnlich mit dem Symptom des Durstes.
+[0:41] Wenn du durstig bist, bist du schon
+[0:43] dehydriert, es ist zu spät. Das Problem
+[0:44] bei langfristiger Unterversorgung kann
+[0:46] ein Vitamin B12 Mangel sogar
+[0:48] irreversible, also nicht umkehrfähige
+[0:50] Nervenschäden verursachten. Und nein,
+[0:52] nicht nur Vegetarier und Veganer müssen
+[0:54] auf ihren B12 Status besonders achten,
+[0:56] weil es eben vor allem in Fleisch und
+[0:57] Eiern vorkommt. Aber auch 30% der netten
+[0:59] und hübschen Menschen, die in
+[1:00] Deutschland wohnen, haben einen B12
+[1:02] Mangel, obwohl sie regelmäßig Fleisch
+[1:04] essen. Lass es mich dir ganz kurz
+[1:06] erklären. Zuerst besprechen wir die fünf
+[1:07] ungewöhnlichen Symptome, an denen du
+[1:09] jetzt noch bei dem Schauen dieses
+[1:11] menschemachten Videos auf YouTube deinen
+[1:13] Vitamin B12 Mangel erkennen kannst. Das
+[1:15] ist natürlich alles kein medizinischer
+[1:16] Rat. Ich bin kein Arzt, ich habe mein
+[1:17] Medizinstudium an den Nagel gehangen, um
+[1:19] die größte Parodie eines
+[1:20] Verschwörungstheoretikers auf YouTube zu
+[1:22] werden, die es jemals gab. Und jetzt
+[1:23] kläre ich die Menschen über Gesundheit
+[1:24] und Ernährung auf. Also abonniere diesen
+[1:26] Kanal. Worauf wartest du? Möchtest du
+[1:27] das wirklich verpassen? Nach den fünf
+[1:29] Symptomen besprechen wir Videobitamin
+[1:31] B12 richtig Einnimmst in Form von
+[1:33] Lebensmitteln und warum B12 Supplements
+[1:35] totaler Schwachsinn sind. Bevor wir
+[1:37] starten, ganz kurz die klinischen Fakten
+[1:39] in 10 Sekunden. Vitamin B12 wird im Blut
+[1:41] gemessen. Bei einem Wert unter 200 Nan
+[1:43] pro Liter besteht bereits ein kritischer
+[1:45] Mangel. Vor allem bei älteren tritt
+[1:46] dieses Problem sehr häufig auf. Keine
+[1:48] Altersdiskriminierung, aber sie haben
+[1:49] weniger Säure im Magen und dadurch
+[1:51] ringert sich auch die Vitamin B12
+[1:52] Absorption. Wir wollen also mindestens
+[1:54] einen Blutspiegel von 200 bis 400 Nan
+[1:57] pro Liter haben. Wo richtet die
+[1:58] Unterversorgung jetzt also massiven
+[2:00] Schaden im Körper an? Erstens, im Blut.
+[2:02] Die Bildung roter Blutkörperchen wird
+[2:04] massiv beeinträchtigt. Man bemerkt es
+[2:05] beispielsweise an blasser, fahler Haut,
+[2:08] Energielosigkeit, Schwächegefühl oder
+[2:10] auch Schwindel beim Aufstehen. Zweitens,
+[2:11] dem Nervensystem. Mögliche Schaden am
+[2:14] Nervenreiz Weiterleitungssystem. Vitamin
+[2:15] B12 hilft nämlich die Nervenpfasern zu
+[2:18] bilden. Typische Symptome sind Kribbeln
+[2:20] in den Füßen, Kribbeln in den Gelenken,
+[2:21] Kribbeln in den Händen, Probleme beim
+[2:23] Gleichgewicht, vor allem beim Laufen,
+[2:25] aber auch die schlechte Laune. Wenn du
+[2:26] dich fühlst, als ob ein Labauter Bach,
+[2:28] der über die Leber gelaufen ist, du
+[2:29] depressive Verstimmungen hast, obwohl du
+[2:31] aufgehört hast, die Nachrichten und
+[2:32] Tagesschau zu schauen, könnte das auf
+[2:33] einen Vitamin B12 Mangel hinweisen.
+[2:35] Drittens, dein Erbgut, die DNA. Körper
+[2:38] nutzt Vitamin B12 als Kofaktor für sehr
+[2:40] viele Enzymsysteme. Vor allem auch
+[2:42] diejenigen, die eine Synthese des
+[2:43] Erbguts beteiligt sind. Warum mache ich
+[2:45] diese komische Bewegung? Keine Ahnung.
+[2:46] Viertens, die Zellteilung und das
+[2:48] Zellwachstum. Der Stoffwechsel des
+[2:49] Vitamin B12 ist sehr eng mit dem
+[2:51] Stoffwechsel des Vitamin B9, dem Folat
+[2:53] verbunden. Er wandelt nämlich das
+[2:54] inaktive B9, das Folat in das Aktive V.
+[2:56] Dabei wird gleichzeitig Homozystein
+[2:57] abgebaut. Du hast bestimmt schon mal im
+[2:58] Bereich vom choradiovaskulären
+[3:00] Krankheiten das Homozystein B9, B12
+[3:02] gehört. Das ist der Zusammenhang und das
+[3:03] ist auch ein potenzieller Risikofaktor
+[3:04] für Herzkreislauferkrankung. Jetzt ist
+[3:06] das große Problem die deutsche
+[3:07] Gesellschaft für Ernährung. Wir lieben
+[3:09] sie. Sie empfehlt uns auch ein Ei am
+[3:10] Tag. Empfiehlt uns 4 Mikrogramm Vitamin
+[3:12] B12. Das Problem ist schwangere ältere
+[3:15] Menschen mit chronischer Gastritis, also
+[3:17] Magenschleimahautreizungen, chronischen
+[3:19] Darmerkrankungen oder auch Menschen, die
+[3:20] bestimmte Medikamente wie beispielsweise
+[3:22] Protonenpumpenhämmer oder Metformin das
+[3:23] häufigste Antidiabetikum einnehmen,
+[3:25] leiden sehr sehr häufig an Vitamin B12
+[3:27] Mangel, weil sie es nicht im richtig im
+[3:29] Darm absorbieren resorbieren können. Das
+[3:30] gleiche gilt für Zyliakie, die sehr
+[3:32] selten ist und die
+[3:33] GlutenUverträglichkeit, die ja sehr sehr
+[3:34] häufig ist. Bis zu 30% der Deutschen
+[3:36] haben eine nichtzyliakische
+[3:37] GlutenUverträglichkeit.
+[3:39] Alkoholabhängigkeit, ich hoffe nicht,
+[3:40] dass du Alkohol regelmäßig trinkst.
+[3:41] Bonenglas Wein ist ja fein, aber eben
+[3:43] nicht zu oft. Auch das resultiert das
+[3:44] Vitamin B12 im Blut. Wo ist also Vitamin
+[3:47] B12 drin? Wie kriegen wir unseren Status
+[3:49] hoch und warum sind die Supplements ein
+[3:50] Scam? Fleisch, Innereihen, Leber, Niere,
+[3:53] Fisch, Eier, all das sind sehr, sehr
+[3:55] schöne Quellen für echtes Vitamin B12.
+[3:57] Aber wichtig, der Darm muss richtig
+[3:59] funktionieren und darf nicht gestört
+[4:00] sein von den gerade genannten Faktoren,
+[4:02] die die Aufnahme resorbieren, die die
+[4:03] Aufnahmefähigkeit reduzieren. Das heißt,
+[4:05] ein gesundes Darmilieö, damit die ganzen
+[4:07] Bakterien auch fungieren können. B12 ist
+[4:09] ja ein mikrobiell vermitteltes Vitamin.
+[4:11] Wichtig bei der Einnahme von
+[4:12] Supplements. Die meisten B12 Supplements
+[4:14] sind leider nur teurer Urin und
+[4:16] wissenschaftlich nicht haltbar. Vitamin
+[4:18] B12, das sogenannte Kobalamin, wird
+[4:20] immer an verschiedene Kofaktoren
+[4:21] gebunden. Gibt das Zyanokobalamin, das
+[4:24] Aden Kobalamin und das Mhylkobalamin.
+[4:26] Zyanokobalamin ist die gefährlichste
+[4:28] Form, vor der ich regelmäßig warne. Sie
+[4:30] wird schlecht absorbiert und enthält
+[4:31] eine Zyanitgruppe, ein gefährliches
+[4:33] Menschengift. Adenokobalamin ist
+[4:35] schlechter resorbierbar, aber immer noch
+[4:36] eine okay Form als Supplementierung.
+[4:38] Wichtig trotzdem, der Darm muss
+[4:40] funktionieren. Beste Form ist das
+[4:41] Methylkobalamin. Warum? 50% der Menschen
+[4:43] haben ein MTH Gendefekt. Das heißt, sie
+[4:45] können ihre Stoffe nicht richtig
+[4:47] metlieren in der Leber. Dabei baut die
+[4:48] Leber besondere Gruppen an das Kobalamin
+[4:51] an, damit sie funktioniert. Der Vorteil
+[4:52] dieses Metylkobalamin ist bereits
+[4:54] methyllert. Das heißt, die Leber spart
+[4:56] sich die Arbeit und der Fun Fact, es
+[4:57] funktioniert auch bei Menschen, die
+[4:58] diesen Gendefekt haben. Lass mich in den
+[5:00] Kommentaren wissen, ob du bereits an
+[5:01] einem der Symptome geleiten hast, ob ein
+[5:03] Vitamin B12 dir geholfen hat und welche
+[5:05] Themen ich als nächstes angehen soll,
+[5:06] vor allem welche Supplements, welche
+[5:08] Mythen. Schreibt einfach in die
+[5:09] Kommentare rein. Ich freue mich auf eure
+[5:10] Anregungen und bleibt gesund. Jesus. Das
+[5:12] King.] 
+[README_18_03project_snapshot]
+
+AI_RESPONZE:
+Tato analýza se zaměřuje na transformaci stávajícího řešení Mediathek (webová aplikace pro kurátorskou správu videí) do robustního systému pro zpracování znalostí. Vycházím z poskytnutého snímku projektu a vámi dodaného příkladu "syrového" přepisu (německé video o B12).
+
+Navrhuji koncept "Semantické Rafinerie" – systém, který video nejen "oštítkuje", ale pochopí jeho roli ve vaší existující knihovně.
+
+1. Analýza stávajícího stavu (Baseline)
+Ze zdrojového kódu je patrné, že aplikace již má funkční základy, ale procesy jsou izolované:
+
+
+Data Model: Video obsahuje pole seoSummary, seoKeywords, practicalTips. To je dobrý základ, ale je to "plochá" struktura.
+
+
+Generate SEO (/api/ai/generate-seo): Prompt je zaměřen na obecné "metadata" (shrnutí, klíčová slova). Chybí mu hloubka pro pochopení vztahů mezi videi.
+
+Match Collections (/api/ai/match-collections): Toto je nejzajímavější část. Posíláte AI kontext videa a seznam všech sbírek.
+
+Limit: Při růstu počtu sbírek (stovky) narazíte na limit kontextového okna (token limit).
+
+Limit: Posuzuje se jen název/popis sbírky, ne její skutečný obsah (ostatní videa uvnitř).
+
+
+Parser (lib/transcriptParser.ts): Očekává formát [MM:SS] Text. Vámi dodaný přepis má formát [0:00], což regex \d{1,2}:\d{2} zvládne, ale text je rozsekaný po větách/řádcích, což může mást AI, pokud se to nespojí do logických celků.
+
+2. Návrh řešení: Semantická Rafinerie
+Cílem je změnit přístup z "Generování popisu" na "Extrakci znalostního grafu".
+
+Fáze 1: Normalizace Vstupu (The Cleaner)
+Váš příklad přepisu (Vitamin B12) je v němčině, hovorový ("Nein, Spaß"), obsahuje vsuvky a je fragmentovaný.
+
+Problém: Současný parser vezme řádek [0:13] Komxandale, alles bleibt gleich. Nein, jako samostatný segment. Řešení: Před odesláním do AI je nutné provést "Chunking" (shlukování).
+
+Spojit text do větších bloků (např. po 30-60 sekundách nebo podle interpunkce), aby AI neztrácela kontext věty rozdělené řádkem.
+
+Fáze 2: Sémantický Otisk (The Fingerprint)
+Místo pouhého SEO popisu musíme z videa extrahovat strukturovaný otisk. Pro vaše německé video o B12 by to vypadalo takto:
+
+Nový AI Prompt (Logika):
+
+Detekce Jazyka: Input je DE, Output vyžadujeme CS (pro vaši aplikaci).
+
+Faktická Extrakce (Entities):
+
+Látka: Vitamin B12 (Kobalamin).
+
+Formy: Methylkobalamin (Doporučeno), Kyanokobalamin (Nedoporučeno/Toxické).
+
+Orgány: Játra (zásobárna 2.5mg), Nervová soustava.
+
+Příznaky: Mravenčení, deprese, bledost.
+
+Tón & Typ: "Edutainment / Parodie" (autor vtipkuje o Blackrock, spiknutí). Toto je důležité, aby uživatel věděl, že jde o odlehčený obsah.
+
+Fáze 3: Diferenciální Zařazení (The Librarian)
+Toto je klíčová inovace. Když přijde nové video, neptáme se jen "Kam patří?", ale "Jak mění to, co už vím?".
+
+Systém porovná Otisk nového videa s Otisky existujících sbírek.
+
+Potvrzení (Confirmation): Video opakuje fakta, která už máte ve sbírce "Zdraví / Suplementace".
+
+Rozpor (Contradiction): Video tvrdí, že tablety jsou scam (z přepisu: "B12 Supplements totaler Schwachsinn sind"), zatímco ve sbírce možná máte video doporučující tablety. Toto musí systém zvýraznit.
+
+Novinka (Gap Fill): Video přináší téma "Genetická mutace MTHFR" (z přepisu: "50% der Menschen haben ein MTH Gendefekt"), které ve sbírce chybí.
+
+3. Konkrétní implementace (Kód & Prompty)
+Zde je návrh, jak upravit stávající logiku aplikace pro robustnější práci s daty.
+
+A. Úprava api/ai/generate-seo/route.ts (Vytvoření Otisku)
+Rozšíříme JSON výstup o entity a "Claims" (Tvrzení).
+
+TypeScript
+
+// Změna v promptu v souboru api/ai/generate-seo/route.ts
+const systemPrompt = `
+Jsi expertní analytik znalostí (Knowledge Graph Architect).
+Analyzuj přepis videa (může být v cizím jazyce) a vytvoř strukturovaný výstup v ČEŠTINĚ.
+
+[VSTUPNÍ DATA]:
+"${transcript}"
+
+[POŽADOVANÁ ANALÝZA]:
+1. **Context & Tone**: O čem video je a jakým tónem (vážný, humor, akademický).
+2. **Key Entities**: Klíčové pojmy (Látky, Osoby, Metody).
+3. **Core Claims (Tvrzení)**: Co autor tvrdí jako fakta? (Např. "Forma X je lepší než Y").
+4. **Actionable Advice**: Konkrétní rady.
+
+[VÝSTUP JSON]:
+{
+  "summary": "Strhující shrnutí obsahu (2-3 věty).",
+  "language_detected": "de", // Detekuj jazyk originálu
+  "tone": "Edutainment/Parodie",
+  "keywords": ["Vitamin B12", "Methylkobalamin", "Játra", "MTHFR"],
+  "claims": [
+    "Zásoba B12 v játrech vydrží až 3 roky.",
+    "Kyanokobalamin obsahuje kyanidovou skupinu a je méně vhodný.",
+    "B12 v tabletách může být neúčinné, pokud nefunguje střevní vstřebávání."
+  ],
+  "practical_tips": ["Používat formu Methylkobalamin.", "Sledovat příznaky mravenčení končetin."],
+  "ai_suggestions": ["Suplementace a Zdraví", "Biochemie Vitamínů"]
+}
+`.trim();
+B. Úprava api/ai/match-collections/route.ts (Diferenciální logika)
+Zde změníme logiku, aby AI nehledala jen shodu, ale i vztah (doplnění/rozpor).
+
+TypeScript
+
+// api/ai/match-collections/route.ts
+
+// ... (konfigurace modelu, viz source: 1001-1039)
+
+const systemPrompt = `
+Jsi "Kurátor Knihovny". Máš nové video a sadu existujících sbírek.
+Tvým úkolem je rozhodnout, jak nové video obohatí knihovnu.
+
+NOVÉ VIDEO:
+Název: "${videoContext.title}"
+Tvrzení (Claims): ${JSON.stringify(videoContext.claims || [])}
+Klíčová slova: "${videoContext.keywords}"
+
+EXISTUJÍCÍ SBÍRKY (Minifikované):
+${JSON.stringify(collectionsMinified)}
+
+INSTRUKCE:
+Pro každou sbírku, která je relevantní, urči "Typ Vztahu":
+1. **CONFIRM**: Video potvrzuje téma sbírky.
+2. **EXPAND**: Video přidává nový pod-aspekt (např. řeší B12, sbírka je obecně o Vitamínech).
+3. **CONTRADICT**: Video zpochybňuje běžný narativ sbírky (např. "Suplementy jsou scam").
+
+VÝSTUP (JSON):
+{
+  "matches": [
+    { "collectionId": "id_1", "relation": "EXPAND", "reason": "Přidává specifické info o Methylkobalaminu do obecné sbírky Vitamíny." }
+  ],
+  "new_proposals": [
+    { "name": "Mýty o doplňcích stravy", "description": "Kritický pohled na vstřebatelnost vitamínů a formy suplementace.", "reason": "Video silně kritizuje běžné formy B12." }
+  ]
+}
+`.trim();
+C. Zpracování syrového přepisu (Parser Update)
+Váš příklad obsahuje časové značky [0:00]. Stávající regex v lib/parser.ts /\((\d{1,2}:\d{2})(?:\s*-\s*(\d{1,2}:\d{2}))?\)$/ očekává čas na konci a v kulatých závorkách, nebo lib/transcriptParser.ts  očekává [MM:SS].
+
+
+Pro robustnost navrhuji sjednotit parser pro "Dirty" vstupy (jako je tento z YouTube transcriptů nebo Whisper AI):
+
+TypeScript
+
+// lib/transcriptCleaner.ts (Nový soubor pro čištění "Dirty" dat)
+
+export function cleanRawTranscript(raw: string): string {
+  // 1. Odstranit nadbytečné "metadata" řádky, pokud existují
+  // 2. Spojit řádky, které jsou jen "useknuté" věty, do odstavců
+  
+  // Příklad pro B12 video:
+  // Vstup:
+  // [0:00] Heute habe ich für dich eine gute
+  // [0:01] Nachricht oder eine schlechte Nachricht.
+  
+  // Výstup pro AI (bez timestampů pro lepší čitelnost, nebo s méně častými):
+  // "Heute habe ich für dich eine gute Nachricht oder eine schlechte Nachricht..."
+  
+  return raw.replace(/\[\d{1,2}:\d{2}\]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+Použití čistého textu (bez tisíců timestampů) pro generate-seo výrazně zlepší kvalitu výstupu AI, protože model nebude rušen čísly a fragmentací vět. Timestamps si nechte v DB pro ChapterList a TranscriptView, ale pro generování SEO pošlete AI vyčištěný blok textu.
+
+4. Shrnutí strategie (Roadmap)
+Okamžitý krok: Upravit generate-seo prompt tak, aby explicitně žádal o Claims (Tvrzení) a Entity, a aby nutil výstup do češtiny i pro cizojazyčná videa.
+
+Technický krok: Vytvořit funkci cleanRawTranscript, která odstraní časové značky před tím, než text pošlete do Gemini pro analýzu obsahu (ušetříte tokeny a zlepšíte kontext).
+
+
+Strategický krok: Upravit UI v VideoDetailClientWrapper, aby zobrazovalo nejen "SEO Summary", ale i "Klíčová tvrzení" (Claims), což uživateli umožní rychle pochopit kontroverzi nebo přínos videa bez sledování.
+
+Budoucí rozvoj (Fáze 20+): Implementovat vektorové vyhledávání (PgVector), které umožní hledat videa podle významu ("najdi videa kritizující suplementy"), nikoliv jen podle klíčových slov.
+
+Tímto způsobem se aplikace posune z "katalogu videí" na skutečný "znalostní systém".
+------------------------------------------------------------------------
+JÁ_PROMPT:
+Pojme vybudovat nové řešení od základu a to současné v aplikaci považovat za první draft. resp. zaměříme se na to jak nyní v aplikaci jsou přidávána videa a jak jsou organizována uživatelem. resp. mělo by zůstat řešení kdy uživatel intuitivně přidává videa a organizuje si je do sbírek. Proti tomuto by měla být vytvořena funkce aplikace. která bez ohledu na řešení nastavené uživatelem vytvoří vlastní strukturu z báze přepisů videí v knihovně a nabídne uživateli alternativní strukturu založenou na analýze videi. Uživatel tak uvidí vlastní strukturu i strukturu vytvořenou aplikací - přičemž jeho struktura mu umožní jeho intuitivní orientaci v jeho videích a struktura vytvořená aplikací mu poskytne náhled na skutečný získaný obsah z internetu. Poté může či nemusí uživatel vlastní strukturu přizpůsobit resp. si bude moci zvolit mezi zobrazením vlastní struktury (resp. videa uspořadaná do sbírek vytvořených uživatelem ) nebo zobrazením struktury (resp. videa uspořadaná do sbírek vytvořené aplikací ) Nyní by se jednalo o vytvoření základny pro tvorbu struktury aplikací, která by mohla své návrhy sbírek ukládat rovněž do databáze jako uživatel a poté by bylo možné tyto sbírky zobrazovat v katalogu sbírek. Rovněž součástí řešení by měla být možnost implementovat sbírku sbírek resp. videa určité sbírky bude možné organizovat do podsbírek. Pojdme navrhnou zadání, které bude postupně implementovat tuto funkčnost aplikace vytvářet seo obsah z jednotlivých videí které povede k seskupování videi do sbírek vytvořených aplikaci. Vedlejším produktem tohoto shlukování budou např ony vektory videi a jejich sdružení do sbírek. Jistý algoritmus poté zajistí tvorbu i materiálů nad daným přepisem videa i danou sbírkou. Je tento návrh realistický? Jakýé postupné kroky by vedly k jeho realizaci? Jak je možné postavit nyní základ takovéhoto systému tvorby SEO obsahu vlastně celé knihovny uživatele. Rovněž i poté s ohledem na přidávání jednotlivých videí postupně do této knihovny viz. onen diferenciální přístup k zařazení videa do stávající knihovny a posouzení o zařazení tohoto videa či přeskupení stávající knihovny. Pojdme najít základy na kterých by jsme tento systém mohli v této aplikaci vytvořit ... a tento dále diskutovat a hledat zadání pro další fázi vývoje této aplikace ...;-)
+
+AI_RESPONZE:
+Tento návrh je nejen realistický, ale pro aplikaci typu "Mediathek" (kurátorská správa znalostí) je to přirozený evoluční krok. Posouváte aplikaci z "prostého seznamu odkazů" na "inteligentní znalostní bázi" (Knowledge Graph).
+
+Z technického hlediska jde o přechod od manuální taxonomie (uživatel ručně škatulkuje) k automatické ontologii (AI chápe význam a shlukuje obsah).
+
+Zde je návrh architektury a konkrétní zadání pro další fázi vývoje, kterou nazveme "Fáze 20: Sémantické Jádro & Dualita Struktur".
+
+1. Architektura řešení: "Dual-Core" Organizace
+Základem je oddělení datové vrstvy (obsah) od organizační vrstvy (struktura).
+
+Levá hemisféra (Uživatel): Subjektivní, manuální struktura. Uživatel tvoří sbírky podle toho, jak chce obsah vidět (např. "Materiály do školy", "Zajímavosti").
+
+Pravá hemisféra (Systém/AI): Objektivní, datová struktura. Systém tvoří sbírky podle toho, o čem obsah skutečně je (sémantická shoda vektorů).
+
+Klíčové komponenty pro realizaci:
+Sémantická Rafinerie (Ingestion Pipeline): Proces, který z videa vytěží čistá data (Fakta, Témata, Vektor).
+
+Vektorová Databáze (PgVector): Umožní matematicky měřit "vzdálenost" (podobnost) mezi dvěma videi.
+
+Hierarchický Model: Úprava DB schématu, aby sbírky mohly obsahovat jiné sbírky (recursivní vztah).
+
+Diferenciální Agent (The Librarian): Algoritmus, který při přidání nového videa rozhodne, zda video patří do existujícího shluku (clusteru), nebo zakládá nový.
+
+2. Postup realizace (Roadmapa)
+Abychom tento systém postavili "od základu" správně, musíme začít úpravou datového modelu a vytvořením procesní roury (pipeline).
+
+KROK A: Datová základna (Prisma Schema Update)
+Musíme umožnit hierarchii a uložit "AI názor" odděleně od "Uživatelského názoru".
+
+Návrh změn v schema.prisma:
+
+Hierarchie sbírek: Přidat vztah "Parent-Child" do modelu Collection.
+
+Vektory: Přidat pole pro uložení embeddingu (pokud použijeme PostgreSQL s pgvector, jinak externí službu).
+
+Původce struktury: Flag type (USER_DEFINED vs. AI_GENERATED).
+
+Fragment kódu
+
+// Konceptuální úprava modelu
+model Collection {
+  id          String  @id @default(cuid())
+  name        String
+  type        CollectionType @default(USER_DEFINED) // NOVÉ: Kdo ji vytvořil?
+  
+  // Hierarchie (Sbírka ve sbírce)
+  parentId    String?
+  parent      Collection? @relation("CollectionHierarchy", fields: [parentId], references: [id])
+  children    Collection[] @relation("CollectionHierarchy")
+
+  // Relace na videa (M:N)
+  videos      Video[]
+  
+  // Sémantický střed (Centroid) sbírky pro rychlé porovnání
+  semanticEmbedding Unsupported("vector(1536)")? 
+}
+
+enum CollectionType {
+  USER_DEFINED // Uživatelská ruční sbírka
+  AI_CLUSTER   // Automaticky vzniklá sbírka (téma)
+}
+
+model Video {
+  // ... stávající pole ...
+  // Sémantický otisk videa
+  semanticEmbedding Unsupported("vector(1536)")? 
+}
+KROK B: Sémantická Rafinerie (Vytvoření "Otisku")
+Než můžeme shlukovat, musíme video "pochopit". Zde využijeme onen "Draft" přepisu z předchozí diskuze.
+
+Algoritmus pro nové video:
+
+Clean: Surový přepis -> Vyčištěný text (bez timestampů).
+
+Atomize (LLM): Extrahuje seznam atomických faktů a klíčových slov (Entities).
+
+Embed: Vyčištěný text + Fakta se převedou na vektor (řada čísel reprezentující význam).
+
+KROK C: Diferenciální Zařazení (Clustering Logic)
+Toto je "mozek" systému. Spouští se při přidání videa nebo při re-indexaci knihovny.
+
+Logika:
+
+Mám nové video V_new s vektorem Vec_new.
+
+Najdi nejbližší AI_CLUSTER sbírku (měřením kosinové podobnosti mezi Vec_new a Collection.semanticEmbedding).
+
+Rozhodnutí:
+
+Je velmi blízko (>85% shoda)? -> Přidej video do této AI sbírky. Aktualizuj popis sbírky ("Tato sbírka nyní obsahuje i informaci o...").
+
+Je středně blízko (60-85%)? -> Je to možná "podsbírka" (Child Collection). Vytvoř novou podsbírku a zařaď ji pod tu hlavní.
+
+Je daleko (<60%)? -> Vytvoř novou kořenovou AI sbírku s názvem vygenerovaným z tématu videa.
+
+3. Konkrétní zadání pro vývoj (Zadání pro AI/Deva)
+Pokud souhlasíte, toto by bylo zadání pro další iteraci (Fáze 20):
+
+Úkol 1: Implementace Hierarchie a Typů Sbírek
+Cíl: Upravit schema.prisma a migraci DB.
+
+Akce:
+
+Přidat enum CollectionType { USER, SYSTEM }.
+
+Přidat Self-relation na Collection (parent/children).
+
+Upravit UI Sidebar a Katalog, aby uměly zobrazovat zanořené sbírky (např. jako "Složky").
+
+Úkol 2: Příprava Sémantického Analyzátoru (Backend)
+Cíl: Vytvořit službu, která přijme přepis a vrátí strukturovaná metadata pro shlukování.
+
+Akce:
+
+Vytvořit lib/semantic-analyzer.ts.
+
+Implementovat funkci generateVideoFingerprint(transcript), která pomocí Gemini vytvoří JSON obsahující:
+
+topics: Hlavní témata (např. "Zdraví", "Vitamíny").
+
+entities: Konkrétní entity ("B12", "Játra").
+
+summary_vector_context: Text optimalizovaný pro tvorbu embeddingu.
+
+Úkol 3: Prototyp "AI Knihovníka" (Logika Shlukování)
+Cíl: Simulovat proces zařazení videa bez nutnosti plné vektorové DB (pro začátek použijeme LLM pro rozhodování, později vektory).
+
+Akce:
+
+Vytvořit API endpoint /api/ai/organize-library.
+
+Logika:
+
+Vezme metadata nového videa.
+
+Načte seznam existujících SYSTEM sbírek (název + popis).
+
+Zeptá se Gemini: "Mám toto nové video. Patří do některé z těchto sbírek, nebo mám založit novou? Pokud novou, jak ji pojmenovat?"
+
+Provede zápis do DB (Connect video to Collection nebo Create Collection).
+
+4. Vizualizace pro uživatele (UI Koncept)
+V aplikaci by přibyl přepínač (Toggle):
+
+Režim "Můj Stůl" (User View):
+
+Vidíte sbírky tak, jak jste si je vytvořili. Je to váš pořádek, vaše názvy.
+
+Režim "Knihovna Znalostí" (System View):
+
+Vidíte strukturu vytvořenou AI.
+
+Příklad: AI vytvořila hlavní kategorii "Biochemie a Zdraví".
+
+V ní podsbírku "Mikronutrienty".
+
+V ní podsbírku "Vitamín B12" (kde je vaše video).
+
+Uživatel může kliknout na tlačítko "Adoptovat", čímž si tuto AI strukturu zkopíruje do svého "Stolu".
+
+Je to realistické?
+Ano. Využíváme toho, že LLM (Gemini) jsou excelentní v klasifikaci.
+
+V první fázi (bez vektorů) to bude fungovat čistě na bázi sémantické analýzy textu (Gemini porovná texty). To je pomalejší a dražší na tokeny, ale implementačně jednodušší.
+
+V druhé fázi (s vektory) to bude bleskurychlé a škálovatelné na tisíce videí.
+
+Doporučený další krok: Chcete začít implementací hierarchie sbírek (Parent/Child) v databázi, abychom měli kam ty automatické struktury ukládat? To je nutný základ pro "sbírku sbírek".
+------------------------------------------------------------------------
+JÁ_PROMPT:
+Plán se mi libí - bylo by možné tento plán dále zpřesnit s ohledem na úlohu sbírek v tom smyslu že i tvorbu sbírek by jsme mohli pojmout diferenciálně resp. že i sbírky by mohli vznikat na úrovni jednoho videa (sdružovala by témata zmíněná v jednom videu) a z těchto minisbírek témat uvnitř videa by vznikali poté shluky těchto sbírek i napříč videi a byl by to základ pro tvorbu sbírek napříč videi resp. sbírka by prosákla pod hladinu jednoho videa a poté se vynořila složením jednotlivých vektorů v rámci sbírek i napříč videi tento princip by možná i usnadnil zařazování pak celých videí do určitých sbírek které by byly definovány z jednotlivých minisbírek. Resp. zda nějaký podobný systém nemůže zjemnit celý systém i jej zefektivnit zároven. Je možné zakomponovat tento systém do navrhnuté architektury řešení pro toto zadání tvorby SEO obsahu knihovny na základě analýzy videí, vektorů, minisbírek a sbírek ... ?
+
+AI_RESPONZE:
+[Image of Fractal Geometry]
+
+Tato myšlenka je naprosto excelentní a posouvá návrh z úrovně "chytrého knihovníka" na úroveň **"neuronové sítě znalostí"**. To, co popisujete, je v podstatě **fraktální přístup k organizaci**, kde se princip sbírky (shluku témat) opakuje na mikro-úrovni (uvnitř videa) i makro-úrovni (celá knihovna).
+
+Tento přístup ("Bottom-Up" neboli zdola-nahoru) je technicky realizovatelný a pro AI mnohem přirozenější než škatulkování celých videí.
+
+Zde je návrh, jak tento **"Mikro-klastrovací" (Micro-clustering)** systém zapracovat do architektury Fáze 20.
+
+-----
+
+### 1\. Koncept: "Video jako Skladiště, ne Jednotka"
+
+V současném modelu je `Video` atomická jednotka – "cihla". Vy navrhujete, aby video bylo "krabicí s různými součástkami".
+
+  * **Starý pohled:** Video o B12 patří do sbírky "Zdraví".
+  * **Váš nový pohled:**
+      * Video o B12 obsahuje 3 **mikro-sbírky** (témata):
+        1.  *Diagnostika (Příznaky)*
+        2.  *Biochemie (Játra/Metabolismus)*
+        3.  *Kritika trhu (Suplementy/Scam)*
+
+Tyto mikro-sbírky se pak "vynoří" (emerge) a spojí s podobnými mikro-sbírkami z jiných videí.
+
+-----
+
+### 2\. Architektura řešení: Sémantická Granularita
+
+Abychom toho dosáhli, musíme změnit základní jednotku, kterou vektorizujeme a třídíme. Nebude to `Video`, ale **`Sémantický Segment`**.
+
+#### KROK A: Rozbíjení Videa (Deep Parsing)
+
+[cite_start]Využijeme existující logiku kapitol[cite: 52], ale zpřesníme ji. AI nebude generovat jen "Kapitoly" pro navigaci, ale "Sémantické Bloky" pro indexaci.
+
+1.  **Analýza:** Video se rozdělí na logické celky (např. podle vašeho přepisu B12: 0:00-1:06 Úvod/Zásoby, 1:07-2:00 Diagnostika, 3:45-5:00 Suplementace).
+2.  **Vektorizace:** Každý tento blok dostane **vlastní vektor** (matematickou reprezentaci obsahu).
+3.  **Lokální (Mini) Sbírka:** V rámci videa vznikne seznam témat (Tagů/Konceptů), které toto video obsahuje.
+
+#### KROK B: "Prosakování" a Klastrování (Cross-Pollination)
+
+Zde nastává ono kouzlo. Vektory jednotlivých bloků "prosáknou" ven z videa do globálního prostoru knihovny.
+
+  * Algoritmus neporovnává *Video A* s *Videem B*.
+  * Algoritmus porovnává *Segment 3 z Videa A* (Suplementy jsou scam) se *Segmentem 1 z Videa B* (Jak vybrat vitamíny).
+
+Pokud jsou si vektory blízké, vzniká **vazba**.
+
+#### KROK C: Vynoření Globální Sbírky (Emergence)
+
+Pokud systém najde shluk (cluster) podobných mikro-segmentů napříč 10 různými videi, **automaticky navrhne novou Sbírku**.
+
+  * **Příklad:** Máte 5 videí o vaření a 5 videí o chemii.
+      * Všechna videa o vaření zmiňují "sůl".
+      * Všechna videa o chemii zmiňují "chlorid sodný".
+      * Systém na základě vektorové shody segmentů vytvoří sbírku **"Sůl / NaCl"**, která propojí kuchařky s chemiky.
+
+-----
+
+### 3\. Upravené Zadání (Implementace)
+
+Pro Fázi 20 tedy upravíme zadání tak, aby pracovalo s touto granularitou.
+
+#### Úkol 1: Datový Model pro Segmenty (Prisma)
+
+Musíme umožnit, aby sbírka mohla odkazovat na *část* videa, ne jen na celé video.
+
+```prisma
+model Video {
+  id              String @id @default(cuid())
+  // ... stávající pole ...
+  semanticSegments SemanticSegment[] // Video se skládá z "minisbírek"
+}
+
+model SemanticSegment {
+  id        String   @id @default(cuid())
+  videoId   String
+  video     Video    @relation(fields: [videoId], references: [id])
+  
+  startTime Int      // Kde téma začíná
+  endTime   Int      // Kde končí
+  content   String   @db.Text // Text přepisu tohoto úseku
+  summary   String   // AI shrnutí tohoto mikro-tématu
+  
+  // Vektor pro toto konkrétní téma (ne pro celé video!)
+  embedding Unsupported("vector(1536)")?
+
+  // Vazba na AI Sbírky (Many-to-Many: Segment může patřit do více sbírek)
+  collections Collection[] 
+}
+
+model Collection {
+  // ... stávající pole ...
+  // Sbírka nyní může obsahovat celé video NEBO jen jeho segmenty
+  linkedSegments SemanticSegment[]
+}
+```
+
+#### Úkol 2: "Deep-Dive" Analýza (Backend Logic)
+
+Upravíme prompt pro AI (`/api/ai/generate`). Nebude generovat jen jeden souhrn, ale pole objektů.
+
+**Prompt logika:**
+*"Rozděl tento přepis na sémanticky uzavřené myšlenkové bloky (mikro-témata). Pro každý blok vygeneruj: 1. Časový rozsah, 2. Abstrakt, 3. Klíčová slova. Ignoruj vatu."*
+
+#### Úkol 3: Algoritmus "Vynoření" (Clustering)
+
+Job, který běží na pozadí (nebo při přidání videa):
+
+1.  Vezmi všechny `SemanticSegment` v databázi, které nejsou zařazené.
+2.  Proveď nad nimi klastrování (např. K-Means nebo prosté porovnání sousedů).
+3.  Pokud vznikne klastr o velikosti \> 3 segmenty, vytvoř novou `AI_CLUSTER` Sbírku.
+4.  Pojmenuj ji podle společného jmenovatele segmentů (AI vygeneruje název).
+
+-----
+
+### 4\. SEO a Uživatelský Přínos
+
+Tento systém radikálně zlepší SEO (Search Engine Optimization) i UX (User Experience) vaší knihovny:
+
+1.  **Extrémní SEO přesnost:** Když uživatel hledá "rozdíl mezi kyanokobalaminem a methylkobalaminem", vy mu nabídnete přesně tu **pasáž (segment)** ve videu, kde se o tom mluví. Neodkážete ho jen na 20minutové video "O vitamínech".
+2.  **Dynamické Sbírky:** Sbírky se budou tvořit samy na základě toho, o čem videa *skutečně mluví*.
+      * *Uživatel:* Přidá video "Dovolená v Chorvatsku".
+      * *Systém:* Rozpozná segment "Ceny jídla".
+      * *Výsledek:* Video se objeví ve sbírce "Ekonomika" (protože řeší ceny) i "Cestování".
+
+### Shrnutí: Je to proveditelné?
+
+Ano. V podstatě místo jednoho vektoru pro video budeme generovat `N` vektorů (kde N je počet témat ve videu). Databáze (Postgres + pgvector) to zvládne hravě.
+
+**Doporučený další krok:**
+Při implementaci Fáze 20 začněme úpravou parseru (`lib/parser.ts` a AI promptu), aby nám vracel data v této struktuře:
+`Video -> [Segment 1, Segment 2, Segment 3]`.
+To je základní stavební kámen, na kterém pak postavíme zbytek.
+------------------------------------------------------------------------
+JÁ_PROMPT:
+Bylo by možné tento systém dále doplnit o akcent toho že jednotlivé vektory videa budou určovat i jakýsi celkový vektor videa a že bude možné vytvářet i sbírky jednotlivých videí jak to uživatelé intuitivně chápou? resp. bude možné vytvářet sbírky např. videi ale i sbírky jednotlivých videí resp. klasické sbírky. Sbírky napříč videi pak budou jakýsi kompilát vice videí resp. jakési průvodce např. knihovnou. Resp. aby jsme udrželi jednak hierarchické intuitivní vnímání uživatele sbírka a seznam videí tak i jakýsi pohled napříč tatkto vytvořenými hierarcjhickými sbírkami tak i celou knihovnou uživatele ... je tento pohled doplnující k architektuře našeho řešení? snažím se najít skutečně robustní řešení které nás samo povede k vývoji tohoto systému ... je toto takto nějak možné? ... ?
+
+AI_RESPONZE:
+Ano, toto je **přesně ten chybějící článek**, který dělá systém robustním a použitelným pro reálného člověka. Váš intuitivní vhled je správný: nemůžeme uživatele nutit, aby zahodil své přirozené vnímání "Soubor -\> Složka" (Video -\> Sbírka) výměnou za čistou abstrakci AI.
+
+To, co popisujete, je architektura **"Sémantického Zoomu"** (Semantic Zoom). Uživatel musí mít možnost se na svou knihovnu podívat "z letadla" (celá videa, klasické sbírky) i "mikroskopem" (konkrétní myšlenky napříč videi).
+
+Zde je návrh, jak tento **hybridní model** (Klasický + AI) technicky a koncepčně ukotvit do stávajícího řešení.
+
+-----
+
+### 1\. Koncept: Vektorová Hierarchie (Těžiště Obsahu)
+
+Vaše myšlenka "celkového vektoru videa" je matematicky velmi elegantní. Video není jen jeden bod v prostoru, je to **mrak bodů** (segmentů).
+
+  * **Mikro-vektory (Segmenty):** Každá kapitola/myšlenka má svůj přesný vektor.
+  * **Makro-vektor (Video):** Vypočítáme tzv. **centroid** (průměr) všech mikro-vektorů. Tím získáme "sémantické těžiště" videa.
+
+**Praktický dopad:**
+
+  * [cite_start]Když uživatel hledá "Vitamín B12", systém najde konkrétní **segment** (minutu 1:07)[cite: 1140].
+  * Když uživatel hledá "Zdravý životní styl", systém najde **celé video** (protože jeho těžiště leží v oblasti zdraví), i když se v něm mluví o mnoha podtématech.
+
+### 2\. Architektura: Tři Vrstvy Organizace
+
+Abychom splnili váš požadavek na "klasické sbírky" i "průvodce", navrhuji zavést v databázi tři typy entit, které budou koexistovat.
+
+#### A. Klasická Vrstva (Kontejner)
+
+[cite_start]To je to, co uživatelé znají a co už v aplikaci částečně máte[cite: 56].
+
+  * **Jednotka:** Celé Video.
+  * **Logika:** "Šuplík". Uživatel ručně hází videa do krabice "Moje oblíbené".
+  * **AI Role:** AI zde funguje jen jako našeptávač ("Toto video by se hodilo do tvé sbírky X").
+
+#### B. Sémantická Vrstva (Remix)
+
+To je vámi navrhovaná "sbírka napříč videi".
+
+  * **Jednotka:** Sémantický Segment (výsek videa).
+  * **Logika:** "Playlist myšlenek".
+  * **Příklad:** Sbírka "Pravda o doplňcích stravy" obsahuje:
+      * Segment z videa A (minuta 3:00-5:00)
+      * Segment z videa B (minuta 10:00-12:00)
+  * **Technicky:** V DB to bude vazba M:N mezi `Collection` a `SemanticSegment` (viz návrh níže).
+
+#### C. Narativní Vrstva (Průvodce)
+
+Toto je onen "kompilát" či "průvodce". Je to vyšší úroveň, která dává sbírkám smysl.
+
+  * **Jednotka:** Smíšená (Videa + Segmenty + Textové spojováky).
+  * **Logika:** "Učebnice".
+  * **AI Role:** AI vytvoří osnovu (např. "Úvod do biochemie") a do jednotlivých kapitol této osnovy vloží buď celá videa (pro kontext), nebo jen segmenty (pro detail).
+
+-----
+
+### 3\. Technická Realizace (Update Zadání)
+
+[cite_start]Abychom tento systém mohli postavit na stávajícím základě projektu[cite: 3], musíme rozšířit datový model.
+
+**Návrh datového schématu (Prisma):**
+
+```prisma
+model Video {
+  id               String   @id @default(cuid())
+  // ... existující pole ...
+  
+  // MACRO: Celkový vektor videa (Centroid)
+  globalEmbedding  Unsupported("vector(1536)")? 
+
+  // Relace na segmenty
+  segments         SemanticSegment[]
+  
+  // Klasické zařazení do sbírek (celá videa)
+  collections      Collection[] 
+}
+
+model SemanticSegment {
+  id        String   @id @default(cuid())
+  videoId   String
+  video     Video    @relation(fields: [videoId], references: [id])
+  
+  content   String   // Text přepisu úseku
+  
+  // MICRO: Vektor konkrétní myšlenky
+  embedding Unsupported("vector(1536)")?
+
+  // Segment může být součástí "Remix" sbírek
+  inCollections Collection[] 
+}
+
+model Collection {
+  id          String   @id @default(cuid())
+  name        String
+  type        CollectionType @default(STANDARD) // STANDARD (Videa) vs REMIX (Segmenty) vs GUIDE (Mix)
+  
+  // Sbírka může obsahovat celá videa...
+  videos      Video[]
+  
+  // ...ALE i jen jednotlivé segmenty (to je ta novinka)
+  segments    SemanticSegment[]
+  
+  // Hierarchie (Podsbírky)
+  parentId    String?
+  children    Collection[] @relation("Hierarchy")
+  parent      Collection?  @relation("Hierarchy", fields: [parentId], references: [id])
+}
+
+enum CollectionType {
+  STANDARD  // Klasická složka (obsahuje Video[])
+  REMIX     // Tématický výcuc (obsahuje SemanticSegment[])
+  GUIDE     // Průvodce (obsahuje obojí + strukturu)
+}
+```
+
+### 4\. Scénář použití (User Story)
+
+Pojďme si ukázat, jak by to vypadalo v praxi pro uživatele:
+
+1.  **Vstup (Ingest):**
+
+      * Uživatel vloží video o B12.
+      * Aplikace na pozadí:
+          * Rozseká video na 5 segmentů.
+          * Vypočítá 5 mikro-vektorů.
+          * Zprůměruje je a vytvoří 1 makro-vektor videa.
+
+2.  **Organizace (Intuitivní):**
+
+      * Uživatel video ručně zařadí do své sbírky **"Zdraví"** (Klasická sbírka).
+
+3.  **AI Návrh (Diferenciální):**
+
+      * Systém (Librarian) upozorní: *"Všiml jsem si, že segment č. 3 v tomto videu mluví o 'Kyanokobalaminu'. Máš už 4 jiné segmenty o tomto tématu v jiných videích. Chceš vytvořit Průvodce **'Formy Vitamínu B12'**?"*
+
+4.  **Výsledek (Průvodce):**
+
+      * Pokud uživatel řekne "Ano", vznikne nová entita (Průvodce), která neobsahuje celá 20minutová videa, ale jen ten 2minutový výcuc z každého, seřazený za sebou.
+
+### Závěr: Je to cesta k robustnosti?
+
+**Ano.** Tento model je robustní, protože:
+
+1.  **Neničí data:** Původní videa a jejich celistvost zůstávají zachovány (pro klasické přehrávání).
+2.  **Umožňuje granularitu:** Umožňuje jít do hloubky tam, kde to dává smysl, ale nenutí to uživatele dělat u všeho.
+3.  **Škáluje:** Makro-vektory umožňují rychlé hledání v milionech videí, mikro-vektory umožňují přesné odpovědi na konkrétní otázky.
+
+Je to ideální základ pro Fázi 20. Systém bude "dýchat" s obsahem – nafukovat se do celých videí nebo smršťovat do esenciálních myšlenek podle potřeby uživatele.
+------------------------------------------------------------------------
+JÁ_PROMPT:
+ano toto je velmi dobrý návrh - zachováme intuitivní hierarchii sbírek a videí (a doplníme ji o možnost sbírek jednotlivých sbírek resp. tvorby podsbírek v rámci jedné sbírky) a o sbírky nejen videí a sbírek ale také segmentů což budou ony průvodce napříč videi (které budou napříč sbírkami a např. i v rámci jedné sbírky pak to bude průvodce po tématech v rámci jedné sbírky videí) Resp. systém doporučí videa do sbírek na základě jejich sloučeného vektoru a na základě vektroru segmentu videa jej doporučí do sbírky segmentu neboli průvodce. Můžeme ještě tento aspekt zakomponovat do našeho zadání? ;-) ... poté se začneme zabývat jak rpovedeme implementaci tohoto systému na analýzu obsahu do aplikace ... ale předpokládám že pro něj vytvoříme zcela novou datovou základnu resp. vlastní tabulky a naopak uživatelská data (resp. uživatelské sbírky) budeme pak integrovat do těchto datových struktur a až je zaintegrujeme tak původní odstřihneme od funkcionality aplikace a smažeme ... můžeme toto  zadání ještě zkompletovat v tomto ohledu ... ;-)
+
+AI_RESPONZE:
+Toto je vynikající a velmi vyspělá architektonická vize. Požadujete systém, který je **fraktální** (opakuje stejné principy na úrovni videa i knihovny) a **hybridní** (respektuje jak lidskou hierarchii, tak strojovou asociaci).
+
+Přístup "postavit nové vedle starého a pak přepnout" (tzv. **Strangler Fig pattern**) je pro takto zásadní změnu datového modelu nejbezpečnější strategií. Umožní nám to vyvíjet nové "Sémantické Jádro" bez narušení chodu stávající aplikace.
+
+Zde je finální, zkompletované zadání pro **Fázi 20: Sémantické Jádro a Dualita Struktur**, které integruje všechny vámi zmíněné aspekty.
+
+---
+
+# FÁZE 20: Architektura Sémantického Jádra (Semantic Core)
+
+## 1. Konceptuální Model
+
+Systém bude operovat na dvou úrovních granularity, které se vzájemně doplňují:
+
+1.  **Makro-úroveň (Videa a Sbírky):**
+    * Základní jednotka: **Video**.
+    * Reprezentace: **Globální Vektor** (těžiště videa).
+    * Organizační jednotka: **Sbírka** (Collection).
+    * Logika: Hierarchická (Složka ve složce). Slouží pro hrubé třídění (např. "Fyzika", "Historie").
+2.  **Mikro-úroveň (Segmenty a Průvodci):**
+    * Základní jednotka: **Sémantický Segment** (myšlenka/téma uvnitř videa).
+    * Reprezentace: **Lokální Vektor** (přesný otisk myšlenky).
+    * Organizační jednotka: **Průvodce** (Guide).
+    * Logika: Asociativní (Playlist myšlenek). Slouží pro hloubkové studium (např. "Vysvětlení teorie relativity napříč 5 videi").
+
+
+
+[Image of hierarchical data structure diagram]
+
+
+---
+
+## 2. Nová Datová Základna (Greenfield Database)
+
+Vytvoříme zcela nové tabulky vedle stávajících. Staré tabulky (`Video`, `Collection`) zatím zachováme pro běh aplikace, ale nová logika se bude budovat nad těmito:
+
+### A. Tabulka `CoreVideo` (Nové Video)
+Převezme roli stávajícího `Video`, ale je připravena na vektory.
+* `id`: PK
+* `youtubeId`: Unique
+* `title`, `summary`: Metadata.
+* `globalEmbedding`: **Vector(1536)**. (Vypočítaný průměr všech jeho segmentů).
+* `processingStatus`: Enum (PENDING, PROCESSED, FAILED).
+
+### B. Tabulka `CoreSegment` (Atomická Jednotka)
+Nová entita, která neexistovala.
+* `id`: PK
+* `coreVideoId`: FK na `CoreVideo`.
+* `startTime`, `endTime`: Časové ukotvení.
+* `content`: Přepis daného úseku.
+* `embedding`: **Vector(1536)**. (Otisk konkrétní myšlenky).
+* `tags`: Pole klíčových slov specifických pro tento segment.
+
+### C. Tabulka `CoreCollection` (Univerzální Kontejner)
+Sjednocuje koncept "Sbírky" a "Průvodce" do jedné hierarchické struktury.
+* `id`: PK
+* `parentId`: FK na `CoreCollection` (umožňuje zanořování: Sbírka ve Sbírce).
+* `type`: Enum (**STANDARD** = Sbírka videí, **GUIDE** = Sbírka segmentů).
+* `origin`: Enum (**USER** = Manuálně vytvořeno, **SYSTEM** = Navrženo AI).
+* `semanticCentroid`: **Vector(1536)**. (Průměrný vektor obsahu sbírky – slouží k doporučování "Kam toto video patří?").
+
+### D. Vazební Tabulky (M:N)
+* `VideoToCollection`: Vazba `CoreVideo` <-> `CoreCollection` (Typ STANDARD).
+* `SegmentToGuide`: Vazba `CoreSegment` <-> `CoreCollection` (Typ GUIDE).
+
+---
+
+## 3. Algoritmy a Logika (The Brain)
+
+### Proces 1: Ingesce a Analýza (Při vložení videa)
+1.  **Segmentace:** AI rozdělí přepis na logické sémantické bloky (ne jen podle času, ale podle změny tématu).
+2.  **Vektorizace Segmentů:** Každý blok dostane vektor. Uloží se do `CoreSegment`.
+3.  **Výpočet Těžiště:** Zprůměrováním vektorů segmentů vznikne *Globální Vektor Videa*. Uloží se do `CoreVideo`.
+
+### Proces 2: Doporučování (Matchmaking)
+* **Pro Sbírky (STANDARD):** Systém porovná *Globální Vektor Videa* s *Centroidy Sbírek*.
+    * *Výsledek:* "Toto video se na 92 % hodí do tvé sbírky 'Zdravá výživa'."
+* **Pro Průvodce (GUIDE):** Systém porovná *Vektory Segmentů* s existujícími Průvodci.
+    * *Výsledek:* "Segment o 'Mýtech B12' se hodí do Průvodce 'Kritické myšlení ve výživě'."
+
+### Proces 3: Tvorba Průvodce (Emergence)
+* Pokud systém najde shluk (cluster) podobných segmentů napříč různými videi, které ještě nejsou v žádném Průvodci, navrhne: *"Vytvořit nového Průvodce na téma 'X'?"*
+
+---
+
+## 4. Migrační Strategie (Implementation Plan)
+
+Toto je postup, jak přejít ze "Starého" (Legacy) na "Nové" (Core) řešení:
+
+1.  **Fáze A: Paralelní Struktura (Backend)**
+    * Vytvořit nové Prisma modely (`CoreVideo`, `CoreSegment`...).
+    * Spustit migraci DB. Stará data zůstávají nedotčena.
+
+2.  **Fáze B: "Shadow" Ingesce**
+    * [cite_start]Upravit `api/videos/route.ts`[cite: 717]. Když uživatel přidá video, uloží se do **STARÉ** tabulky (aby to viděl v UI) a **ZÁROVEŇ** se spustí proces na pozadí, který data zpracuje do **NOVÉ** struktury (rozseká na segmenty, vypočítá vektory).
+    * Tím se nová databáze začne plnit "živými" daty, aniž by si toho uživatel všiml.
+
+3.  **Fáze C: Zpětná Migrace (Backfill)**
+    * Vytvořit skript, který vezme všechna stará videa (`Video`), projede je novou AI analýzou a naplní `CoreVideo` a `CoreSegment`.
+    * Převést staré `Collection` na `CoreCollection` (Typ STANDARD, Origin USER).
+
+4.  **Fáze D: Přepnutí UI (Cutover)**
+    * Přepsat frontend komponenty (`VideoGrid`, `Sidebar`), aby četly data z `Core` tabulek.
+    * V tento moment uživatel uvidí nové funkce (Průvodce, Podsbírky).
+
+5.  **Fáze E: Úklid (Cleanup)**
+    * Smazat staré tabulky (`Video`, `Chapter`, `Transcript`, `Collection`) ze schématu.
+
+---
+
+### Souhrn zadání pro vývojáře:
+
+> "Vytvořte novou vrstvu datového modelu ('Core') vedle stávajícího. Tato vrstva musí podporovat **vektorové vyhledávání** (pgvector), **hierarchii sbírek** (Parent-Child) a **dualitu obsahu** (Videa vs. Segmenty).
+>
+> Implementujte logiku, která každé video při vstupu rozloží na **Sémantické Segmenty** (každý s vlastním vektorem) a zároveň vypočítá **Globální Vektor** videa.
+>
+> Připravte mechanismus pro **migraci stávajících dat** do této nové struktury tak, aby ve finále aplikace používala výhradně tuto novou 'Core' strukturu pro navigaci, vyhledávání a organizaci do Sbírek (Video level) i Průvodců (Segment level)."
+
+Je toto zadání přesně to, co jste hledal pro start vývoje nové generace aplikace?
+------------------------------------------------------------------------
+JÁ_PROMPT:
+ano díky skvělé ;-) - pojdme toto zadání jen doplnit ještě o Use cases aneb ... uživatel vloží video a přidá jej do uživatelské sbírky ... systém provede analýzu videa - vytvoří vektory pro segmenty - vytvoří vektor videa ... poté systém doporučí sbírku podle vektoru videa ... zařadí video do sbírky segmentů (průvodce napříč sbírkami a videi) ... uživatel bude moci vytvářet průvodce pro určité sbírky resp. vytvoří se průvodce jen na základě vektorů segmentů videí spadající do určité sbírky apod ... chápu toto zadání správně? ... ;-) 
+
+AI_RESPONZE:
+Ano, chápete to naprosto správně. Přesně takto by měl systém fungovat. Váš návrh na **"Průvodce uvnitř Sbírky"** (Scoped Guide) je skvělý detail – umožňuje to uživateli "rozbít" velkou sbírku (např. 50 videí o WW2) na srozumitelné narativní linky (např. "Vývoj tanků", "Politická jednání"), aniž by musel sledovat hodiny záznamu.
+
+Zde je finální doplnění zadání o konkrétní **Use Cases (Scénáře použití)**, které definují chování systému. Toto poslouží jako "kuchařka" pro implementaci.
+
+---
+
+# DOPLNĚK ZADÁNÍ FÁZE 20: Use Cases & Behavior
+
+
+
+[Image of use case diagram]
+
+
+### 1. UC-01: Ingesce a Hybridní Zařazení (The "Smart Import")
+* **Uživatel:** Vloží URL videa (např. o Vitamínu B12) a manuálně ho zařadí do své sbírky *"Moje Zdraví"* (User Intent).
+* **Systém (Pozadí):**
+    1.  Stáhne přepis a provede **Sémantickou Segmentaci** (rozdělí video na 5 myšlenkových bloků).
+    2.  Vypočítá **5 Mikro-vektorů** (pro segmenty).
+    3.  Vypočítá **1 Makro-vektor** (těžiště celého videa).
+* **Systém (Výstup):**
+    1.  Video je fyzicky vloženo do *"Moje Zdraví"*.
+    2.  Systém ale zároveň "vidí", že Makro-vektor videa je z 95 % shodný s AI Sbírkou *"Biochemie"*.
+    3.  **Akce:** Zobrazí notifikaci/návrh: *"Toto video se také hodí do tématu 'Biochemie'. Chceš ho tam přidat?"* (Diferenciální zařazení).
+
+### 2. UC-02: Tvorba "Průvodce" napříč Knihovnou (Global Guide)
+* **Situace:** Uživatel má v knihovně 100 videí z různých oborů (Vaření, Chemie, Zdraví).
+* **Systém (Pozadí):**
+    1.  Diferenciální Agent neustále porovnává **Mikro-vektory** všech segmentů v celé databázi.
+    2.  Detekuje silný shluk (cluster) segmentů, které mluví o *"Soli"* (NaCl), ačkoliv videa jsou z různých sbírek.
+* **Systém (Výstup):**
+    1.  V sekci "Návrhy" se objeví nový Průvodce: **"Vše o Soli"**.
+    2.  Když ho uživatel otevře, nevidí seznam videí, ale **playlist segmentů**:
+        * *Segment 1:* "Chemické složení NaCl" (z videa o Chemii).
+        * *Segment 2:* "Vliv sodíku na tlak" (z videa o Zdraví).
+        * *Segment 3:* "Kdy solit steak" (z videa o Vaření).
+* **Hodnota:** Propojení souvislostí, které by uživatele nenapadly.
+
+### 3. UC-03: Tvorba "Průvodce" uvnitř Sbírky (Scoped Guide)
+*To je ten vámi zmíněný aspekt.*
+* **Uživatel:** Otevře svou velkou sbírku *"Dějepis - 20. století"* (obsahuje 50 videí). Cítí se zahlcen.
+* **Akce:** Klikne na tlačítko **"Analyzovat témata sbírky"**.
+* **Systém (Pozadí):**
+    1.  Vezme pouze segmenty videí, která jsou *v této konkrétní sbírce*.
+    2.  Provede klastrování (shlukování) jen nad touto podmnožinou vektorů.
+* **Systém (Výstup):**
+    1.  Nabídne seznam Průvodců specifických pro tuto sbírku:
+        * *Průvodce A:* "Vzestup totalitních režimů" (sestříháno z 10 videí).
+        * *Průvodce B:* "Hospodářská krize" (sestříháno z 8 videí).
+    2.  Uživatel si může tyto Průvodce uložit jako "Podsbírky".
+
+### 4. UC-04: Sémantické Vyhledávání (Deep Search)
+* **Uživatel:** Do vyhledávacího pole napíše velmi specifický dotaz: *"Proč je kyanokobalamin špatný?"*
+* **Systém:**
+    1.  Převede dotaz na vektor.
+    2.  Hledá nejbližší **Mikro-vektor** (Segment), nikoliv Makro-vektor (Video).
+* **Výsledek:**
+    1.  Aplikace přeskočí seznam videí a rovnou přehraje video X v čase **04:24**, kde se přesně tato věta říká.
+    2.  Jako kontext nabídne Průvodce *"Formy B12"*.
+
+---
+
+### Shrnutí pro Implementaci (Technical Brief)
+
+Tímto máme zadání kompletní. Architektura je postavena na:
+
+1.  **Dualitě dat:** `CoreVideo` (Makro) vs. `CoreSegment` (Mikro).
+2.  **Dualitě sbírek:** `Collection` (Složka videí) vs. `Guide` (Playlist myšlenek).
+3.  **Vektorové inteligenci:** Použití `pgvector` pro hledání vztahů "Video-Video", "Segment-Segment" a "Dotaz-Segment".
+
+**Další krok:**
+Můžeme přistoupit k **Fázi 20 - Krok 1: Příprava Databáze**.
+Chcete, abych nyní připravil přesný `schema.prisma` kód pro tuto novou `Core` strukturu, abyste mohl založit novou datovou základnu?
+------------------------------------------------------------------------
+JÁ_PROMPT:
+Mohu poprosit nyní zkompletovat toto zadání do jednoho finálního dokumentu Zadání (fáze bude mít číslo 19 - resp. fázi 19 jsem zahrnul pod fázi 18 takže 19 je ještě volná - a 19 jedná se o prvočíslo ;-) včetně i dokumentu který bude zprávou o tvorbě tohoto zadání resp. jak se vyvíjel názor na toto zadání v tomto chatu. tímto způsobem poskytneme výsledné Zadání fáze 19 a i vektor jak jsme se k tomuto zadání dostali ... tyto dokumenty poté budou vstupem pro tvorbu realizačního plánu pro tuto prvočíselnou fází 19 ;-) ... díky !!!  
+
+AI_RESPONZE:
+Zde jsou dva kompletní dokumenty, které definují **Fázi 19**.
+
+Prvním dokumentem je **Zpráva o genezi (Vektor vývoje)**, která popisuje myšlenkový proces a cestu, jak jsme k tomuto řešení dospěli. Druhým dokumentem je samotné **Technické Zadání**, které slouží jako podklad pro implementaci.
+
+-----
+
+# DOKUMENT 1: Zpráva o genezi zadání Fáze 19
+
+**Téma:** Evoluce od "SEO popisků" k "Sémantickému Jádru"
+**Datum:** 8. 12. 2025
+
+### 1\. Výchozí bod: Statická Metadata
+
+Na začátku jsme analyzovali stávající řešení (Fáze 18/19), kde aplikace generovala SEO metadata (shrnutí, klíčová slova) na úrovni celého videa. Zjistili jsme, že:
+
+  * Stávající systém "Matchmaker" naráží na limity kontextu při velkém počtu sbírek.
+  * Data jsou plochá – video je vnímáno jako jeden monolitický blok.
+  * Chybí hlubší porozumění obsahu (rozlišení faktů, tónu, konkrétních tvrzení).
+
+### 2\. První posun: Sémantická Rafinerie
+
+Došli jsme k závěru, že nestačí video jen "popsat", ale je nutné ho "pochopit". Navrhli jsme koncept **Semantické Rafinerie**, která čistí "dirty" přepisy a extrahuje entity a tvrzení (Claims).
+
+  * **Klíčový moment:** Uvědomění, že pro efektivní doporučování musí systém chápat *vztah* mezi videem a sbírkou (potvrzení / rozpor / rozšíření), ne jen shodu klíčových slov.
+
+### 3\. Druhý posun: Fraktální Organizace (Mikro-klastrování)
+
+Zde nastal zásadní zlom v uvažování. Definovali jsme, že video není atomická jednotka, ale "kontejner myšlenek".
+
+  * Zavedli jsme koncept **Sémantického Segmentu** (myšlenkový blok uvnitř videa).
+  * Navrhli jsme, aby sbírky vznikaly nejen z celých videí, ale i "prosakováním" témat napříč segmenty různých videí.
+  * Tím vznikl koncept **"Průvodce"** (Guide) – narativní linka složená z úseků více videí.
+
+### 4\. Finální syntéza: Dualita Struktur (Hybridní model)
+
+Abychom neztratili uživatelskou přívětivost, sjednotili jsme tyto pokročilé funkce s intuitivním vnímáním uživatele (Video -\> Složka).
+
+  * **Architektura:** Systém bude udržovat dvě paralelní struktury.
+    1.  **Levá hemisféra (Uživatel):** Manuální, hierarchické sbírky videí.
+    2.  **Pravá hemisféra (AI/Core):** Automatické, asociativní sítě segmentů a vektorů.
+  * **Propojení:** Vektory (Makro pro videa, Mikro pro segmenty) slouží jako most, který uživateli v jeho struktuře nabízí kontext ze struktury AI.
+
+-----
+
+# DOKUMENT 2: Technické Zadání – Fáze 19
+
+**Název Fáze:** Sémantické Jádro & Dualita Struktur (Semantic Core)
+**Cíl:** Implementace vektorové inteligence, hierarchie a granulární organizace obsahu.
+
+## 1\. Manažerské Shrnutí
+
+Cílem Fáze 19 je vybudovat "druhý mozek" aplikace. Vedle stávající manuální správy videí vznikne autonomní vrstva (**Core**), která bude každé video analyzovat na úrovni jednotlivých myšlenek (segmentů). Systém využije vektorové databáze (pgvector) k tomu, aby chápal souvislosti mezi částmi videí a automaticky navrhoval **"Průvodce"** (tematické playlisty napříč knihovnou) i klasické zařazení do sbírek.
+
+## 2\. Architektura Řešení
+
+Systém bude operovat na principu **Dual-Core**:
+
+1.  **Legacy Layer (User):** Zachovává stávající intuitivní práci se sbírkami (složkami).
+2.  **Semantic Core (System):** Nová datová vrstva pro AI analýzu.
+
+### Klíčové komponenty:
+
+  * **Sémantická Segmentace:** Rozklad videa na logické bloky.
+  * **Vektorová Hierarchie:**
+      * **Mikro-vektor:** Reprezentuje jeden segment (pro přesné vyhledávání a Průvodce).
+      * **Makro-vektor (Centroid):** Reprezentuje celé video (pro řazení do hlavních sbírek).
+  * **Diferenciální Agent:** Algoritmus, který porovnává vektory nového obsahu s existující bází a navrhuje akce (zařadit / vytvořit novou sbírku).
+
+## 3\. Datový Model (Prisma Schema - Draft)
+
+Vytvoříme nové tabulky (prefix `Core`), které poběží paralelně se stávajícími.
+
+```prisma
+// 1. ZÁKLADNÍ JEDNOTKA OBSAHU
+model CoreVideo {
+  id               String   @id @default(cuid())
+  youtubeId        String   @unique
+  title            String
+  
+  // Makro-vektor: Sémantické těžiště celého videa
+  globalEmbedding  Unsupported("vector(1536)")? 
+
+  segments         CoreSegment[]
+  
+  // Vazba na uživatelská data (propojení světů)
+  legacyVideoId    String? 
+}
+
+// 2. ATOMICKÁ JEDNOTKA MYŠLENKY
+model CoreSegment {
+  id        String   @id @default(cuid())
+  videoId   String
+  video     CoreVideo @relation(fields: [videoId], references: [id])
+  
+  startTime Int
+  endTime   Int
+  content   String   @db.Text // Vyčištěný přepis úseku
+  summary   String   // AI abstrakt myšlenky
+  
+  // Mikro-vektor: Otisk konkrétního tématu
+  embedding Unsupported("vector(1536)")?
+
+  // Segment může být součástí Průvodců
+  guides    CoreCollection[] @relation("SegmentToGuide")
+}
+
+// 3. UNIVERZÁLNÍ KONTEJNER (SBÍRKA / PRŮVODCE)
+model CoreCollection {
+  id          String   @id @default(cuid())
+  name        String
+  description String?  @db.Text
+  
+  // Typologie
+  type        CollectionType @default(STANDARD) // STANDARD vs GUIDE
+  origin      CollectionOrigin @default(USER)   // USER vs SYSTEM
+  
+  // Hierarchie (Sbírka ve Sbírce / Průvodce ve Sbírce)
+  parentId    String?
+  parent      CoreCollection?  @relation("Hierarchy", fields: [parentId], references: [id])
+  children    CoreCollection[] @relation("Hierarchy")
+
+  // Obsah: Buď celá videa (STANDARD) nebo segmenty (GUIDE)
+  videos      CoreVideo[]      @relation("VideoToCollection")
+  segments    CoreSegment[]    @relation("SegmentToGuide")
+  
+  // Sémantický střed sbírky (pro doporučování)
+  semanticCentroid Unsupported("vector(1536)")?
+}
+
+enum CollectionType {
+  STANDARD // Klasická sbírka videí
+  GUIDE    // Průvodce (playlist segmentů)
+}
+
+enum CollectionOrigin {
+  USER     // Vytvořil uživatel
+  SYSTEM   // Navrhla AI
+}
+```
+
+## 4\. Funkční Specifikace (Use Cases)
+
+### UC-01: Ingesce a Analýza (Smart Import)
+
+  * **Vstup:** Uživatel přidá video.
+  * **Proces:**
+    1.  Systém video stáhne a vyčistí přepis (odstranění balastu).
+    2.  AI rozdělí text na sémantické segmenty (podle změny tématu).
+    3.  Vygenerují se vektory pro segmenty (Mikro) i celé video (Makro).
+  * **Výstup:** Data uložena v `CoreVideo` a `CoreSegment`.
+
+### UC-02: Diferenciální Zařazení (Recommendation)
+
+  * **Trigger:** Dokončení analýzy videa.
+  * **Proces:**
+    1.  Systém porovná **Makro-vektor** videa s **Centroidy** existujících sbírek.
+    2.  Systém porovná **Mikro-vektory** segmentů s existujícími Průvodci.
+  * **Výstup (UI):**
+      * *"Toto video patří do tvé sbírky 'Zdraví' (95% shoda)."*
+      * *"Segment o 'Kyanokobalaminu' se hodí do Průvodce 'Mýty o Vitamínech'."*
+
+### UC-03: Vynoření Průvodce (Emergence)
+
+  * **Trigger:** Pravidelný job na pozadí nebo přidání videa.
+  * **Proces:**
+    1.  Systém hledá shluky (clustery) podobných segmentů napříč celou knihovnou, které nejsou pokryty žádným Průvodcem.
+    2.  Pokud najde silný shluk (např. 5 segmentů z různých videí o "Inflaci"), navrhne nového Průvodce.
+  * **Výstup (UI):** *"Navrhuji vytvořit nového Průvodce: 'Vše o Inflaci'."*
+
+### UC-04: Scoped Guide (Průvodce uvnitř Sbírky)
+
+  * **Akce:** Uživatel klikne na "Analyzovat Sbírku" u velké sbírky.
+  * **Proces:** Klastrování proběhne pouze nad segmenty videí v dané sbírce.
+  * **Výstup:** Rozpad sbírky na narativní linky (Podsbírky typu GUIDE).
+
+## 5\. Implementační Strategie (Strangler Fig)
+
+Vývoj bude probíhat bez narušení stávající funkcionality:
+
+1.  **Příprava (Backend):** Nasazení `pgvector` a migrace nového `Core` schématu.
+2.  **Shadow Run:** Nová videa se ukládají do starých tabulek (pro UI) i do nových (pro analýzu).
+3.  **Backfill:** Skript zpracuje zpětně všechna existující videa do nové struktury.
+4.  **UI Integrace:** Postupné napojení komponent (`Sidebar`, `VideoDetail`) na data z `Core` tabulek (např. zobrazení "Doporučených Průvodců").
+
+-----
+
+**Další krok:** Schválení tohoto zadání a zahájení implementace databázové vrstvy (Krok 1).
+------------------------------------------------------------------------
+
+id_chat: 
+https://gemini.google.com/u/1/app/00f7a67a28513ffe?pageId=none
+
+
