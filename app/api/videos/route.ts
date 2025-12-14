@@ -3,6 +3,8 @@ import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { parseStructuredContent } from '@/lib/parser';
+// NOVÉ: Import funkce pro Shadow Ingestion
+import { ingestVideoToCore } from '@/lib/core/ingestion';
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 const prisma = globalForPrisma.prisma || new PrismaClient();
@@ -20,10 +22,8 @@ export async function POST(request: Request) {
     // 1. Ověření sezení a role
     const session = await getServerSession(authOptions);
 
-    // ZMĚNA: Definujeme seznam rolí, které mají právo přidávat videa
     const allowedRoles = ['ADMIN', 'KURATOR'];
 
-    // Pokud uživatel nemá session, nemá roli, nebo jeho role není v seznamu povolených -> 403
     if (!session || !session.user?.role || !allowedRoles.includes(session.user.role)) {
       return new NextResponse(JSON.stringify({ message: 'Unauthorized' }), {
         status: 403,
@@ -33,7 +33,6 @@ export async function POST(request: Request) {
 
     // 2. Zpracování požadavku
     const body = await request.json();
-    // NOVÉ: Přijímáme i 'transcript'
     const { youtubeUrl, title, summary, structuredContent, transcript } = body;
 
     if (!youtubeUrl || !title || !summary) {
@@ -66,13 +65,13 @@ export async function POST(request: Request) {
         },
       });
 
-      // B. Uložení přepisu (pokud existuje) - NOVÉ
+      // B. Uložení přepisu (pokud existuje)
       if (transcript && transcript.trim() !== '') {
         await tx.transcript.create({
           data: {
             videoId: video.id,
             content: transcript,
-            language: 'cs', // Defaultně předpokládáme češtinu, nebo dle detekce
+            language: 'cs',
           }
         });
       }
@@ -92,6 +91,18 @@ export async function POST(request: Request) {
 
       return video;
     });
+
+    // --- FÁZE 19: SPUNKCE SHADOW INGESTION ---
+    // Spustíme asynchronní proces na pozadí.
+    // Nepoužíváme 'await', aby uživatel nečekal na AI analýzu.
+    // Na RPi (Node.js) bude proces pokračovat i po odeslání odpovědi.
+    if (transcript && transcript.trim() !== '') {
+        console.log(`[API] Spouštím Shadow Ingest pro video ${newVideo.id}`);
+        ingestVideoToCore(newVideo.id).catch(err => {
+            console.error("[BG JOB ERROR] Ingesce selhala:", err);
+        });
+    }
+    // -----------------------------------------
 
     return new NextResponse(JSON.stringify(newVideo), {
       status: 201,

@@ -1,0 +1,52 @@
+### Další kroky (Instrukce pro kapitána):
+
+Nyní, když máme definici, musíme ji promítnout do reality:
+
+1.  **Migrace:** Spusťte příkaz pro vytvoření a aplikaci migrace. Tím se v databázi aktivuje `vector` extension a vytvoří nové tabulky.
+    ```bash
+    npx prisma migrate dev --name init_semantic_core_phase19
+    ```
+2.  **Generování klienta:** Protože používáme `vector`, Prisma potřebuje přegenerovat typy.
+    ```bash
+    npx prisma generate
+    
+    
+------------------------------------------------------------------------
+
+```
+
+### Další krok pro kapitána:
+
+1.  **Aplikujte opravnou migraci:**
+    ```bash
+    npx dotenv -e .env.local -- prisma migrate dev --name fix_vector_dimensions_768
+
+
+------------------------------------------------------------------------
+
+# Příklad (musíte být přihlášen v prohlížeči, takže curl může být tricky kvůli cookies)
+# Jednodušší je vytvořit dočasné tlačítko v adminu, nebo použít check-vectors skript upravený na volání této funkce.
+
+**Ještě lepší test:**
+Upravme ten náš `check-vectors.ts` skript, aby na konci zavolal `autoCategorizeVideo`! To je nejrychlejší cesta.
+
+Přidejte na konec `check-vectors.ts` (před `check()` volání):
+
+```typescript
+import { autoCategorizeVideo } from './lib/core/librarian'; // Import funkce
+
+// ... uvnitř funkce check() na konci ...
+// if (lastVideo) {
+//    console.log("--- TEST AUTONOMNÍHO KNIHOVNÍKA ---");
+//    const res = await autoCategorizeVideo(lastVideo.id);
+//    console.log("Výsledek:", res);
+// }
+*(Poznámka: `ts-node` může mít problém s importem aliasů `@/lib...`, možná budete muset použít relativní cestu `./lib/core/librarian`)*.
+
+Zkuste to nasadit a dejte vědět! Pokud to klapne, video o datlích by mělo samo založit sbírku, třeba "Zdravá strava".
+
+------------------------------------------------------------------------
+
+Vyvíjím webovou aplikaci, která spravuje odkazy na videa z youtube, získává a ukládá přepis tohoto videa z youtube, zobrazuje tato videa uživateli a přehrává je, při přehrávání zobrazuje přepisy videa a interaktivně podtrhává právě přehravaný text videa, rovněž zobrazuje strukturovaný přepis videa 
+
+------------------------------------------------------------------------

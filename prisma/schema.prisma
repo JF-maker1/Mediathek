@@ -1,20 +1,24 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [vector]
 }
 
-// Definice rolí pro uživatele
+// =========================================================
+// STÁVAJÍCÍ APLIKAČNÍ VRSTVA (LEGACY / UI)
+// =========================================================
+
 enum Role {
   USER
   ADMIN
-  KURATOR  // <-- Nová role (Fáze 18)
+  KURATOR
 }
 
-// Datový model pro uživatele
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
@@ -23,59 +27,55 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Vztah: Uživatel může přidat více videí
   videos      Video[]
-  // Sbírky vytvořené uživatelem
   collections Collection[]
 }
 
 model Video {
   id        String   @id @default(cuid())
-  youtubeId String   @unique // ID videa z URL (např. "dQw4w9WgXcQ")
-  title     String   // Manuálně zadaný název
-  summary   String   @db.Text // Manuálně zadané shrnutí (delší text)
+  youtubeId String   @unique 
+  title     String   
+  summary   String   @db.Text 
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Propojení na autora
   authorId  String
   author    User     @relation(fields: [authorId], references: [id])
 
   chapters    Chapter[]
-  // Relace M:N (Video může být ve více sbírkách)
   collections Collection[]
-  // Relace 1:1 na přepis
   transcript  Transcript?
 
-  // --- NOVÁ SEO POLE (Fáze 12) ---
-  seoSummary     String?   @db.Text  // AI Abstrakt (kontext + řešení)
-  seoKeywords    String[]  // Klíčová slova (entity, látky, diagnózy)
-  practicalTips  String[]  // Konkrétní rady (Actionable items)
-  aiSuggestions  String[]  // Návrhy názvů sbírek
+  // Fáze 12 SEO fields
+  seoSummary     String?   @db.Text  
+  seoKeywords    String[]  
+  practicalTips  String[]  
+  aiSuggestions  String[]  
+
+  // --- FÁZE 19: MOST DO NOVÉHO SVĚTA ---
+  // Odkaz na stínovou entitu v novém jádře
+  coreVideo      CoreVideo?
 }
 
 model Chapter {
   id        String   @id @default(cuid())
-  text      String   // Zobrazený text (např. "1.1. Úvod...")
-  startTime Int      // Čas "od" v sekundách
-  endTime   Int?     // Čas "do" v sekundách (nepovinné)
-  level     Int      // Úroveň zanoření (0 = kořen, 1 = podkapitola)
-  order     Int      // Pořadí kapitoly v rámci videa
+  text      String   
+  startTime Int      
+  endTime   Int?     
+  level     Int      
+  order     Int      
 
-  // Relace k videu. Při smazání videa se smažou i kapitoly.
   video   Video  @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoId String
 }
 
-// Model pro sbírky videí
 model Collection {
   id          String   @id @default(cuid())
   
-  // --- ZÁMĚR UŽIVATELE (User Intent) ---
-  name        String   // Uživatelský název
-  description String?  @db.Text // Uživatelský popis
-  keywords    String[] // Uživatelská klíčová slova
+  name        String   
+  description String?  @db.Text 
+  keywords    String[] 
   isPublic    Boolean  @default(false)
   
   createdAt   DateTime @default(now())
@@ -86,25 +86,162 @@ model Collection {
 
   videos      Video[]
 
-  // --- AI ZRCADLO / REALITA (AI Mirror) ---
-  seoTitle       String?   // AI navržený název
-  seoDescription String?   @db.Text // AI navržený popis
-  seoKeywords    String[]  // AI navržená klíčová slova
+  seoTitle       String?   
+  seoDescription String?   @db.Text 
+  seoKeywords    String[]  
 }
 
-// Model pro přepisy videí
 model Transcript {
   id          String   @id @default(cuid())
   
-  // Relace 1:1 na Video
   videoId     String   @unique
   video       Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
   
-  // Obsah
-  content     String   @db.Text      // Surový text titulků spojený do jednoho bloku
-  fullData    Json?                  // Kompletní JSON s časovými značkami (pro budoucí AI)
-  language    String   @default("cs") // Jazyk titulků
+  content     String   @db.Text      
+  fullData    Json?                  
+  language    String   @default("cs") 
   
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// =========================================================
+// NOVÉ SÉMANTICKÉ JÁDRO (FÁZE 19/20 - SEMANTIC CORE)
+// =========================================================
+
+// Enumy pro Core logiku
+enum CollectionType {
+  STANDARD  // Klasická sbírka videí (Složka)
+  GUIDE     // Průvodce složený ze segmentů (Playlist myšlenek)
+}
+
+enum CollectionOrigin {
+  USER      // Vytvořil uživatel manuálně
+  SYSTEM    // Navrhla AI (Emergence)
+}
+
+enum ProcessingStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+// 1. MAKRO ÚROVEŇ: CoreVideo (Zrcadlo Videa)
+model CoreVideo {
+  id               String   @id @default(cuid())
+  
+  // Identifikátory
+  youtubeId        String   @unique
+  
+  // Vazba na Legacy (pokud existuje)
+  legacyVideoId    String?  @unique
+  legacyVideo      Video?   @relation(fields: [legacyVideoId], references: [id])
+  
+  // Metadata (mohou být zpřesněná AI)
+  title            String
+  summary          String?  @db.Text
+  
+  // Sémantika
+  // Globální vektor reprezentující těžiště celého videa
+  // Pro Gemini používáme 768 dimenzí
+  globalEmbedding  Unsupported("vector(768)")? 
+  
+  // --- FÁZE 19.5 NOVINKA: STRUKTUROVANÁ PAMĚŤ ---
+  // JSON strom (Root -> Branch -> Leaf), který vrátí AI
+  // Struktura:
+  // {
+  //   "root": {
+  //     "title": "Hlavní téma",
+  //     "description": "Popis",
+  //     "branches": [
+  //       {
+  //         "title": "Podtéma",
+  //         "leaves": [
+  //           {
+  //             "title": "Myšlenka",
+  //             "startTime": 0,
+  //             "endTime": 120,
+  //             "content": "Obsah",
+  //             "tags": []
+  //           }
+  //         ]
+  //       }
+  //     ]
+  //   }
+  // }
+  taxonomy         Json?
+  
+  // Stav zpracování (pro Background Joby)
+  status           ProcessingStatus @default(PENDING)
+  lastProcessedAt  DateTime?
+
+  // Relace
+  segments         CoreSegment[]
+  
+  // M:N vazba na CoreCollection (pro typ STANDARD)
+  collections      CoreCollection[] @relation("CoreVideoToCollection")
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+// 2. MIKRO ÚROVEŇ: CoreSegment (Myšlenkový blok)
+model CoreSegment {
+  id        String   @id @default(cuid())
+  
+  // Rodičovské video
+  videoId   String
+  video     CoreVideo @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  
+  // Časové ukotevení
+  startTime Int
+  endTime   Int
+  
+  // Obsah
+  content   String   @db.Text // Vyčištěný text segmentu
+  summary   String?  @db.Text // AI abstrakt myšlenky
+  tags      String[] // Specifické tagy pro tento segment
+  
+  // Sémantika
+  // Lokální vektor konkrétní myšlenky
+  // Pro Gemini používáme 768 dimenzí
+  embedding Unsupported("vector(768)")?
+
+  // Relace: Segment může být součástí Průvodců (M:N)
+  inGuides  CoreCollection[] @relation("SegmentToGuide")
+
+  createdAt DateTime @default(now())
+}
+
+// 3. ORGANIZAČNÍ JEDNOTKA: CoreCollection (Sbírka / Průvodce)
+model CoreCollection {
+  id          String   @id @default(cuid())
+  
+  name        String
+  description String?  @db.Text
+  
+  // Typologie
+  type        CollectionType   @default(STANDARD)
+  origin      CollectionOrigin @default(USER)
+  
+  // Sémantika
+  // Vektorový střed sbírky (pro doporučování "kam to patří")
+  // Pro Gemini používáme 768 dimenzí
+  semanticCentroid Unsupported("vector(768)")?
+  
+  // Hierarchie (Stromová struktura)
+  parentId    String?
+  parent      CoreCollection?  @relation("Hierarchy", fields: [parentId], references: [id])
+  children    CoreCollection[] @relation("Hierarchy")
+
+  // OBSAH:
+  // 1. Celá videa (pokud je to STANDARD sbírka)
+  videos      CoreVideo[]      @relation("CoreVideoToCollection")
+  
+  // 2. Segmenty (pokud je to GUIDE průvodce)
+  segments    CoreSegment[]    @relation("SegmentToGuide")
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

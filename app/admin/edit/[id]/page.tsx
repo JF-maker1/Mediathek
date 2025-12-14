@@ -20,7 +20,7 @@ export default function EditVideoPage() {
     const load = async () => {
       try {
         const [vidRes, colRes] = await Promise.all([
-          fetch(`/api/videos/${id}`),
+          fetch(`/api/videos/${id}`), // Tento endpoint vrací i coreVideo
           fetch('/api/collections')
         ]);
         
@@ -33,7 +33,7 @@ export default function EditVideoPage() {
         
         // Transformace dat z DB do formátu VideoFormData
         setInitialData({
-          youtubeUrl: v.youtubeId, // Zde předáváme ID, komponenta to pozná díky youtubeIdReadOnly
+          youtubeUrl: v.youtubeId,
           title: v.title,
           summary: v.summary,
           transcript: v.transcript || '',
@@ -42,7 +42,12 @@ export default function EditVideoPage() {
           seoSummary: v.seoSummary || '',
           seoKeywords: v.seoKeywords || [],
           practicalTips: v.practicalTips || [],
-          aiSuggestions: v.aiSuggestions || []
+          aiSuggestions: v.aiSuggestions || [],
+          
+          // --- OPRAVA: Správné mapování taxonomie ---
+          // Bereme celý JSON objekt 'taxonomy' z CoreVideo a dáváme ho do pole 'coreTaxonomy'
+          coreTaxonomy: v.coreVideo?.taxonomy || null
+          // ------------------------------------------
         });
       } catch (err: any) {
         setError(err.message);
@@ -90,7 +95,7 @@ export default function EditVideoPage() {
           onSubmit={handleSubmit} 
           isSubmitting={isSubmitting} 
           submitButtonText="Uložit změny"
-          youtubeIdReadOnly={true} // V editaci neměníme ID videa
+          youtubeIdReadOnly={true}
         />
       )}
     </div>

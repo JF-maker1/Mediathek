@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, FormEvent, useEffect } from 'react';
-import { Sparkles, ExternalLink, RefreshCw } from 'lucide-react';
+import { Sparkles, ExternalLink, RefreshCw, BrainCircuit, CheckCircle } from 'lucide-react';
 
 // Definice datové struktury, se kterou formulář pracuje
 export interface VideoFormData {
@@ -16,13 +16,15 @@ export interface VideoFormData {
   seoKeywords: string[];
   practicalTips: string[];
   aiSuggestions: string[];
+  // AI Architekt (DCVA) pole
+  coreTaxonomy?: any;
 }
 
 // Definice pro sbírky (pro výběr)
 interface Collection {
   id: string;
   name: string;
-  description?: string; // Fáze 14: Potřebujeme description pro AI kontext
+  description?: string;
 }
 
 // Props komponenty
@@ -59,6 +61,10 @@ export default function VideoForm({
   const [practicalTips, setPracticalTips] = useState<string[]>(initialData?.practicalTips || []);
   const [aiSuggestions, setAiSuggestions] = useState<string[]>(initialData?.aiSuggestions || []);
 
+  // AI Architekt stav
+  const [coreTaxonomy, setCoreTaxonomy] = useState<any>(initialData?.coreTaxonomy || null);
+  const [isIngesting, setIsIngesting] = useState(false);
+
   // Pomocné stavy pro UI
   const [isFetching, setIsFetching] = useState(false);
   const [isAiGeneratingChapters, setIsAiGeneratingChapters] = useState(false);
@@ -89,6 +95,7 @@ export default function VideoForm({
       setSeoKeywords(initialData.seoKeywords?.join(', ') || '');
       setPracticalTips(initialData.practicalTips);
       setAiSuggestions(initialData.aiSuggestions);
+      setCoreTaxonomy(initialData.coreTaxonomy);
     }
   }, [initialData]);
 
@@ -189,16 +196,53 @@ export default function VideoForm({
     }
   };
 
-  // C) FÁZE 14: AI MATCHMAKER LOGIC
+  // C) FÁZE 14 + 19: AI MATCHMAKER LOGIC (SMART HYBRID)
   const handleAiMatchCollections = async () => {
+    setIsAiMatching(true);
+    setAiProposals([]);
+    
+    // 1. Zkusíme použít lokální taxomonii (ZDARMA)
+    if (coreTaxonomy && coreTaxonomy.branch) {
+        addLog('⚡ Používám existující AI taxonomii (Cached)...');
+        
+        // Hledáme sbírku, která se jmenuje stejně jako Branch nebo Root
+        const targetName = coreTaxonomy.branch;
+        const rootName = coreTaxonomy.root;
+        
+        const match = collections.find(c => 
+            c.name.toLowerCase() === targetName.toLowerCase() || 
+            c.name.toLowerCase() === rootName.toLowerCase()
+        );
+
+        if (match) {
+            if (!selectedCollectionIds.includes(match.id)) {
+                setSelectedCollectionIds(prev => [...prev, match.id]);
+                addLog(`✅ Automaticky vybrána sbírka: "${match.name}"`);
+            } else {
+                addLog(`ℹ️ Sbírka "${match.name}" je již vybrána.`);
+            }
+            setIsAiMatching(false);
+            return; // Hotovo, ušetřili jsme API call
+        } else {
+            // Pokud sbírka neexistuje, navrhneme ji vytvořit
+            setAiProposals([{
+                name: targetName,
+                description: `Automaticky navrženo pro sekci ${rootName}`
+            }]);
+            addLog(`💡 Navrhuji novou sbírku: "${targetName}"`);
+            setIsAiMatching(false);
+            return;
+        }
+    }
+
+    // 2. Fallback: Pokud nemáme taxonomii, voláme API (DRAHÉ)
     if (!title && !summary && !seoSummary) {
-        alert('Pro návrh zařazení je potřeba mít vyplněný alespoň název a shrnutí (nebo vygenerované SEO).');
+        alert('Pro návrh zařazení je potřeba mít vyplněný alespoň název a shrnutí.');
+        setIsAiMatching(false);
         return;
     }
 
-    setIsAiMatching(true);
-    setAiProposals([]);
-    addLog('Spouštím AI Matchmaker...');
+    addLog('Spouštím Cloud AI Matchmaker...');
 
     try {
         const payload = {
@@ -220,7 +264,7 @@ export default function VideoForm({
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || 'Chyba při párování');
 
-        // 1. Aplikace shod (Matches) - Aditivní
+        // Aplikace shod
         if (data.matches && Array.isArray(data.matches)) {
             const newMatches = data.matches.filter((id: string) => !selectedCollectionIds.includes(id));
             if (newMatches.length > 0) {
@@ -231,7 +275,7 @@ export default function VideoForm({
             }
         }
 
-        // 2. Návrhy (Proposals)
+        // Návrhy
         if (data.new_proposals && Array.isArray(data.new_proposals) && data.new_proposals.length > 0) {
             setAiProposals(data.new_proposals);
             addLog(`AI navrhuje ${data.new_proposals.length} nové sbírky.`);
@@ -244,6 +288,40 @@ export default function VideoForm({
         console.error(e);
     } finally {
         setIsAiMatching(false);
+    }
+  };
+
+  // D) NOVÁ FUNKCE: Manuální Ingesce AI Architektem
+  const handleManualIngest = async () => {
+    if (!youtubeIdReadOnly) return; // Pouze pro editaci
+    
+    // Varování při přepisování
+    if (coreTaxonomy && !confirm('Toto video již má AI analýzu. Chcete ji opravdu přegenerovat? Spotřebuje to API kredity.')) {
+        return;
+    }
+    
+    setIsIngesting(true);
+    addLog('🚀 Spouštím hloubkovou DCVA analýzu...');
+    
+    try {
+        const pathParts = window.location.pathname.split('/');
+        const videoId = pathParts[pathParts.length - 1];
+
+        const res = await fetch('/api/admin/ingest', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ videoId })
+        });
+        
+        if (!res.ok) throw new Error('Chyba ingesce');
+        
+        addLog('✅ Analýza dokončena. Obnovuji stránku...');
+        
+        setTimeout(() => window.location.reload(), 1000);
+
+    } catch (e: any) {
+        addLog(`❌ Chyba: ${e.message}`);
+        setIsIngesting(false);
     }
   };
 
@@ -275,7 +353,8 @@ export default function VideoForm({
           seoSummary,
           seoKeywords: keywordsArray,
           practicalTips: tipsArray,
-          aiSuggestions
+          aiSuggestions,
+          coreTaxonomy
       });
   };
 
@@ -331,13 +410,13 @@ export default function VideoForm({
                 </div>
             </section>
 
-            {/* SEKVENCE 2: PŘEPIS (Přesunuto nahoru) */}
+            {/* SEKVENCE 2: PŘEPIS */}
             <section className="space-y-4 border-b border-gray-700 pb-6">
                 <h2 className="text-xl font-semibold text-gray-200">Přepis (Zdroj pro AI)</h2>
                 <textarea rows={6} value={transcript} onChange={e => setTranscript(e.target.value)} className="mt-1 block w-full bg-gray-900 text-white p-2 text-sm font-mono border-gray-600 rounded-md" placeholder="Zde bude text titulků..." />
             </section>
 
-            {/* SEKVENCE 3: KAPITOLY (Přesunuto nahoru) */}
+            {/* SEKVENCE 3: KAPITOLY */}
             <section className="space-y-4 border-b border-gray-700 pb-6">
                  <div className="flex justify-between items-end">
                     <h2 className="text-xl font-semibold text-gray-200">Kapitoly</h2>
@@ -348,7 +427,67 @@ export default function VideoForm({
                 <textarea rows={8} value={structuredContent} onChange={e => setStructuredContent(e.target.value)} className="mt-1 block w-full bg-gray-800 text-white p-2 font-mono border-gray-600 rounded-md" />
             </section>
 
-            {/* SEKVENCE 4: SEO A SÉMANTIKA (Nyní před sbírkami) */}
+            {/* NOVÁ SEKCE: AI ARCHITEKT (DCVA) */}
+            <section className="space-y-4 bg-purple-900/10 border border-purple-500/30 p-6 rounded-lg">
+                 <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                        <BrainCircuit className="w-6 h-6 text-purple-400" />
+                        <h2 className="text-xl font-bold text-purple-100">AI Architekt (DCVA)</h2>
+                    </div>
+                    
+                    {youtubeIdReadOnly && (
+                        <button 
+                            type="button" 
+                            onClick={handleManualIngest} 
+                            disabled={isIngesting} 
+                            className={`text-sm text-white py-2 px-4 rounded shadow-lg flex items-center gap-2 disabled:opacity-50 transition-all ${
+                                coreTaxonomy ? 'bg-gray-700 hover:bg-gray-600' : 'bg-purple-600 hover:bg-purple-500'
+                            }`}
+                        >
+                            {isIngesting ? (
+                                <RefreshCw className="w-4 h-4 animate-spin" />
+                            ) : (
+                                coreTaxonomy ? <RefreshCw className="w-4 h-4" /> : <Sparkles className="w-4 h-4" />
+                            )}
+                            {isIngesting ? 'Analyzuji...' : (coreTaxonomy ? 'Přegenerovat analýzu' : 'Spustit Hloubkovou Analýzu')}
+                        </button>
+                    )}
+                </div>
+                
+                <p className="text-sm text-gray-400">
+                    Automatická klasifikace obsahu do taxonomického stromu.
+                </p>
+
+                {coreTaxonomy ? (
+                    <div className="bg-gray-900/50 p-4 rounded border border-purple-500/20 mt-4 relative">
+                        {/* Vizualizace úspěšné analýzy */}
+                        <div className="absolute top-2 right-2">
+                            <CheckCircle className="text-green-500 w-5 h-5" />
+                        </div>
+
+                        <div className="flex items-center gap-2 text-sm text-purple-300 mb-2 font-mono">
+                            <span>ROOT:</span> <span className="text-white font-bold">{coreTaxonomy.root}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-indigo-300 mb-2 font-mono pl-4 border-l-2 border-purple-500/20">
+                            <span>BRANCH:</span> <span className="text-white font-bold">{coreTaxonomy.branch}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-blue-300 font-mono pl-8 border-l-2 border-purple-500/20">
+                            <span>LEAF:</span> <span className="text-white">{coreTaxonomy.leaf}</span>
+                        </div>
+                        
+                        <div className="mt-4 pt-4 border-t border-gray-700 text-xs text-gray-500 flex gap-2">
+                            <span>Analýza je uložena v databázi.</span>
+                            {/* Zde by šlo přidat odkaz na admin detail sbírky */}
+                        </div>
+                    </div>
+                ) : (
+                    <div className="text-center p-6 border-2 border-dashed border-gray-700 rounded text-gray-500 text-sm">
+                        Zatím neproběhla hloubková analýza. Spusťte ji tlačítkem výše.
+                    </div>
+                )}
+            </section>
+
+            {/* SEKVENCE 4: SEO A SÉMANTIKA */}
             <section className="space-y-6 bg-gradient-to-r from-gray-900 to-indigo-900/20 p-6 rounded-lg border border-indigo-500/30">
                  <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
@@ -394,7 +533,7 @@ export default function VideoForm({
                 )}
             </section>
 
-            {/* SEKVENCE 5: SBÍRKY (Přesunuto nakonec) */}
+            {/* SEKVENCE 5: SBÍRKY */}
             <section className="bg-gray-900 p-4 rounded-md border border-gray-700 relative overflow-hidden">
                 <div className="flex justify-between items-center mb-3">
                     <h3 className="text-sm font-medium text-gray-300">Zařadit do sbírek</h3>

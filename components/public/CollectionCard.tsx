@@ -11,6 +11,7 @@ interface CollectionCardProps {
   seoDescription?: string | null;
   videoCount: number;
   thumbnails: string[]; 
+  href?: string; // NOVÉ: Volitelný odkaz
 }
 
 export default function CollectionCard({
@@ -18,14 +19,14 @@ export default function CollectionCard({
   name,
   seoDescription,
   videoCount,
-  thumbnails = [] // Výchozí hodnota
+  thumbnails = [],
+  href // Destructure
 }: CollectionCardProps) {
   const [activeThumbIndex, setActiveThumbIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    // Bezpečná kontrola
     if (isHovered && thumbnails?.length > 1) {
       intervalRef.current = setInterval(() => {
         setActiveThumbIndex((prev) => (prev + 1) % thumbnails.length);
@@ -42,8 +43,11 @@ export default function CollectionCard({
 
   const currentThumb = thumbnails && thumbnails.length > 0 ? thumbnails[activeThumbIndex] : null;
 
+  // LOGIKA ODKAZU: Pokud přijde 'href' (z Guides), použij ho. Jinak klasika.
+  const targetLink = href || `/collections/${id}`;
+
   return (
-    <Link href={`/collections/${id}`} className="block group h-full">
+    <Link href={targetLink} className="block group h-full">
       <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-700 h-full flex flex-col transition-all duration-300 hover:shadow-xl hover:ring-2 hover:ring-indigo-500/50 hover:-translate-y-1">
         
         <div 

@@ -26,7 +26,8 @@ async function checkPermissions(
     include: { 
       chapters: { orderBy: { order: 'asc' } },
       collections: true,
-      transcript: true 
+      transcript: true,
+      coreVideo: true // <--- PŘIDÁNO: Načítáme i Core data (taxonomii)
     },
   });
 
@@ -72,12 +73,15 @@ export async function GET(
     const params = await context.params;
     const { id } = params; 
 
+    console.log(`[VIDEO GET] Načítám video ID: ${id}`);
+
     const { allowed, video, error } = await checkPermissions(id, session);
     if (!allowed) return error;
 
+    console.log(`[VIDEO GET] ✅ Video nalezeno: ${video.title}`);
     return NextResponse.json(video);
   } catch (error) {
-    console.error('API_VIDEOS_GET_ERROR', error);
+    console.error('[VIDEO GET] ❌ Chyba:', error);
     return new NextResponse(JSON.stringify({ message: 'Internal Server Error' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
@@ -93,6 +97,8 @@ export async function PUT(
     const session = await getServerSession(authOptions);
     const params = await context.params;
     const { id } = params;
+
+    console.log(`[VIDEO UPDATE] Startuji aktualizaci pro video ID: ${id}`);
 
     const { allowed, error } = await checkPermissions(id, session);
     if (!allowed) return error;
@@ -115,12 +121,14 @@ export async function PUT(
 
     const updatedVideo = await prisma.$transaction(async (tx) => {
       
-      // --- FIX P2025: SANITIZACE SBÍREK ---
+      // --- SMART LOGIKA: SANITIZACE SBÍREK ---
       // Před pokusem o update ověříme, která ID skutečně existují v databázi.
-      // Tím předejdeme chybě "Expected X records, found Y".
+      // Tím předejdeme chybě "Expected X records, found Y" (P2025).
       let validCollectionIds: string[] = [];
       
       if (collectionIds && Array.isArray(collectionIds) && collectionIds.length > 0) {
+        console.log(`[VIDEO UPDATE] Kontroluji existenci ${collectionIds.length} sbírek...`);
+        
         const existingCollections = await tx.collection.findMany({
           where: {
             id: { in: collectionIds }
@@ -130,13 +138,19 @@ export async function PUT(
         
         validCollectionIds = existingCollections.map(c => c.id);
         
-        // Volitelné: Logování, pokud se počty neshodují (pro debug)
+        // Logování pro debug
         if (validCollectionIds.length !== collectionIds.length) {
-           console.warn(`Warning: Attempted to link ${collectionIds.length} collections, but only ${validCollectionIds.length} exist.`);
+          const missingCount = collectionIds.length - validCollectionIds.length;
+          console.warn(`[VIDEO UPDATE] ⚠️ Varování: ${missingCount} sbírek neexistuje, budou přeskočeny.`);
+          console.warn(`[VIDEO UPDATE] Požadováno: ${collectionIds.length}, Nalezeno: ${validCollectionIds.length}`);
+        } else {
+          console.log(`[VIDEO UPDATE] ✅ Všechny sbírky validní (${validCollectionIds.length})`);
         }
       }
+      // ----------------------------------------
 
       // 1. Aktualizace videa
+      console.log(`[VIDEO UPDATE] Aktualizuji základní metadata...`);
       const video = await tx.video.update({
         where: { id: id },
         data: {
@@ -150,59 +164,97 @@ export async function PUT(
           // --------------
           updatedAt: new Date(),
           collections: {
-            // Použijeme POUZE existující ID
+            // Použijeme POUZE existující ID (recyklace)
             set: validCollectionIds.map((cid) => ({ id: cid }))
           },
         },
       });
 
-      // 2. Aktualizace Přepisu
+      // 2. Aktualizace Přepisu (Smart Update/Create)
       if (transcript !== undefined) {
-        await tx.transcript.upsert({
-          where: { videoId: id },
-          create: {
-            videoId: id,
-            content: transcript,
-          },
-          update: {
-            content: transcript,
-          },
+        console.log(`[VIDEO UPDATE] Zpracovávám přepis...`);
+        
+        // --- SMART LOGIKA: KONTROLA EXISTENCE PŘEPISU ---
+        const existingTranscript = await tx.transcript.findUnique({
+          where: { videoId: id }
         });
+
+        if (existingTranscript) {
+          console.log(`[VIDEO UPDATE] Aktualizuji existující přepis (Recyklace)`);
+          await tx.transcript.update({
+            where: { videoId: id },
+            data: {
+              content: transcript,
+            },
+          });
+        } else {
+          console.log(`[VIDEO UPDATE] Vytvářím nový přepis`);
+          await tx.transcript.create({
+            data: {
+              videoId: id,
+              content: transcript,
+            },
+          });
+        }
+        // ------------------------------------------------
       }
 
-      // 3. Aktualizace kapitol
-      await tx.chapter.deleteMany({
+      // 3. Aktualizace kapitol (Replace Strategy)
+      console.log(`[VIDEO UPDATE] Aktualizuji kapitoly...`);
+      
+      // Nejdříve smažeme staré
+      const deletedChapters = await tx.chapter.deleteMany({
         where: { videoId: id },
       });
+      console.log(`[VIDEO UPDATE] Smazáno ${deletedChapters.count} starých kapitol`);
 
+      // Pak vytvoříme nové
       if (parsedChapters.length > 0) {
         const chapterData = parsedChapters.map((chapter, index) => ({
           ...chapter,
           order: index,
           videoId: id,
         }));
+        
         await tx.chapter.createMany({
           data: chapterData,
         });
+        console.log(`[VIDEO UPDATE] Vytvořeno ${parsedChapters.length} nových kapitol`);
+      } else {
+        console.log(`[VIDEO UPDATE] Žádné nové kapitoly k vytvoření`);
       }
 
       return video;
     });
 
+    console.log(`[VIDEO UPDATE] ✅ Hotovo pro video: ${updatedVideo.title}`);
     return NextResponse.json(updatedVideo);
+    
   } catch (error: any) {
+    // Specifické error handling
     if (error.message.startsWith('Neplatný formát řádku')) {
+      console.error('[VIDEO UPDATE] ❌ Chyba parsování:', error.message);
       return new NextResponse(JSON.stringify({ message: error.message }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
     }
-    console.error('API_VIDEOS_PUT_ERROR', error);
+    
+    console.error('[VIDEO UPDATE] ❌ Chyba:', error);
+    console.error('[VIDEO UPDATE] Stack:', error.stack);
+    
     // Vracíme error i s detailem pro snazší debug na klientovi
-    return new NextResponse(JSON.stringify({ message: 'Internal Server Error', detail: error.message }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return new NextResponse(
+      JSON.stringify({ 
+        message: 'Internal Server Error', 
+        detail: error.message,
+        code: error.code 
+      }), 
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
   }
 }
 
@@ -215,16 +267,20 @@ export async function DELETE(
     const params = await context.params;
     const { id } = params;
 
-    const { allowed, error } = await checkPermissions(id, session);
+    console.log(`[VIDEO DELETE] Startuji mazání pro video ID: ${id}`);
+
+    const { allowed, video, error } = await checkPermissions(id, session);
     if (!allowed) return error;
 
     await prisma.video.delete({
       where: { id: id },
     });
 
+    console.log(`[VIDEO DELETE] ✅ Video smazáno: ${video.title}`);
     return new NextResponse(null, { status: 204 });
+    
   } catch (error) {
-    console.error('API_VIDEOS_DELETE_ERROR', error);
+    console.error('[VIDEO DELETE] ❌ Chyba:', error);
     return new NextResponse(JSON.stringify({ message: 'Internal Server Error' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
